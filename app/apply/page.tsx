@@ -2,8 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
+
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 type Phase = "disclosure" | "form" | "success";
@@ -33,7 +32,7 @@ interface FormState {
   startDate: string;
 }
 
-type FieldErrors = Partial<Record<keyof FormState | "resume", string>>;
+type FieldErrors = Partial<Record<keyof FormState, string>>;
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const ROLES = [
@@ -270,11 +269,9 @@ export default function ApplyPage() {
   const [phase, setPhase] = useState<Phase>("disclosure");
   const [agreed, setAgreed] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const formTopRef = useRef<HTMLDivElement>(null);
 
   const set = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
@@ -297,22 +294,9 @@ export default function ApplyPage() {
     setForm((prev) => ({ ...prev, skills: [...prev.skills, trimmed], customSkill: "" }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      setErrors((prev) => ({ ...prev, resume: "Only PDF files are accepted." }));
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, resume: "File must be under 5 MB." }));
-      return;
-    }
-    setResumeFile(file);
-    setErrors((prev) => ({ ...prev, resume: undefined }));
-  };
 
-  const validate = (): boolean => {
+
+  const validate = (): FieldErrors => {
     const e: FieldErrors = {};
     if (!form.name.trim()) e.name = "Full name is required.";
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email required.";
@@ -323,66 +307,95 @@ export default function ApplyPage() {
     if (!form.role) e.role = "Please select a role.";
     if (!form.motivation.trim()) e.motivation = "Please tell us why you want to join.";
     setErrors(e);
-    return Object.keys(e).length === 0;
+    return e;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) {
-      formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleSubmit = async (e?: React.SyntheticEvent) => {
+    if (e) e.preventDefault();
+    if (submitting) return;
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      const firstError = Object.keys(validationErrors)[0];
+      const errorElement = document.getElementById(`field-${firstError}`);
+      try {
+        if (errorElement) {
+          errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (formTopRef.current) {
+          formTopRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      } catch (err) {
+        // Fallback for older mobile browsers that do not support options object in scrollIntoView
+        if (errorElement) {
+          errorElement.scrollIntoView();
+        } else if (formTopRef.current) {
+          formTopRef.current.scrollIntoView();
+        }
+      }
       return;
     }
     setSubmitting(true);
     setSubmitError("");
 
     try {
-      let resumeUrl = "";
-      if (resumeFile) {
-        const fileRef = ref(storage, `resumes/${Date.now()}_${resumeFile.name.replace(/\s+/g, "_")}`);
-        await uploadBytes(fileRef, resumeFile);
-        resumeUrl = await getDownloadURL(fileRef);
-      }
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-      const payload = {
-        name: form.name.trim(),
-        email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim(),
-        college: form.college.trim(),
-        branch: form.branch.trim(),
-        year: form.year,
-        linkedin: form.linkedin.trim(),
-        github: form.github.trim(),
-        portfolio: form.portfolio.trim(),
-        resumeUrl,
-        role: form.role,
-        skills: form.skills,
-        bestProject: form.bestProject.trim(),
-        projectLinks: form.projectLinks.trim(),
-        builtAgent: form.builtAgent,
-        agentDescription: form.agentDescription.trim(),
-        productIdea: form.productIdea.trim(),
-        technicalChallenge: form.technicalChallenge.trim(),
-        motivation: form.motivation.trim(),
-        autonomousAIInterest: form.autonomousAIInterest.trim(),
-        availabilityHours: form.availabilityHours.trim(),
-        startDate: form.startDate,
+      const submitProcess = async () => {
+        const payload = {
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone.trim(),
+          college: form.college.trim(),
+          branch: form.branch.trim(),
+          year: form.year,
+          linkedin: form.linkedin.trim(),
+          github: form.github.trim(),
+          portfolio: form.portfolio.trim(),
+          role: form.role,
+          skills: form.skills,
+          bestProject: form.bestProject.trim(),
+          projectLinks: form.projectLinks.trim(),
+          builtAgent: form.builtAgent,
+          agentDescription: form.agentDescription.trim(),
+          productIdea: form.productIdea.trim(),
+          technicalChallenge: form.technicalChallenge.trim(),
+          motivation: form.motivation.trim(),
+          autonomousAIInterest: form.autonomousAIInterest.trim(),
+          availabilityHours: form.availabilityHours.trim(),
+          startDate: form.startDate,
+        };
+
+        const res = await fetch("/api/apply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Submission failed.");
+        }
       };
 
-      const res = await fetch("/api/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Submission failed.");
-      }
+      await Promise.race([
+        submitProcess(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Timeout: The server took too long. If on iOS, disable iCloud Private Relay for local network testing.")), 20000)
+        )
+      ]);
+      
+      clearTimeout(timeoutId);
 
       setPhase("success");
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } catch (err: any) {
+      if (err.name === "AbortError") {
+        setSubmitError("Network timeout. The local server could not be reached.");
+      } else {
+        setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -771,27 +784,27 @@ export default function ApplyPage() {
           <FormSection>
             <SectionHeader num="01" title="Personal Information" />
             <FormGrid>
-              <FormField>
+              <FormField id="field-name">
                 <FieldLabel required>Full Name</FieldLabel>
                 <TextInput value={form.name} onChange={(v) => set("name", v)} placeholder="Your full name" error={errors.name} />
               </FormField>
-              <FormField>
+              <FormField id="field-email">
                 <FieldLabel required>Email Address</FieldLabel>
                 <TextInput value={form.email} onChange={(v) => set("email", v)} type="email" placeholder="you@email.com" error={errors.email} />
               </FormField>
-              <FormField>
+              <FormField id="field-phone">
                 <FieldLabel required>Phone Number</FieldLabel>
                 <TextInput value={form.phone} onChange={(v) => set("phone", v)} placeholder="+91 98765 43210" error={errors.phone} />
               </FormField>
-              <FormField>
+              <FormField id="field-college">
                 <FieldLabel required>College / University</FieldLabel>
                 <TextInput value={form.college} onChange={(v) => set("college", v)} placeholder="Institution name" error={errors.college} />
               </FormField>
-              <FormField>
+              <FormField id="field-branch">
                 <FieldLabel required>Degree / Branch</FieldLabel>
                 <TextInput value={form.branch} onChange={(v) => set("branch", v)} placeholder="e.g. B.Tech Computer Science" error={errors.branch} />
               </FormField>
-              <FormField>
+              <FormField id="field-year">
                 <FieldLabel required>Current Year of Study</FieldLabel>
                 <SelectInput
                   value={form.year}
@@ -822,52 +835,7 @@ export default function ApplyPage() {
                 <FieldLabel>Portfolio Website</FieldLabel>
                 <TextInput value={form.portfolio} onChange={(v) => set("portfolio", v)} placeholder="yourportfolio.dev" />
               </FormField>
-              <FormField>
-                <FieldLabel>Resume (PDF)</FieldLabel>
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{
-                    padding: "20px 24px", borderRadius: 10, cursor: "pointer",
-                    border: `1.5px dashed ${errors.resume ? "rgba(239,68,68,0.45)" : resumeFile ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.12)"}`,
-                    background: resumeFile ? "rgba(99,102,241,0.05)" : "rgba(255,255,255,0.02)",
-                    textAlign: "center", transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.4)"; }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = errors.resume
-                      ? "rgba(239,68,68,0.45)" : resumeFile
-                      ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.12)";
-                  }}
-                >
-                  {resumeFile ? (
-                    <div>
-                      <div style={{ fontSize: 24, marginBottom: 6 }}>📄</div>
-                      <p style={{ fontSize: 13, color: "rgba(99,102,241,0.9)", fontWeight: 500, marginBottom: 2 }}>{resumeFile.name}</p>
-                      <p style={{ fontSize: 11, color: "rgba(241,245,249,0.3)", fontFamily: "var(--mono, monospace)" }}>
-                        {(resumeFile.size / 1024).toFixed(0)} KB · Click to replace
-                      </p>
-                    </div>
-                  ) : (
-                    <div>
-                      <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.5 }}>↑</div>
-                      <p style={{ fontSize: 13, color: "rgba(241,245,249,0.5)", marginBottom: 4 }}>
-                        Click to upload your resume
-                      </p>
-                      <p style={{ fontSize: 11, color: "rgba(241,245,249,0.25)", fontFamily: "var(--mono, monospace)" }}>
-                        PDF only · Max 5 MB
-                      </p>
-                    </div>
-                  )}
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                />
-                <FieldError msg={errors.resume} />
-              </FormField>
+
             </FormGrid>
           </FormSection>
 
@@ -876,7 +844,7 @@ export default function ApplyPage() {
           {/* ─── Section 3: Role ───────────────────────────────────── */}
           <FormSection>
             <SectionHeader num="03" title="Role Selection" />
-            <div>
+            <div id="field-role">
               <FieldLabel required>Primary Role You're Applying For</FieldLabel>
               <SelectInput
                 value={form.role}
@@ -1072,7 +1040,7 @@ export default function ApplyPage() {
           {/* ─── Section 7: Motivation ───────────────────────────── */}
           <FormSection>
             <SectionHeader num="07" title="Motivation" />
-            <FormField style={{ marginBottom: 20 }}>
+            <FormField style={{ marginBottom: 20 }} id="field-motivation">
               <FieldLabel required>Why do you want to join Orvantia ?</FieldLabel>
               <TextArea
                 value={form.motivation}
@@ -1137,6 +1105,21 @@ export default function ApplyPage() {
             </motion.div>
           )}
 
+          {Object.keys(errors).length > 0 && !submitError && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                marginBottom: 24, padding: "14px 18px",
+                background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)",
+                borderRadius: 10, fontSize: 13, color: "rgba(248,113,113,0.85)", lineHeight: 1.5,
+                textAlign: "center"
+              }}
+            >
+              Please fill out all required fields. See the highlighted fields above.
+            </motion.div>
+          )}
+
           <style>{`
             .apply-submit-btn { touch-action: manipulation; }
             @media (hover: hover) {
@@ -1147,7 +1130,7 @@ export default function ApplyPage() {
           `}</style>
           <div style={{ textAlign: "center", paddingTop: 8 }}>
             <button
-              type="submit"
+              type="button"
               onClick={handleSubmit}
               disabled={submitting}
               className="apply-submit-btn"
@@ -1201,8 +1184,8 @@ function FormGrid({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FormField({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return <div style={style}>{children}</div>;
+function FormField({ children, style, id }: { children: React.ReactNode; style?: React.CSSProperties; id?: string }) {
+  return <div style={style} id={id}>{children}</div>;
 }
 
 function SectionDivider() {

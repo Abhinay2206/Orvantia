@@ -90,7 +90,6 @@ function buildAdminNotificationEmail(data: Record<string, unknown>) {
           ["LinkedIn", data.linkedin || "—"],
           ["GitHub", data.github || "—"],
           ["Portfolio", data.portfolio || "—"],
-          ["Resume", data.resumeUrl || "Not uploaded"],
         ]
           .map(
             ([label, value]) => `
@@ -129,7 +128,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       name, email, phone, college, branch, year,
-      linkedin, github, portfolio, resumeUrl,
+      linkedin, github, portfolio,
       role, skills,
       bestProject, projectLinks, builtAgent, agentDescription,
       productIdea, technicalChallenge,
@@ -151,7 +150,6 @@ export async function POST(req: NextRequest) {
       linkedin: (linkedin || "").trim(),
       github: (github || "").trim(),
       portfolio: (portfolio || "").trim(),
-      resumeUrl: resumeUrl || "",
       role: role || "",
       skills: skills || [],
       bestProject: (bestProject || "").trim(),

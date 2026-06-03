@@ -1,60 +1,77 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 export default function CustomCursor() {
-  const [visible, setVisible] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const [clicking, setClicking] = useState(false);
-
   const mx = useMotionValue(-100);
   const my = useMotionValue(-100);
+  const cursorOpacity = useMotionValue(0);
+  const isHovering = useMotionValue(0);
+  const isClicking = useMotionValue(0);
 
   const dotX = useSpring(mx, { damping: 40, stiffness: 500, mass: 0.3 });
   const dotY = useSpring(my, { damping: 40, stiffness: 500, mass: 0.3 });
   const ringX = useSpring(mx, { damping: 22, stiffness: 180, mass: 0.6 });
   const ringY = useSpring(my, { damping: 22, stiffness: 180, mass: 0.6 });
 
+  // Spring the raw 0/1 signals for smooth transitions
+  const hoverSpring = useSpring(isHovering, { damping: 20, stiffness: 260, mass: 0.3 });
+  const clickSpring = useSpring(isClicking, { damping: 15, stiffness: 400, mass: 0.2 });
+
+  // Derive scale values via transform (pure GPU, no layout recalcs)
+  const ringHoverScale = useTransform(hoverSpring, [0, 1], [1, 1.375]);
+  const ringClickScale = useTransform(clickSpring, [0, 1], [1, 0.75]);
+  const dotHoverScale = useTransform(hoverSpring, [0, 1], [1, 1.5]);
+  const dotClickScale = useTransform(clickSpring, [0, 1], [1, 1.6]);
+
+  // Combine hover + click scales by multiplying
+  const ringScale = useTransform(
+    [ringHoverScale, ringClickScale],
+    ([h, c]: number[]) => h * c
+  );
+  const dotScale = useTransform(
+    [dotHoverScale, dotClickScale],
+    ([h, c]: number[]) => h * c
+  );
+
   useEffect(() => {
-    const move = (e: MouseEvent) => {
+    const handleMove = (e: MouseEvent) => {
       mx.set(e.clientX);
       my.set(e.clientY);
-      if (!visible) setVisible(true);
+      cursorOpacity.set(1);
     };
 
-    const over = (e: MouseEvent) => {
+    const handleOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const isHoverable =
-        target.closest("button, a, [data-cursor-hover]") !== null;
-      setHovering(isHoverable);
+      isHovering.set(target.closest("button, a, [data-cursor-hover]") !== null ? 1 : 0);
     };
 
-    const down = () => setClicking(true);
-    const up = () => setClicking(false);
-    const leave = () => setVisible(false);
-    const enter = () => setVisible(true);
+    const handleDown = () => isClicking.set(1);
+    const handleUp = () => isClicking.set(0);
+    const handleLeave = () => cursorOpacity.set(0);
+    const handleEnter = () => cursorOpacity.set(1);
 
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseover", over);
-    window.addEventListener("mousedown", down);
-    window.addEventListener("mouseup", up);
-    document.documentElement.addEventListener("mouseleave", leave);
-    document.documentElement.addEventListener("mouseenter", enter);
+    window.addEventListener("mousemove", handleMove, { passive: true });
+    window.addEventListener("mouseover", handleOver, { passive: true });
+    window.addEventListener("mousedown", handleDown, { passive: true });
+    window.addEventListener("mouseup", handleUp, { passive: true });
+    document.documentElement.addEventListener("mouseleave", handleLeave);
+    document.documentElement.addEventListener("mouseenter", handleEnter);
 
     return () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseover", over);
-      window.removeEventListener("mousedown", down);
-      window.removeEventListener("mouseup", up);
-      document.documentElement.removeEventListener("mouseleave", leave);
-      document.documentElement.removeEventListener("mouseenter", enter);
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseover", handleOver);
+      window.removeEventListener("mousedown", handleDown);
+      window.removeEventListener("mouseup", handleUp);
+      document.documentElement.removeEventListener("mouseleave", handleLeave);
+      document.documentElement.removeEventListener("mouseenter", handleEnter);
     };
-  }, [mx, my, visible]);
+  }, [mx, my, cursorOpacity, isHovering, isClicking]);
 
   return (
     <>
-      {/* Trailing ring */}
+      {/* Trailing ring — fixed 32px, scale-only transitions (no layout recalcs) */}
       <motion.div
         className="fixed pointer-events-none z-[9999] rounded-full"
         style={{
@@ -62,31 +79,27 @@ export default function CustomCursor() {
           y: ringY,
           translateX: "-50%",
           translateY: "-50%",
-          width: hovering ? 44 : 32,
-          height: hovering ? 44 : 32,
-          border: `1px solid ${hovering ? "rgba(99,102,241,0.7)" : "rgba(255,255,255,0.25)"}`,
-          opacity: visible ? 1 : 0,
-          scale: clicking ? 0.8 : 1,
-          transition: "width 0.3s ease, height 0.3s ease, border-color 0.3s ease, opacity 0.15s ease, scale 0.1s ease",
+          width: 32,
+          height: 32,
+          border: "1px solid rgba(255,255,255,0.25)",
+          opacity: cursorOpacity,
+          scale: ringScale,
           mixBlendMode: "difference",
         }}
       />
 
-      {/* Core dot */}
+      {/* Core dot — fixed 4px, scale-only transitions */}
       <motion.div
-        className="fixed pointer-events-none z-[9999] rounded-full"
+        className="fixed pointer-events-none z-[9999] rounded-full bg-white/90"
         style={{
           x: dotX,
           y: dotY,
           translateX: "-50%",
           translateY: "-50%",
-          width: hovering ? 6 : 4,
-          height: hovering ? 6 : 4,
-          background: hovering ? "rgba(99,102,241,1)" : "rgba(255,255,255,0.9)",
-          opacity: visible ? 1 : 0,
-          scale: clicking ? 1.5 : 1,
-          transition: "width 0.3s ease, height 0.3s ease, background 0.3s ease, opacity 0.15s ease, scale 0.1s ease",
-          boxShadow: hovering ? "0 0 8px rgba(99,102,241,0.8)" : "none",
+          width: 4,
+          height: 4,
+          opacity: cursorOpacity,
+          scale: dotScale,
         }}
       />
     </>

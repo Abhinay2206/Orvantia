@@ -5,9 +5,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 /* ─── Constants ──────────────────────────────────────────── */
-const NODE_COUNT = 1200;
-const CONNECT_DIST = 4.5;
-const MAX_CONNECTIONS = 4;
+const NODE_COUNT = 750;
+const CONNECT_DIST = 3.8;
+const MAX_CONNECTIONS = 3;
 
 /* ─── Build sparse connection lines ─────────────────────── */
 function buildLines(pos: Float32Array, count: number) {

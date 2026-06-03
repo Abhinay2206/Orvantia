@@ -45,8 +45,10 @@ export default function HeroScene() {
             alpha: false,
             toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 1.5,
+            powerPreference: "high-performance",
           }}
-          dpr={[1, 1.5]}
+          dpr={[1, 1.2]}
+          performance={{ min: 0.5 }}
         >
           <color attach="background" args={["#04040a"]} />
           <fog attach="fog" args={["#04040a", 42, 100]} />
@@ -56,9 +58,10 @@ export default function HeroScene() {
             <EffectComposer>
               <Bloom
                 mipmapBlur
-                luminanceThreshold={0.08}
-                luminanceSmoothing={0.85}
-                intensity={3.0}
+                luminanceThreshold={0.25}
+                luminanceSmoothing={0.9}
+                intensity={2.2}
+                levels={5}
               />
             </EffectComposer>
           </Suspense>

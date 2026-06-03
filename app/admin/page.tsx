@@ -185,21 +185,37 @@ export default function AdminDashboard() {
             <img src="/logo.png" alt="Orvantia Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(241,245,249,0.85)" }}>Orvantia</span>
-          <span style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(241,245,249,0.2)", marginLeft: 4 }}>/ Admin</span>
+          <span style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(241,245,249,0.2)", marginLeft: 4 }}>/ Leads</span>
         </div>
-        <button
-          onClick={handleSignOut}
-          style={{
-            padding: "7px 16px", borderRadius: 100, fontSize: 11,
-            letterSpacing: "0.12em", textTransform: "uppercase",
-            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-            color: "rgba(241,245,249,0.4)", cursor: "pointer", transition: "all 0.2s",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)"; e.currentTarget.style.color = "rgba(248,113,113,0.8)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(241,245,249,0.4)"; }}
-        >
-          Sign Out
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <a
+            href="/admin/applications"
+            style={{
+              padding: "7px 16px", borderRadius: 100, fontSize: 11,
+              letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none",
+              background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.3)",
+              color: "#818cf8", transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 6,
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.2)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.5)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.12)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.3)"; }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#818cf8", display: "inline-block" }} />
+            Applications
+          </a>
+          <button
+            onClick={handleSignOut}
+            style={{
+              padding: "7px 16px", borderRadius: 100, fontSize: 11,
+              letterSpacing: "0.12em", textTransform: "uppercase",
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(241,245,249,0.4)", cursor: "pointer", transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)"; e.currentTarget.style.color = "rgba(248,113,113,0.8)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(241,245,249,0.4)"; }}
+          >
+            Sign Out
+          </button>
+        </div>
       </header>
 
       <div style={{ padding: "32px 28px", maxWidth: 1400, margin: "0 auto" }}>

@@ -1137,12 +1137,17 @@ export default function ApplyPage() {
             </motion.div>
           )}
 
+          <style>{`
+            .apply-submit-btn { touch-action: manipulation; }
+            .apply-submit-btn:not(:disabled):hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 0 40px rgba(99,102,241,0.5), 0 0 100px rgba(99,102,241,0.15), inset 0 1px 0 rgba(255,255,255,0.2) !important; }
+            .apply-submit-btn:not(:disabled):active { transform: scale(0.98); }
+            @keyframes spin-btn { to { transform: rotate(360deg); } }
+          `}</style>
           <div style={{ textAlign: "center", paddingTop: 8 }}>
-            <motion.button
+            <button
               type="submit"
               disabled={submitting}
-              whileHover={!submitting ? { scale: 1.02, y: -1 } : {}}
-              whileTap={!submitting ? { scale: 0.98 } : {}}
+              className="apply-submit-btn"
               style={{
                 padding: "18px 56px", borderRadius: 100, fontSize: 13,
                 fontFamily: "var(--mono, monospace)", letterSpacing: "0.14em",
@@ -1151,17 +1156,18 @@ export default function ApplyPage() {
                 background: "linear-gradient(135deg, rgba(99,102,241,0.95), rgba(168,85,247,0.95))",
                 boxShadow: "0 0 30px rgba(99,102,241,0.35), 0 0 80px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.15)",
                 opacity: submitting ? 0.7 : 1,
-                transition: "opacity 0.2s, box-shadow 0.2s",
+                transition: "transform 0.2s, opacity 0.2s, box-shadow 0.2s",
+                display: "inline-flex", alignItems: "center", gap: 10,
               }}
             >
               {submitting ? (
-                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <>
                   <Spinner /> Submitting Application…
-                </span>
+                </>
               ) : (
                 "Apply to Orvantia AI →"
               )}
-            </motion.button>
+            </button>
             <p style={{
               marginTop: 14, fontSize: 11, fontFamily: "var(--mono, monospace)",
               color: "rgba(241,245,249,0.22)", letterSpacing: "0.05em",
@@ -1260,9 +1266,8 @@ function Spinner() {
       width: 14, height: 14, borderRadius: "50%",
       border: "2px solid rgba(255,255,255,0.2)",
       borderTopColor: "rgba(255,255,255,0.9)",
-      animation: "spin 0.7s linear infinite",
-    }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
+      animation: "spin-btn 0.7s linear infinite",
+      flexShrink: 0,
+    }} />
   );
 }

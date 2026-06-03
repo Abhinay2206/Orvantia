@@ -57,10 +57,12 @@ function LiveBrowserPreview({
   url,
   color,
   stats,
+  isMobile,
 }: {
   url: string;
   color: string;
   stats: ReadonlyArray<{ v: string; l: string }>;
+  isMobile?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,7 @@ function LiveBrowserPreview({
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!wrapperRef.current) return;
+    if (!wrapperRef.current || isMobile) return;
     const rect = wrapperRef.current.getBoundingClientRect();
     tiltX.set(((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -9);
     tiltY.set(((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 9);
@@ -198,25 +200,49 @@ function LiveBrowserPreview({
           <div ref={containerRef} style={{ width: "100%", position: "relative", background: "#05050e" }}>
             <div
               style={{
-                height: `${IFRAME_H * scale}px`,
+                height: isMobile ? 200 : `${IFRAME_H * scale}px`,
                 overflow: "hidden",
                 position: "relative",
               }}
             >
-              <iframe
-                src={url}
-                style={{
-                  width: 1280,
-                  height: IFRAME_H,
-                  transform: `scale(${scale})`,
-                  transformOrigin: "0 0",
-                  pointerEvents: "none",
-                  border: "none",
-                  display: "block",
-                }}
-                sandbox="allow-scripts allow-same-origin"
-                title={`Live preview`}
-              />
+              {isMobile ? (
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: `linear-gradient(135deg, #05050e 0%, ${color}08 50%, #05050e 100%)`,
+                  }}
+                >
+                  <div style={{ textAlign: "center", opacity: 0.5 }}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" style={{ marginBottom: 8 }}>
+                      <rect x="2" y="3" width="20" height="14" rx="2" />
+                      <line x1="8" y1="21" x2="16" y2="21" />
+                      <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: 10, color: `${color}80`, letterSpacing: "0.1em" }}>
+                      {url.replace("https://", "").replace(/\/$/, "")}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <iframe
+                  src={url}
+                  style={{
+                    width: 1280,
+                    height: IFRAME_H,
+                    transform: `scale(${scale})`,
+                    transformOrigin: "0 0",
+                    pointerEvents: "none",
+                    border: "none",
+                    display: "block",
+                  }}
+                  sandbox="allow-scripts allow-same-origin"
+                  title={`Live preview`}
+                />
+              )}
 
               {/* Scanline sweep */}
               <motion.div
@@ -347,13 +373,13 @@ function LiveBrowserPreview({
 /* ─── Single Panel ───────────────────────────────────────── */
 type ProductType = typeof PRODUCTS[number];
 
-function Panel({ product, vw, index }: { product: ProductType; vw: number; index: number }) {
+function Panel({ product, vw, index, isMobile }: { product: ProductType; vw: number; index: number; isMobile: boolean }) {
   const glowX = index % 2 === 0 ? "25%" : "75%";
 
   return (
     <div
       id={product.id}
-      className="overflow-y-auto overflow-x-hidden no-scrollbar"
+      className="overflow-hidden"
       style={{
         width: vw > 0 ? `${vw}px` : "100vw",
         height: "100%",
@@ -514,6 +540,7 @@ function Panel({ product, vw, index }: { product: ProductType; vw: number; index
             url={product.url}
             color={product.color}
             stats={product.stats}
+            isMobile={isMobile}
           />
         </div>
       </div>
@@ -538,6 +565,7 @@ function Panel({ product, vw, index }: { product: ProductType; vw: number; index
 export default function ProductsShowcase() {
   const ref = useRef<HTMLDivElement>(null);
   const [vw, setVw] = useState(0);
+  const isMobile = vw > 0 && vw < 768;
 
   useEffect(() => {
     const resize = () => setVw(window.innerWidth);
@@ -566,7 +594,7 @@ export default function ProductsShowcase() {
     <div ref={ref} id="products" style={{ height: `${PRODUCTS.length * 100 + 50}vh` }}>
       <div
         className="sticky top-0 overflow-hidden"
-        style={{ height: "100vh", background: "var(--bg)" }}
+        style={{ height: "100vh", background: "var(--bg)", touchAction: "pan-y" }}
       >
         <motion.div
           style={{
@@ -574,10 +602,11 @@ export default function ProductsShowcase() {
             display: "flex",
             width: vw > 0 ? `${vw * PRODUCTS.length}px` : `${PRODUCTS.length * 100}vw`,
             height: "100%",
+            willChange: "transform",
           }}
         >
           {PRODUCTS.map((product, i) => (
-            <Panel key={product.id} product={product} index={i} vw={vw} />
+            <Panel key={product.id} product={product} index={i} vw={vw} isMobile={isMobile} />
           ))}
         </motion.div>
 

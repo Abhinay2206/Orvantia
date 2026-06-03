@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   collection, onSnapshot, doc, updateDoc, deleteDoc, orderBy, query, Timestamp, writeBatch,
@@ -118,6 +118,20 @@ export default function ApplicationsDashboard() {
   const [filterRole, setFilterRole] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Refresh
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const triggerRefresh = useCallback(() => {
+    setRefreshing(true);
+    setCountdown(5);
+    setRefreshKey((k) => k + 1);
+    setTimeout(() => setRefreshing(false), 600);
+  }, []);
+
   // Auth guard
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((user) => {
@@ -127,14 +141,32 @@ export default function ApplicationsDashboard() {
     return unsub;
   }, [router]);
 
-  // Real-time listener
+  // Real-time listener — re-subscribes whenever refreshKey changes
   useEffect(() => {
     if (!authChecked) return;
     const q = query(collection(db, "applications"), orderBy("createdAt", "desc"));
-    return onSnapshot(q, (snap) => {
+    const unsub = onSnapshot(q, (snap) => {
       setApps(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Application)));
+      setLastRefreshed(new Date());
+      setRefreshing(false);
     });
-  }, [authChecked]);
+    return unsub;
+  }, [authChecked, refreshKey]);
+
+  // 5-second countdown + auto-refresh
+  useEffect(() => {
+    if (!authChecked) return;
+    countdownRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          triggerRefresh();
+          return 5;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
+  }, [authChecked, triggerRefresh]);
 
   const handleSelect = useCallback((app: Application) => {
     setSelected(app);
@@ -355,6 +387,54 @@ export default function ApplicationsDashboard() {
           <span style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(241,245,249,0.25)" }}>Applications</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Refresh button + countdown */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button
+              onClick={triggerRefresh}
+              title="Refresh now"
+              style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                width: 32, height: 32, borderRadius: 8, cursor: "pointer",
+                background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)",
+                color: "#818cf8", transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(99,102,241,0.18)"; e.currentTarget.style.borderColor = "rgba(99,102,241,0.4)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(99,102,241,0.08)"; e.currentTarget.style.borderColor = "rgba(99,102,241,0.2)"; }}
+            >
+              <svg
+                width="14" height="14" viewBox="0 0 14 14" fill="none"
+                style={{ transition: "transform 0.6s", transform: refreshing ? "rotate(360deg)" : "rotate(0deg)" }}
+              >
+                <path d="M12.5 2.5A6 6 0 1 0 13 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M13 2.5V5.5H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{
+                  width: 28, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden",
+                }}>
+                  <div style={{
+                    height: "100%", borderRadius: 2,
+                    background: "rgba(99,102,241,0.7)",
+                    width: `${(countdown / 5) * 100}%`,
+                    transition: "width 0.9s linear",
+                  }} />
+                </div>
+                <span style={{ fontFamily: "monospace", fontSize: 10, color: "rgba(241,245,249,0.25)", minWidth: 14 }}>
+                  {countdown}s
+                </span>
+              </div>
+              {lastRefreshed && (
+                <span style={{ fontSize: 9, color: "rgba(241,245,249,0.18)", letterSpacing: "0.05em" }}>
+                  {lastRefreshed.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.07)" }} />
+
           <a
             href="/admin"
             style={{

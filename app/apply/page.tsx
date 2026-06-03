@@ -65,9 +65,9 @@ const DISCLOSURE_SECTIONS = [
       "Current products include:",
     ],
     bullets: [
-      "Enteraflux — GLP-1 Companion for Weight Loss",
-      "Continuum — Autonomous Engineering Platform",
-      "ClinicalAgents — Healthcare Intelligence Platform",
+      "Enteraflux - GLP-1 Companion for Weight Loss",
+      "Continuum - Autonomous Engineering Platform",
+      "ClinicalAgents - Healthcare Intelligence Platform",
     ],
   },
   {
@@ -1052,7 +1052,7 @@ export default function ApplyPage() {
               <TextArea
                 value={form.productIdea}
                 onChange={(v) => set("productIdea", v)}
-                placeholder="Describe your vision — the problem, the solution, and why it matters…"
+                placeholder="Describe your vision - the problem, the solution, and why it matters…"
                 rows={6}
               />
             </FormField>

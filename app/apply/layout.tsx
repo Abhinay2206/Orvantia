@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Apply — Orvantia AI Founding Builders",
+  title: "Apply - Orvantia AI Founding Builders",
   description:
     "Join the Founding Builder Community at Orvantia AI. We're looking for engineers, researchers, and designers to help build the next generation of autonomous AI products.",
   openGraph: {

@@ -1139,13 +1139,16 @@ export default function ApplyPage() {
 
           <style>{`
             .apply-submit-btn { touch-action: manipulation; }
-            .apply-submit-btn:not(:disabled):hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 0 40px rgba(99,102,241,0.5), 0 0 100px rgba(99,102,241,0.15), inset 0 1px 0 rgba(255,255,255,0.2) !important; }
+            @media (hover: hover) {
+              .apply-submit-btn:not(:disabled):hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 0 40px rgba(99,102,241,0.5), 0 0 100px rgba(99,102,241,0.15), inset 0 1px 0 rgba(255,255,255,0.2) !important; }
+            }
             .apply-submit-btn:not(:disabled):active { transform: scale(0.98); }
             @keyframes spin-btn { to { transform: rotate(360deg); } }
           `}</style>
           <div style={{ textAlign: "center", paddingTop: 8 }}>
             <button
               type="submit"
+              onClick={handleSubmit}
               disabled={submitting}
               className="apply-submit-btn"
               style={{

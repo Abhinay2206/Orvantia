@@ -61,7 +61,7 @@ const DISCLOSURE_SECTIONS = [
   {
     label: "Introduction",
     content: [
-      "Orvantia AI is an early-stage technology company focused on building autonomous AI products that solve real-world problems across engineering, enterprise operations, and healthcare.",
+      "Orvantia is an early-stage technology company focused on building autonomous AI products that solve real-world problems across engineering, enterprise operations, and healthcare.",
       "Current products include:",
     ],
     bullets: [
@@ -110,7 +110,7 @@ const DISCLOSURE_SECTIONS = [
   {
     label: "Transparency Notice",
     content: [
-      "Orvantia AI is currently in the product-building and client-acquisition stage.",
+      "Orvantia is currently in the product-building and client-acquisition stage.",
     ],
     bullets: [
       "We do not guarantee salaries or stipends at this stage",
@@ -451,7 +451,7 @@ export default function ApplyPage() {
               background: "linear-gradient(135deg, #f1f5f9 0%, rgba(129,140,248,0.95) 45%, rgba(99,102,241,0.85) 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
             }}>
-              Join the Founding Builder<br />Community at Orvantia AI
+              Join the Founding Builder<br />Community at Orvantia 
             </h1>
             <p style={{ fontSize: 16, color: "rgba(241,245,249,0.45)", lineHeight: 1.7, maxWidth: 540, margin: "0 auto" }}>
               Help us build the next generation of autonomous AI products. Read the information below before applying.
@@ -631,7 +631,7 @@ export default function ApplyPage() {
             transition={{ delay: 0.45, duration: 0.6 }}
           >
             <p style={{ fontSize: 15, color: "rgba(241,245,249,0.5)", lineHeight: 1.75, marginBottom: 12 }}>
-              Thank you for applying to Orvantia AI.
+              Thank you for applying to Orvantia.
             </p>
             <p style={{ fontSize: 15, color: "rgba(241,245,249,0.5)", lineHeight: 1.75, marginBottom: 12 }}>
               Your application has been received and is currently under review.
@@ -759,7 +759,7 @@ export default function ApplyPage() {
             background: "linear-gradient(135deg, #f1f5f9 0%, rgba(129,140,248,0.95) 45%, rgba(99,102,241,0.85) 100%)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
           }}>
-            Apply to Orvantia AI
+            Apply to Orvantia 
           </h1>
           <p style={{ fontSize: 14, color: "rgba(241,245,249,0.4)", lineHeight: 1.65 }}>
             Fields marked with <span style={{ color: "rgba(99,102,241,0.8)" }}>*</span> are required.
@@ -1073,11 +1073,11 @@ export default function ApplyPage() {
           <FormSection>
             <SectionHeader num="07" title="Motivation" />
             <FormField style={{ marginBottom: 20 }}>
-              <FieldLabel required>Why do you want to join Orvantia AI?</FieldLabel>
+              <FieldLabel required>Why do you want to join Orvantia ?</FieldLabel>
               <TextArea
                 value={form.motivation}
                 onChange={(v) => set("motivation", v)}
-                placeholder="Tell us what draws you to Orvantia AI specifically and what you hope to contribute…"
+                placeholder="Tell us what draws you to Orvantia specifically and what you hope to contribute…"
                 rows={6}
                 error={errors.motivation}
               />

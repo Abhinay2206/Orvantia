@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { useModal } from "@/app/components/providers/ModalProvider";
 
 const PRODUCTS = [
@@ -46,6 +46,284 @@ const PLATFORM_STATS = [
   { v: "50+", label: "Workflows Automated", color: "#22d3ee" },
   { v: "99.98%", label: "Uptime", color: "#10b981" },
 ];
+
+/* ─── Tilt card with spotlight ──────────────────────────── */
+function ProductCard({
+  p,
+  i,
+  inView,
+}: {
+  p: (typeof PRODUCTS)[number];
+  i: number;
+  inView: boolean;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [spotlight, setSpotlight] = useState({ x: 0, y: 0 });
+  const [hovering, setHovering] = useState(false);
+
+  const rX = useMotionValue(0);
+  const rY = useMotionValue(0);
+  const rotateX = useSpring(rX, { damping: 28, stiffness: 220 });
+  const rotateY = useSpring(rY, { damping: 28, stiffness: 220 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    rX.set(((y - cy) / cy) * -7);
+    rY.set(((x - cx) / cx) * 7);
+    setSpotlight({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    rX.set(0);
+    rY.set(0);
+    setHovering(false);
+  };
+
+  return (
+    <motion.div
+      key={p.name}
+      initial={{ opacity: 0, y: 36 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, delay: 0.3 + i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+      style={{ perspective: 900 }}
+    >
+      <motion.div
+        ref={cardRef}
+        className="glass-card product-card"
+        style={{
+          padding: "clamp(24px, 3vw, 40px)",
+          position: "relative",
+          overflow: "hidden",
+          "--card-accent": p.color,
+          rotateX,
+          rotateY,
+          transformStyle: "preserve-3d",
+          height: "100%",
+        } as React.CSSProperties}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={handleMouseLeave}
+        data-cursor-hover
+      >
+        {/* Spotlight */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: spotlight.x,
+            top: spotlight.y,
+            width: 280,
+            height: 280,
+            borderRadius: "50%",
+            background: `radial-gradient(circle, ${p.color}20 0%, transparent 65%)`,
+            transform: "translate(-50%, -50%)",
+            opacity: hovering ? 1 : 0,
+            transition: "opacity 0.35s ease",
+            zIndex: 0,
+          }}
+        />
+
+        {/* Hover glow corner */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `radial-gradient(ellipse 80% 60% at 0% 0%, ${p.glow}, transparent)`,
+            opacity: hovering ? 1 : 0,
+            transition: "opacity 0.4s ease",
+            borderRadius: 14,
+          }}
+        />
+
+        {/* Animated border gradient on hover */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none rounded-[14px]"
+          style={{
+            background: `linear-gradient(135deg, ${p.color}30, transparent 40%, ${p.color}15)`,
+            opacity: hovering ? 1 : 0,
+            transition: "opacity 0.4s ease",
+          }}
+        />
+
+        {/* Large background number */}
+        <div
+          style={{
+            position: "absolute", top: -8, right: 12,
+            fontFamily: "var(--mono)",
+            fontSize: "clamp(64px, 10vw, 120px)",
+            fontWeight: 700,
+            color: "rgba(255,255,255,0.03)",
+            lineHeight: 1,
+            letterSpacing: "-0.04em",
+            userSelect: "none",
+            pointerEvents: "none",
+          }}
+        >
+          {p.num}
+        </div>
+
+        {/* Content */}
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <div
+              style={{
+                fontFamily: "var(--mono)", fontSize: 10,
+                letterSpacing: "0.2em", textTransform: "uppercase",
+                color: p.color, opacity: 0.7,
+              }}
+            >
+              {p.sub}
+            </div>
+            {p.inDev && (
+              <div
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  padding: "3px 8px", borderRadius: 100,
+                  background: `${p.color}0D`,
+                  border: `1px solid ${p.color}28`,
+                }}
+              >
+                <motion.div
+                  style={{ width: 4, height: 4, borderRadius: "50%", background: p.color }}
+                  animate={{ opacity: [1, 0.3, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <span
+                  style={{
+                    fontFamily: "var(--mono)", fontSize: 8,
+                    letterSpacing: "0.12em", textTransform: "uppercase",
+                    color: `${p.color}B0`,
+                  }}
+                >
+                  In Development
+                </span>
+              </div>
+            )}
+          </div>
+
+          <h3
+            style={{
+              fontFamily: "var(--font)",
+              fontSize: "clamp(26px, 3vw, 40px)",
+              fontWeight: 700, letterSpacing: "-0.02em",
+              color: "rgba(241,245,249,0.92)", marginBottom: 12,
+            }}
+          >
+            {p.name}
+          </h3>
+
+          <p
+            style={{
+              fontFamily: "var(--font)",
+              fontSize: "clamp(13px, 1vw, 15px)",
+              color: "rgba(241,245,249,0.32)",
+              lineHeight: 1.65, marginBottom: 24,
+            }}
+          >
+            {p.desc}
+          </p>
+
+          <div
+            style={{
+              display: "flex", gap: 24,
+              paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)",
+              alignItems: "flex-end", justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex", gap: 24 }}>
+              {p.stats.map((s) => (
+                <div key={s.l}>
+                  <div
+                    style={{
+                      fontFamily: "var(--mono)", fontSize: 22,
+                      fontWeight: 700, color: p.color, marginBottom: 2,
+                    }}
+                  >
+                    {s.v}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--mono)", fontSize: 9,
+                      letterSpacing: "0.14em", textTransform: "uppercase",
+                      color: "rgba(241,245,249,0.2)",
+                    }}
+                  >
+                    {s.l}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <motion.a
+              href={p.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: "var(--mono)", fontSize: 10,
+                color: p.color, opacity: 0.7,
+                textDecoration: "none", letterSpacing: "0.08em",
+                flexShrink: 0,
+                display: "flex", alignItems: "center", gap: 4,
+              }}
+              whileHover={{ opacity: 1, gap: 8 }}
+              data-cursor-hover
+            >
+              Explore →
+            </motion.a>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ─── Magnetic CTA button ────────────────────────────────── */
+function MagneticButton({
+  children,
+  className,
+  onClick,
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  style?: React.CSSProperties;
+}) {
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const bx = useMotionValue(0);
+  const by = useMotionValue(0);
+  const x = useSpring(bx, { damping: 14, stiffness: 180 });
+  const y = useSpring(by, { damping: 14, stiffness: 180 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!btnRef.current) return;
+    const rect = btnRef.current.getBoundingClientRect();
+    bx.set((e.clientX - rect.left - rect.width / 2) * 0.38);
+    by.set((e.clientY - rect.top - rect.height / 2) * 0.38);
+  };
+
+  const handleMouseLeave = () => {
+    bx.set(0);
+    by.set(0);
+  };
+
+  return (
+    <motion.button
+      ref={btnRef}
+      className={className}
+      style={{ ...style, x, y }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      whileTap={{ scale: 0.96 }}
+      data-cursor-hover
+    >
+      {children}
+    </motion.button>
+  );
+}
 
 export default function EcosystemSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -153,8 +431,14 @@ export default function EcosystemSection() {
             flexWrap: "wrap",
           }}
         >
-          {PLATFORM_STATS.map((s) => (
-            <div key={s.label} style={{ textAlign: "center" }}>
+          {PLATFORM_STATS.map((s, i) => (
+            <motion.div
+              key={s.label}
+              style={{ textAlign: "center" }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.25 + i * 0.08, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            >
               <div
                 style={{
                   fontFamily: "var(--mono)",
@@ -176,164 +460,25 @@ export default function EcosystemSection() {
               >
                 {s.label}
               </div>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
 
-        {/* ─── Product cards ───────────────────── */}
+        {/* ─── Product cards with tilt ─────────── */}
         <div
           className="grid grid-cols-1 md:grid-cols-3"
           style={{
             gap: "clamp(12px, 2vw, 20px)",
             marginBottom: "clamp(40px, 6vw, 64px)",
+            alignItems: "stretch",
           }}
         >
           {PRODUCTS.map((p, i) => (
-            <motion.div
-              key={p.name}
-              initial={{ opacity: 0, y: 36 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.3 + i * 0.12, ease: [0.16, 1, 0.3, 1] }}
-              className="glass-card"
-              style={{ padding: "clamp(24px, 3vw, 40px)", position: "relative", overflow: "hidden" }}
-              data-cursor-hover
-            >
-              {/* Hover glow */}
-              <div
-                className="absolute inset-0 rounded-[14px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{ background: `radial-gradient(ellipse 70% 50% at 0% 0%, ${p.glow}, transparent)` }}
-              />
-
-              {/* Large background number */}
-              <div
-                style={{
-                  position: "absolute", top: -8, right: 12,
-                  fontFamily: "var(--mono)",
-                  fontSize: "clamp(64px, 10vw, 120px)",
-                  fontWeight: 700,
-                  color: "rgba(255,255,255,0.03)",
-                  lineHeight: 1,
-                  letterSpacing: "-0.04em",
-                  userSelect: "none",
-                  pointerEvents: "none",
-                }}
-              >
-                {p.num}
-              </div>
-
-              <div
-                style={{
-                  display: "flex", alignItems: "center", gap: 10, marginBottom: 10,
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: "var(--mono)", fontSize: 10,
-                    letterSpacing: "0.2em", textTransform: "uppercase",
-                    color: p.color, opacity: 0.7,
-                  }}
-                >
-                  {p.sub}
-                </div>
-                {p.inDev && (
-                  <div
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: 5,
-                      padding: "3px 8px", borderRadius: 100,
-                      background: `${p.color}0D`,
-                      border: `1px solid ${p.color}28`,
-                    }}
-                  >
-                    <motion.div
-                      style={{ width: 4, height: 4, borderRadius: "50%", background: p.color }}
-                      animate={{ opacity: [1, 0.3, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                    <span
-                      style={{
-                        fontFamily: "var(--mono)", fontSize: 8,
-                        letterSpacing: "0.12em", textTransform: "uppercase",
-                        color: `${p.color}B0`,
-                      }}
-                    >
-                      In Development
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <h3
-                style={{
-                  fontFamily: "var(--font)",
-                  fontSize: "clamp(26px, 3vw, 40px)",
-                  fontWeight: 700, letterSpacing: "-0.02em",
-                  color: "rgba(241,245,249,0.92)", marginBottom: 12,
-                }}
-              >
-                {p.name}
-              </h3>
-
-              <p
-                style={{
-                  fontFamily: "var(--font)",
-                  fontSize: "clamp(13px, 1vw, 15px)",
-                  color: "rgba(241,245,249,0.32)",
-                  lineHeight: 1.65, marginBottom: 24,
-                }}
-              >
-                {p.desc}
-              </p>
-
-              <div
-                style={{
-                  display: "flex", gap: 24,
-                  paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)",
-                  alignItems: "flex-end", justifyContent: "space-between",
-                }}
-              >
-                <div style={{ display: "flex", gap: 24 }}>
-                  {p.stats.map((s) => (
-                    <div key={s.l}>
-                      <div
-                        style={{
-                          fontFamily: "var(--mono)", fontSize: 22,
-                          fontWeight: 700, color: p.color, marginBottom: 2,
-                        }}
-                      >
-                        {s.v}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "var(--mono)", fontSize: 9,
-                          letterSpacing: "0.14em", textTransform: "uppercase",
-                          color: "rgba(241,245,249,0.2)",
-                        }}
-                      >
-                        {s.l}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <a
-                  href={p.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontFamily: "var(--mono)", fontSize: 10,
-                    color: p.color, opacity: 0.7,
-                    textDecoration: "none", letterSpacing: "0.08em",
-                    flexShrink: 0,
-                  }}
-                  data-cursor-hover
-                >
-                  Explore →
-                </a>
-              </div>
-            </motion.div>
+            <ProductCard key={p.name} p={p} i={i} inView={inView} />
           ))}
         </div>
 
-        {/* ─── Unified core CTA ────────────────── */}
+        {/* ─── CTA block ───────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -354,7 +499,7 @@ export default function EcosystemSection() {
           />
 
           <div className="relative z-10">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 28 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 28, flexWrap: "wrap" }}>
               {PRODUCTS.map((p, i) => (
                 <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 16 }}>
                   <div
@@ -403,24 +548,12 @@ export default function EcosystemSection() {
             </p>
 
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-              <motion.button
-                className="btn-primary"
-                data-cursor-hover
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => openModal("schedule")}
-              >
+              <MagneticButton className="btn-primary" onClick={() => openModal("schedule")}>
                 Schedule a Consultation
-              </motion.button>
-              <motion.button
-                className="btn-secondary"
-                data-cursor-hover
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => openModal("book-demo")}
-              >
+              </MagneticButton>
+              <MagneticButton className="btn-secondary" onClick={() => openModal("book-demo")}>
                 Request a Demo
-              </motion.button>
+              </MagneticButton>
             </div>
           </div>
         </motion.div>

@@ -6,6 +6,7 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { NodeCloud, CameraRig } from "./IntelligenceNetwork";
 import { motion } from "framer-motion";
 import AnimatedCounter from "../ui/AnimatedCounter";
+import { useModal } from "@/app/components/providers/ModalProvider";
 import * as THREE from "three";
 
 const WORD = "ORVANTIA";
@@ -19,6 +20,7 @@ const LIVE_STATS: Array<{ value: number; suffix: string; label: string; color: s
 
 export default function HeroScene() {
   const mouseRef = useRef<[number, number]>([0, 0]);
+  const { openModal } = useModal();
 
   const onMouseMove = (e: React.MouseEvent) => {
     mouseRef.current = [
@@ -88,16 +90,6 @@ export default function HeroScene() {
         className="absolute top-0 inset-x-0 pointer-events-none"
         style={{ height: "20%", background: "linear-gradient(to bottom, #04040a, transparent)" }}
       />
-
-      {/* ─── Status pill (top-left) ───────────────────── */}
-      <motion.div
-        className="absolute pointer-events-auto"
-        style={{ top: "clamp(24px, 3vw, 40px)", left: "clamp(24px, 5vw, 72px)" }}
-        initial={{ opacity: 0, x: -16 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      >
-      </motion.div>
 
       {/* ─── Vertical accent text (right edge) ───────── */}
       <motion.div
@@ -232,21 +224,48 @@ export default function HeroScene() {
             marginBottom: 0,
           }}
         >
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontFamily: "var(--font)",
-              fontSize: "clamp(13px, 1.3vw, 18px)",
-              color: "rgba(241,245,249,0.38)",
-              lineHeight: 1.55,
-              maxWidth: "44ch",
-            }}
-          >
-            We build autonomous AI products that transform enterprise operations,
-            engineering, and healthcare at scale.
-          </motion.p>
+          <div>
+            <motion.p
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontFamily: "var(--font)",
+                fontSize: "clamp(13px, 1.3vw, 18px)",
+                color: "rgba(241,245,249,0.38)",
+                lineHeight: 1.55,
+                maxWidth: "44ch",
+                marginBottom: 20,
+              }}
+            >
+              We build autonomous AI products that transform enterprise operations,
+              engineering, and healthcare at scale.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.38, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              style={{ display: "flex", gap: 10, flexWrap: "wrap" }}
+            >
+              <button
+                className="btn-primary"
+                style={{ padding: "10px 22px" }}
+                data-cursor-hover
+                onClick={() => openModal("schedule")}
+              >
+                Partner with Us
+              </button>
+              <button
+                className="btn-secondary"
+                style={{ padding: "10px 22px" }}
+                data-cursor-hover
+                onClick={() => openModal("book-demo")}
+              >
+                Book Demo
+              </button>
+            </motion.div>
+          </div>
         </div>
 
         {/* ─── Live stats bar ──────────────────────────── */}

@@ -309,6 +309,24 @@ html.lenis { height: auto; }
 .animate-float { animation: float-y 4s ease-in-out infinite; }
 .animate-spin-slow { animation: spin-slow 8s linear infinite; }
 
+/* ─── Product card top accent ───────────────────────────── */
+.product-card {
+  position: relative;
+}
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--card-accent, rgba(99,102,241,0.4));
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+.product-card:hover::before {
+  opacity: 1;
+}
+
 /* ─── Canvas ─────────────────────────────────────────────── */
 canvas { display: block; }
 
@@ -348,3 +366,125 @@ html { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.2) transparent;
 
 /* ─── Opacity scale ─────────────────────────────────────── */
 .opacity-18 { opacity: 0.18; }
+
+/* ─── Shimmer text sweep ─────────────────────────────────── */
+@keyframes shimmer-sweep {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    rgba(241,245,249,0.4) 0%,
+    rgba(241,245,249,0.95) 30%,
+    rgba(129,140,248,1) 50%,
+    rgba(241,245,249,0.95) 70%,
+    rgba(241,245,249,0.4) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-sweep 4s linear infinite;
+}
+
+/* ─── Animated gradient border ───────────────────────────── */
+@keyframes border-rotate {
+  from { --border-angle: 0deg; }
+  to   { --border-angle: 360deg; }
+}
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.animated-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    conic-gradient(from var(--border-angle), rgba(99,102,241,0.8), rgba(168,85,247,0.6), rgba(34,211,238,0.6), rgba(99,102,241,0.8)) border-box;
+  animation: border-rotate 4s linear infinite;
+}
+
+/* ─── Reveal clip ────────────────────────────────────────── */
+@keyframes clip-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+.clip-reveal { animation: clip-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ─── Glow pulse ring ────────────────────────────────────── */
+@keyframes glow-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+  70%  { box-shadow: 0 0 0 16px rgba(99,102,241,0); }
+  100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+}
+.glow-ring { animation: glow-ring 2s ease-out infinite; }
+
+/* ─── Number ticker ──────────────────────────────────────── */
+@keyframes count-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ─── Line draw ──────────────────────────────────────────── */
+@keyframes line-draw {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+.line-draw { animation: line-draw 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ─── Frosted glass panel ────────────────────────────────── */
+.frosted {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ─── Text glitch ────────────────────────────────────────── */
+@keyframes glitch-1 {
+  0%, 100% { clip-path: inset(0 0 95% 0); transform: translateX(-3px); }
+  20%       { clip-path: inset(40% 0 50% 0); transform: translateX(3px); }
+  40%       { clip-path: inset(80% 0 5% 0); transform: translateX(-2px); }
+  60%       { clip-path: inset(60% 0 30% 0); transform: translateX(2px); }
+  80%       { clip-path: inset(20% 0 70% 0); transform: translateX(-1px); }
+}
+@keyframes glitch-2 {
+  0%, 100% { clip-path: inset(50% 0 40% 0); transform: translateX(3px); }
+  25%       { clip-path: inset(10% 0 85% 0); transform: translateX(-3px); }
+  50%       { clip-path: inset(70% 0 20% 0); transform: translateX(2px); }
+  75%       { clip-path: inset(30% 0 60% 0); transform: translateX(-2px); }
+}
+
+/* ─── Hover lift ─────────────────────────────────────────── */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(99,102,241,0.08);
+}
+
+/* ─── Cursor text ────────────────────────────────────────── */
+.cursor-none, .cursor-none * { cursor: none !important; }
+
+/* ─── Text mask reveal ───────────────────────────────────── */
+.text-mask-reveal {
+  overflow: hidden;
+  display: inline-block;
+}
+.text-mask-reveal > * {
+  display: inline-block;
+  transform: translateY(105%);
+}
+
+/* ─── Color stop transitions ─────────────────────────────── */
+.transition-glow {
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+/* ─── Perspective wrapper ────────────────────────────────── */
+.perspective-1000 { perspective: 1000px; }
+.perspective-1200 { perspective: 1200px; }
+.preserve-3d      { transform-style: preserve-3d; }

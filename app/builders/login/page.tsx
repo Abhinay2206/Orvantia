@@ -19,6 +19,10 @@ export default function BuilderLogin() {
     setMounted(true);
     const unsub = auth.onAuthStateChanged(async (user) => {
       if (user) {
+        if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
+          router.replace("/admin");
+          return;
+        }
         const snap = await getDoc(doc(db, "builder_profiles", user.uid));
         router.replace(snap.exists() ? "/dashboard" : "/builders/onboarding");
       }
@@ -31,6 +35,10 @@ export default function BuilderLogin() {
     setError(""); setLoading(true);
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
+      if (cred.user.email?.endsWith("@orvantia.ai") && cred.user.emailVerified) {
+        router.replace("/admin");
+        return;
+      }
       const snap = await getDoc(doc(db, "builder_profiles", cred.user.uid));
       router.replace(snap.exists() ? "/dashboard" : "/builders/onboarding");
     } catch {

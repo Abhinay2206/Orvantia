@@ -195,7 +195,13 @@ export default function BuildersLanding() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setAuthChecked(true);
-      if (user) router.replace("/dashboard");
+      if (user) {
+        if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
+          router.replace("/admin");
+        } else {
+          router.replace("/dashboard");
+        }
+      }
     });
     return unsub;
   }, [router]);

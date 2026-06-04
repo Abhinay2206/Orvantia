@@ -20,12 +20,16 @@ export default function BuilderSignup() {
     setMounted(true);
     const unsub = auth.onAuthStateChanged(async (user) => {
       if (user) {
+        if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
+          router.replace("/admin");
+          return;
+        }
         const snap = await getDoc(doc(db, "builder_profiles", user.uid));
         router.replace(snap.exists() ? "/dashboard" : "/builders/onboarding");
       }
     });
     return unsub;
-  }, []);
+  }, [router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +39,10 @@ export default function BuilderSignup() {
     setLoading(true);
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
+      if (cred.user.email?.endsWith("@orvantia.ai") && cred.user.emailVerified) {
+        router.replace("/admin");
+        return;
+      }
       await setDoc(doc(db, "users", cred.user.uid), { role: "builder", createdAt: serverTimestamp() }, { merge: true });
       await fetch("/api/builder/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "account_created", userId: cred.user.uid, userEmail: email }) });
       router.replace("/builders/onboarding");

@@ -132,6 +132,7 @@ export default function Dashboard() {
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {
       if (!user) { router.replace("/builders/login"); return; }
+      if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) { router.replace("/admin"); return; }
       const snap = await getDoc(doc(db, "builder_profiles", user.uid));
       if (!snap.exists()) { router.replace("/builders/onboarding"); return; }
       setProfile(snap.data() as Profile);
@@ -139,7 +140,7 @@ export default function Dashboard() {
       setDataReady(true);
     });
     return unsub;
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (!uid) return;

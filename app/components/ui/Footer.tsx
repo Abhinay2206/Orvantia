@@ -7,7 +7,7 @@ const NAV = [
   {
     heading: "Products",
     links: [
-      { label: "Enteraflux", sub: "Enterprise Agent OS", href: "https://www.enteraflux.tech/" },
+      { label: "Enteraflux", sub: "GLP-1 Therapy Companion", href: "https://www.enteraflux.tech/" },
       { label: "Continuum", sub: "Autonomous Engineering", href: "https://continuumos.vercel.app/" },
       { label: "ClinicalAgent", sub: "Clinical Research AI", href: "https://clinicalagent.vercel.app/" },
     ],

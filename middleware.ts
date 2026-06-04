@@ -40,7 +40,7 @@ function extractIP(req: NextRequest): string {
     req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
     req.headers.get("x-real-ip") ||
     req.headers.get("x-vercel-forwarded-for")?.split(",")[0].trim() ||
-    req.ip ||
+    (req as any).ip ||
     "unknown"
   );
 }

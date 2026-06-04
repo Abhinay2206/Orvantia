@@ -117,7 +117,7 @@ export default function AdminDashboard() {
   // Auth guard
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((user) => {
-      if (!user) {
+      if (!user || !(user.email?.endsWith("@orvantia.ai") && user.emailVerified)) {
         router.replace("/admin/login");
       } else {
         setAuthChecked(true);

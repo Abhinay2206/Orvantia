@@ -135,8 +135,11 @@ export default function ApplicationsDashboard() {
   // Auth guard
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((user) => {
-      if (!user) router.replace("/admin/login");
-      else setAuthChecked(true);
+      if (!user || !(user.email?.endsWith("@orvantia.ai") && user.emailVerified)) {
+        router.replace("/admin/login");
+      } else {
+        setAuthChecked(true);
+      }
     });
     return unsub;
   }, [router]);

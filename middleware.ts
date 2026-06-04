@@ -66,11 +66,31 @@ export function middleware(req: NextRequest) {
   }
 
   // ── 2. Reject requests with no User-Agent on API routes ─────────────────────
-  if (pathname.startsWith("/api/") && !ua) {
-    return new NextResponse(JSON.stringify({ error: "Bad Request" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json", ...SECURITY_HEADERS },
-    });
+  if (pathname.startsWith("/api/")) {
+    if (!ua) {
+      return new NextResponse(JSON.stringify({ error: "Bad Request" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...SECURITY_HEADERS },
+      });
+    }
+
+    // CORS Check
+    const origin = req.headers.get("origin");
+    const host = req.headers.get("host");
+    
+    // Allowed domains
+    const allowedOrigins = [
+      "https://orvantia.vercel.app", 
+      "http://localhost:3000",
+      "https://localhost:3000"
+    ];
+
+    if (origin && !allowedOrigins.includes(origin)) {
+      return new NextResponse(JSON.stringify({ error: "Forbidden Origin" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...SECURITY_HEADERS },
+      });
+    }
   }
 
   // ── 3. Edge-level burst protection on API routes ─────────────────────────────
@@ -127,7 +147,54 @@ export function middleware(req: NextRequest) {
     edgeStore.set(key, entry);
   }
 
-  // ── 4. Attach security headers to all responses ──────────────────────────────
+  // ── 4. Edge-level burst protection on Auth routes ────────────────────────────
+  const authRoutes = ["/admin/gate-x7q9", "/builders/login", "/builders/signup"];
+  if (authRoutes.includes(pathname)) {
+    const ip = extractIP(req);
+    const now = Date.now();
+    const key = `auth_${ip}`;
+
+    let entry = edgeStore.get(key);
+    if (!entry || now - entry.windowStart > EDGE_WINDOW_MS) {
+      entry = { count: 0, windowStart: now, blocked: false };
+    }
+
+    if (entry.blocked) {
+      const retryAfter = Math.ceil((entry.windowStart + EDGE_WINDOW_MS - now) / 1000);
+      return new NextResponse(
+        "Too many login attempts. Please slow down.",
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "text/plain",
+            "Retry-After": String(retryAfter),
+            ...SECURITY_HEADERS,
+          },
+        },
+      );
+    }
+
+    entry.count += 1;
+    // 10 attempts per minute per IP for auth routes
+    if (entry.count > 10) {
+      entry.blocked = true;
+      edgeStore.set(key, entry);
+      return new NextResponse(
+        "Too many login attempts. Please slow down.",
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "text/plain",
+            "Retry-After": String(Math.ceil(EDGE_WINDOW_MS / 1000)),
+            ...SECURITY_HEADERS,
+          },
+        },
+      );
+    }
+    edgeStore.set(key, entry);
+  }
+
+  // ── 5. Attach security headers to all responses ──────────────────────────────
   const response = NextResponse.next();
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
     response.headers.set(k, v);

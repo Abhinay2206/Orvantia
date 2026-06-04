@@ -134,11 +134,22 @@ export default function ApplicationsDashboard() {
 
   // Auth guard
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged((user) => {
-      if (!user || !(user.email?.endsWith("@orvantia.ai") && user.emailVerified)) {
-        router.replace("/admin/login");
-      } else {
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        router.replace("/admin/gate-x7q9");
+        return;
+      }
+      if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
         setAuthChecked(true);
+      } else if (user.email?.endsWith("@orvantia.ai")) {
+        await user.reload();
+        if (auth.currentUser?.emailVerified) {
+          setAuthChecked(true);
+        } else {
+          router.replace("/admin/gate-x7q9");
+        }
+      } else {
+        router.replace("/admin/gate-x7q9");
       }
     });
     return unsub;
@@ -466,7 +477,7 @@ export default function ApplicationsDashboard() {
             Builder Program
           </a>
           <button
-            onClick={async () => { await signOut(auth); router.replace("/admin/login"); }}
+            onClick={async () => { await signOut(auth); router.replace("/admin/gate-x7q9"); }}
             style={{
               padding: "7px 14px", borderRadius: 100, fontSize: 11,
               letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer",

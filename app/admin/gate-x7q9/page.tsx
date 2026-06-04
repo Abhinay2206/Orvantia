@@ -13,8 +13,22 @@ export default function AdminLogin() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged((user) => {
-      if (user) router.replace("/admin");
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
+          router.replace("/admin");
+        } else if (user.email?.endsWith("@orvantia.ai")) {
+          // Force refresh the user object to get the latest emailVerified status from the backend
+          await user.reload();
+          if (auth.currentUser?.emailVerified) {
+             router.replace("/admin");
+          } else {
+             await auth.signOut();
+          }
+        } else {
+          await auth.signOut();
+        }
+      }
     });
     return unsub;
   }, [router]);
@@ -24,8 +38,13 @@ export default function AdminLogin() {
     setError("");
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.replace("/admin");
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      if (cred.user.email?.endsWith("@orvantia.ai") && cred.user.emailVerified) {
+        router.replace("/admin");
+      } else {
+        await auth.signOut();
+        setError("Access denied. Admin email not verified or invalid.");
+      }
     } catch {
       setError("Invalid credentials. Check your email and password.");
     } finally {

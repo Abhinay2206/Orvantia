@@ -116,11 +116,22 @@ export default function AdminDashboard() {
 
   // Auth guard
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged((user) => {
-      if (!user || !(user.email?.endsWith("@orvantia.ai") && user.emailVerified)) {
-        router.replace("/admin/login");
-      } else {
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        router.replace("/admin/gate-x7q9");
+        return;
+      }
+      if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
         setAuthChecked(true);
+      } else if (user.email?.endsWith("@orvantia.ai")) {
+        await user.reload();
+        if (auth.currentUser?.emailVerified) {
+          setAuthChecked(true);
+        } else {
+          router.replace("/admin/gate-x7q9");
+        }
+      } else {
+        router.replace("/admin/gate-x7q9");
       }
     });
     return unsub;
@@ -188,7 +199,7 @@ export default function AdminDashboard() {
 
   const handleSignOut = async () => {
     await signOut(auth);
-    router.replace("/admin/login");
+    router.replace("/admin/gate-x7q9");
   };
 
   const filtered = filter === "all" ? leads : leads.filter((l) => l.status === filter);

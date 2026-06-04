@@ -177,12 +177,23 @@ export default function AdminBuilderDashboard() {
 
   // ── Auth guard ────────────────────────────────────────────────────────────
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged((user) => {
-      if (!user || !(user.email?.endsWith("@orvantia.ai") && user.emailVerified)) {
-        router.replace("/admin/login");
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        router.replace("/admin/gate-x7q9");
         return;
       }
-      setAuthChecked(true);
+      if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
+        setAuthChecked(true);
+      } else if (user.email?.endsWith("@orvantia.ai")) {
+        await user.reload();
+        if (auth.currentUser?.emailVerified) {
+          setAuthChecked(true);
+        } else {
+          router.replace("/admin/gate-x7q9");
+        }
+      } else {
+        router.replace("/admin/gate-x7q9");
+      }
     });
     return unsub;
   }, [router]);
@@ -306,7 +317,7 @@ export default function AdminBuilderDashboard() {
     await addDoc(collection(db, "notifications"), { message, type, timestamp: serverTimestamp() });
   };
 
-  const handleSignOut = async () => { await signOut(auth); router.replace("/admin/login"); };
+  const handleSignOut = async () => { await signOut(auth); router.replace("/admin/gate-x7q9"); };
 
   // ── Stats ──────────────────────────────────────────────────────────────────
   const stats = {

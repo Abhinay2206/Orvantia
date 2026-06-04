@@ -45,6 +45,26 @@ export default function SubmitTask() {
   const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const picked = Array.from(e.target.files || []).filter((f) => {
       if (f.size > MAX_SIZE) { setErrors((p) => ({ ...p, files: `${f.name} exceeds 25 MB.` })); return false; }
+      
+      // Strict MIME type check to prevent executables
+      const allowedTypes = [
+        "application/pdf",
+        "application/zip",
+        "application/x-zip-compressed",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain",
+        "text/markdown",
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+      ];
+      
+      if (!allowedTypes.includes(f.type) && !f.name.endsWith(".md")) {
+        setErrors((p) => ({ ...p, files: `${f.name} is not an allowed file type.` })); 
+        return false;
+      }
+      
       return true;
     });
     setFiles((p) => [...p, ...picked]);

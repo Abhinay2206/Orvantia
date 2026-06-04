@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import nodemailer from "nodemailer";
+import { checkRateLimit, getIP, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -55,6 +56,16 @@ function buildConfirmationEmail(name: string, type: string) {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 5 lead submissions per IP per hour.
+  const ip = getIP(req);
+  const rl = checkRateLimit(ip, "lead", 5, 60 * 60 * 1000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait before submitting again." },
+      { status: 429, headers: rateLimitHeaders(rl, 5) },
+    );
+  }
+
   try {
     const body = await req.json();
     const { name, email, company, phone, type, products, message } = body;

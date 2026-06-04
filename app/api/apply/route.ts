@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import nodemailer from "nodemailer";
+import { checkRateLimit, getIP, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -122,6 +123,16 @@ function buildAdminNotificationEmail(data: Record<string, unknown>) {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 3 application submissions per IP per hour.
+  const ip = getIP(req);
+  const rl = checkRateLimit(ip, "apply", 3, 60 * 60 * 1000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait before submitting again." },
+      { status: 429, headers: rateLimitHeaders(rl, 3) },
+    );
+  }
+
   try {
     const body = await req.json();
     const {

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   collection, onSnapshot, doc, updateDoc, orderBy, query,
-  Timestamp,
+  Timestamp, deleteDoc
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
@@ -55,17 +55,21 @@ function StatusBadge({ status }: { status: LeadStatus }) {
   );
 }
 
-function LeadRow({ lead, onSelect }: { lead: Lead; onSelect: (l: Lead) => void }) {
+function LeadRow({ lead, onSelect, isSelected, onToggleSelect }: { lead: Lead; onSelect: (l: Lead) => void; isSelected: boolean; onToggleSelect: (id: string) => void }) {
   return (
     <tr
       onClick={() => onSelect(lead)}
       style={{
         borderBottom: "1px solid rgba(255,255,255,0.04)",
         cursor: "pointer", transition: "background 0.15s",
+        background: isSelected ? "rgba(239,68,68,0.05)" : "transparent"
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = "rgba(255,255,255,0.025)" }}
+      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent" }}
     >
+      <td style={{ ...td, width: 40 }} onClick={(e) => e.stopPropagation()}>
+        <input type="checkbox" checked={isSelected} onChange={() => onToggleSelect(lead.id)} style={{ cursor: "pointer", accentColor: "#ef4444" }} />
+      </td>
       <td style={td}>{lead.name}</td>
       <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{lead.email}</td>
       <td style={td}>{lead.company}</td>
@@ -104,8 +108,10 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [selected, setSelected] = useState<Lead | null>(null);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
   const [notesDraft, setNotesDraft] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
 
   // Auth guard
@@ -150,6 +156,36 @@ export default function AdminDashboard() {
     setSaving(false);
   };
 
+  const toggleSelect = (id: string) => {
+    const next = new Set(selectedLeadIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedLeadIds(next);
+  };
+
+  const toggleSelectAll = (filteredIds: string[]) => {
+    if (selectedLeadIds.size === filteredIds.length && filteredIds.length > 0) {
+      setSelectedLeadIds(new Set());
+    } else {
+      setSelectedLeadIds(new Set(filteredIds));
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedLeadIds.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedLeadIds.size} lead(s)?`)) return;
+    setDeleting(true);
+    try {
+      for (const id of selectedLeadIds) {
+        await deleteDoc(doc(db, "leads", id));
+      }
+      setSelectedLeadIds(new Set());
+      if (selected && selectedLeadIds.has(selected.id)) setSelected(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut(auth);
     router.replace("/admin/login");
@@ -188,20 +224,22 @@ export default function AdminDashboard() {
           <span style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(241,245,249,0.2)", marginLeft: 4 }}>/ Leads</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <a
-            href="/admin/applications"
-            style={{
+          {[{ href: "/admin/applications", label: "Applications" }, { href: "/admin/builder", label: "Builder Program", highlight: true }].map((link) => (
+            <a key={link.href} href={link.href} style={{
               padding: "7px 16px", borderRadius: 100, fontSize: 11,
               letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none",
-              background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.3)",
-              color: "#818cf8", transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 6,
+              background: link.highlight ? "rgba(99,102,241,0.12)" : "rgba(255,255,255,0.04)",
+              border: link.highlight ? "1px solid rgba(99,102,241,0.3)" : "1px solid rgba(255,255,255,0.08)",
+              color: link.highlight ? "#818cf8" : "rgba(241,245,249,0.4)",
+              transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 6,
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.2)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.5)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.12)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.3)"; }}
-          >
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#818cf8", display: "inline-block" }} />
-            Applications
-          </a>
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = link.highlight ? "rgba(99,102,241,0.2)" : "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.borderColor = link.highlight ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.15)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = link.highlight ? "rgba(99,102,241,0.12)" : "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.borderColor = link.highlight ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.08)"; }}
+            >
+              {link.highlight && <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#818cf8", display: "inline-block" }} />}
+              {link.label}
+            </a>
+          ))}
           <button
             onClick={handleSignOut}
             style={{
@@ -236,23 +274,39 @@ export default function AdminDashboard() {
         </div>
 
         {/* Filter tabs */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
-          {FILTERS.map((f) => (
+        <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  padding: "7px 16px", borderRadius: 100, fontSize: 11,
+                  letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
+                  background: filter === f ? "rgba(99,102,241,0.18)" : "rgba(255,255,255,0.04)",
+                  border: filter === f ? "1px solid rgba(99,102,241,0.45)" : "1px solid rgba(255,255,255,0.08)",
+                  color: filter === f ? "#818cf8" : "rgba(241,245,249,0.35)",
+                  transition: "all 0.2s",
+                }}
+              >
+                {f === "all" ? `All (${leads.length})` : `${f} (${counts[f as LeadStatus]})`}
+              </button>
+            ))}
+          </div>
+          {selectedLeadIds.size > 0 && (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
+              onClick={handleDeleteSelected}
+              disabled={deleting}
               style={{
                 padding: "7px 16px", borderRadius: 100, fontSize: 11,
-                letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer",
-                background: filter === f ? "rgba(99,102,241,0.18)" : "rgba(255,255,255,0.04)",
-                border: filter === f ? "1px solid rgba(99,102,241,0.45)" : "1px solid rgba(255,255,255,0.08)",
-                color: filter === f ? "#818cf8" : "rgba(241,245,249,0.35)",
-                transition: "all 0.2s",
+                letterSpacing: "0.12em", textTransform: "uppercase", cursor: deleting ? "wait" : "pointer",
+                background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)",
+                color: "#f87171", transition: "all 0.2s", opacity: deleting ? 0.7 : 1,
               }}
             >
-              {f === "all" ? `All (${leads.length})` : `${f} (${counts[f as LeadStatus]})`}
+              {deleting ? "Deleting..." : `Delete Selected (${selectedLeadIds.size})`}
             </button>
-          ))}
+          )}
         </div>
 
         {/* Main grid: table + detail panel */}
@@ -268,6 +322,13 @@ export default function AdminDashboard() {
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr>
+                      <th style={{ ...th, width: 40 }}>
+                        <input type="checkbox" 
+                          checked={filtered.length > 0 && selectedLeadIds.size === filtered.length} 
+                          onChange={() => toggleSelectAll(filtered.map(l => l.id))} 
+                          style={{ cursor: "pointer", accentColor: "#ef4444" }} 
+                        />
+                      </th>
                       {["Name", "Email", "Company", "Type", "Products", "Status", "Date"].map((h) => (
                         <th key={h} style={th}>{h}</th>
                       ))}
@@ -275,7 +336,7 @@ export default function AdminDashboard() {
                   </thead>
                   <tbody>
                     {filtered.map((lead) => (
-                      <LeadRow key={lead.id} lead={lead} onSelect={handleSelect} />
+                      <LeadRow key={lead.id} lead={lead} onSelect={handleSelect} isSelected={selectedLeadIds.has(lead.id)} onToggleSelect={toggleSelect} />
                     ))}
                   </tbody>
                 </table>

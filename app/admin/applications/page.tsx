@@ -443,8 +443,24 @@ export default function ApplicationsDashboard() {
               background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
               color: "rgba(241,245,249,0.4)", transition: "all 0.2s",
             }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.3)"; (e.currentTarget as HTMLElement).style.color = "#818cf8"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.color = "rgba(241,245,249,0.4)"; }}
           >
             Leads
+          </a>
+          <a
+            href="/admin/builder"
+            style={{
+              padding: "7px 14px", borderRadius: 100, fontSize: 11, textDecoration: "none",
+              letterSpacing: "0.1em", textTransform: "uppercase",
+              background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.3)",
+              color: "#818cf8", transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 6,
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.2)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.5)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.12)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.3)"; }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#818cf8", display: "inline-block" }} />
+            Builder Program
           </a>
           <button
             onClick={async () => { await signOut(auth); router.replace("/admin/login"); }}

@@ -3,27 +3,21 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { doc, getDoc, addDoc, collection, serverTimestamp, query, where, getDocs, updateDoc } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { auth, db, storage } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useRouter, useParams } from "next/navigation";
 import BuilderNav from "@/app/_builder/BuilderNav";
-
-const MAX_SIZE = 25 * 1024 * 1024;
 
 export default function SubmitTask() {
   const router = useRouter();
   const { taskId } = useParams() as { taskId: string };
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const [uid, setUid] = useState<string | null>(null);
   const [taskTitle, setTaskTitle] = useState("");
   const [authReady, setAuthReady] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [uploadPct, setUploadPct] = useState(0);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [files, setFiles] = useState<File[]>([]);
-  const [form, setForm] = useState({ githubRepo: "", liveDemo: "", videoDemo: "", technicalExplanation: "", architectureExplanation: "", challengesFaced: "", learnings: "", notes: "" });
+  const [form, setForm] = useState({ githubRepo: "", liveDemo: "", videoDemo: "", technicalExplanation: "", architectureExplanation: "", challengesFaced: "", learnings: "", notes: "", attachments: "" });
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {
@@ -42,34 +36,6 @@ export default function SubmitTask() {
 
   const set = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const picked = Array.from(e.target.files || []).filter((f) => {
-      if (f.size > MAX_SIZE) { setErrors((p) => ({ ...p, files: `${f.name} exceeds 25 MB.` })); return false; }
-      
-      // Strict MIME type check to prevent executables
-      const allowedTypes = [
-        "application/pdf",
-        "application/zip",
-        "application/x-zip-compressed",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "text/plain",
-        "text/markdown",
-        "image/png",
-        "image/jpeg",
-        "image/webp"
-      ];
-      
-      if (!allowedTypes.includes(f.type) && !f.name.endsWith(".md")) {
-        setErrors((p) => ({ ...p, files: `${f.name} is not an allowed file type.` })); 
-        return false;
-      }
-      
-      return true;
-    });
-    setFiles((p) => [...p, ...picked]);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.githubRepo.trim()) { setErrors({ githubRepo: "GitHub URL is required." }); document.getElementById("githubRepo")?.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
@@ -78,17 +44,7 @@ export default function SubmitTask() {
     setSubmitting(true);
 
     try {
-      const attachments: string[] = [];
-      for (const file of files) {
-        const storageRef = ref(storage, `submissions/${uid}/${taskId}/${Date.now()}_${file.name}`);
-        await new Promise<void>((res, rej) => {
-          const task = uploadBytesResumable(storageRef, file);
-          task.on("state_changed", (s) => setUploadPct(Math.round((s.bytesTransferred / s.totalBytes) * 100)), rej, async () => {
-            attachments.push(await getDownloadURL(task.snapshot.ref));
-            res();
-          });
-        });
-      }
+      const attachments = form.attachments.split(/[\n,]+/).map(u => u.trim()).filter(Boolean);
 
       await addDoc(collection(db, "submissions"), { userId: uid, taskId, taskTitle, ...form, attachments, status: "submitted", submittedAt: serverTimestamp() });
 
@@ -98,7 +54,7 @@ export default function SubmitTask() {
       await fetch("/api/builder/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "submission_received", userId: uid, taskTitle }) });
       setSuccess(true);
     } catch { setErrors({ submit: "Submission failed. Please try again." }); }
-    finally { setSubmitting(false); setUploadPct(0); }
+    finally { setSubmitting(false); }
   };
 
   const inp: React.CSSProperties = { width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 10, padding: "12px 14px", color: "rgba(241,245,249,0.9)", fontSize: 14, outline: "none", fontFamily: "inherit", boxSizing: "border-box" };
@@ -177,45 +133,14 @@ export default function SubmitTask() {
             ))}
           </Sec>
 
-          {/* File Upload */}
-          <Sec num="03" title="Attachments">
-            <input ref={fileRef} type="file" multiple accept=".pdf,.zip,.png,.jpg,.jpeg,.webp,.txt,.md,.doc,.docx" onChange={handleFiles} style={{ display: "none" }} />
-            <motion.div onClick={() => fileRef.current?.click()} whileHover={{ borderColor: "rgba(99,102,241,0.35)", background: "rgba(99,102,241,0.04)" }}
-              style={{ border: "2px dashed rgba(255,255,255,0.08)", borderRadius: 14, padding: "32px 24px", textAlign: "center", cursor: "pointer", background: "rgba(255,255,255,0.02)", transition: "all 0.2s", marginBottom: 10 }}>
-              <div style={{ fontSize: 24, marginBottom: 8 }}>📎</div>
-              <p style={{ fontSize: 13, color: "rgba(241,245,249,0.5)" }}>Click to upload</p>
-              <p style={{ fontSize: 11, color: "rgba(241,245,249,0.22)", marginTop: 4 }}>PDFs, ZIPs, Images, Docs · Max 25 MB each</p>
-            </motion.div>
-            {files.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {files.map((f, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span>📄</span>
-                      <div><p style={{ fontSize: 13, color: "rgba(241,245,249,0.75)", marginBottom: 1 }}>{f.name}</p><p style={{ fontSize: 10, color: "rgba(241,245,249,0.3)" }}>{(f.size / 1024).toFixed(0)} KB</p></div>
-                    </div>
-                    <button type="button" onClick={() => setFiles((p) => p.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "rgba(241,245,249,0.3)", cursor: "pointer", fontSize: 18, lineHeight: 1, padding: 4 }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = "rgba(248,113,113,0.8)"}
-                      onMouseLeave={(e) => e.currentTarget.style.color = "rgba(241,245,249,0.3)"}>×</button>
-                  </div>
-                ))}
-              </div>
-            )}
-            {errors.files && <p style={{ fontSize: 11, color: "rgba(248,113,113,0.75)", marginTop: 8 }}>{errors.files}</p>}
+          {/* External Links / Attachments */}
+          <Sec num="03" title="Attachments & External Resources">
+            <Field id="attachments" label="Resource URLs" error={errors.attachments}>
+              <textarea id="attachments" value={form.attachments} onChange={(e) => set("attachments", e.target.value)} placeholder="Paste links to Google Drive, Figma, Notion, etc. (one per line)" rows={3}
+                style={{ ...inp, resize: "vertical", lineHeight: 1.7, borderColor: errors.attachments ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.09)" }}
+                onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")} onBlur={(e) => (e.target.style.borderColor = errors.attachments ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.09)")} />
+            </Field>
           </Sec>
-
-          {/* Upload progress */}
-          {submitting && uploadPct > 0 && uploadPct < 100 && (
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 11, color: "rgba(241,245,249,0.4)" }}>Uploading files…</span>
-                <span style={{ fontSize: 11, color: "#818cf8" }}>{uploadPct}%</span>
-              </div>
-              <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 100, overflow: "hidden" }}>
-                <motion.div initial={{ width: 0 }} animate={{ width: `${uploadPct}%` }} style={{ height: "100%", background: "linear-gradient(90deg, #6366f1, #a855f7)", borderRadius: 100 }} />
-              </div>
-            </div>
-          )}
 
           {errors.submit && <p style={{ fontSize: 13, color: "rgba(248,113,113,0.8)", marginBottom: 18, padding: "12px 14px", background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.18)", borderRadius: 10 }}>{errors.submit}</p>}
 

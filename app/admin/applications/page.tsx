@@ -136,7 +136,7 @@ export default function ApplicationsDashboard() {
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        router.replace("/admin/gate-x7q9");
+        router.replace("/");
         return;
       }
       if (user.email?.endsWith("@orvantia.ai") && user.emailVerified) {
@@ -146,10 +146,10 @@ export default function ApplicationsDashboard() {
         if (auth.currentUser?.emailVerified) {
           setAuthChecked(true);
         } else {
-          router.replace("/admin/gate-x7q9");
+          router.replace("/");
         }
       } else {
-        router.replace("/admin/gate-x7q9");
+        router.replace("/");
       }
     });
     return unsub;

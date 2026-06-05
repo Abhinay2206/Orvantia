@@ -18,6 +18,8 @@ export default function BuilderOnboarding() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [customSkill, setCustomSkill] = useState("");
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", college: "", branch: "", year: "", github: "", linkedin: "", portfolio: "", track: "", bio: "", skills: [] as string[] });
+  const [prefilled, setPrefilled] = useState<string[]>([]);
+  const [showPrefillBanner, setShowPrefillBanner] = useState(false);
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {
@@ -29,7 +31,47 @@ export default function BuilderOnboarding() {
       const snap = await getDoc(doc(db, "builder_profiles", user.uid));
       if (snap.exists()) { router.replace("/dashboard"); return; }
       setUid(user.uid);
-      setForm((p) => ({ ...p, email: user.email || "" }));
+
+      const baseForm = { fullName: "", email: user.email || "", phone: "", college: "", branch: "", year: "", github: "", linkedin: "", portfolio: "", track: "", bio: "", skills: [] as string[] };
+
+      try {
+        const idToken = await user.getIdToken();
+        const res = await fetch("/api/builder/application-prefill", {
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+        if (res.ok) {
+          const { data } = await res.json();
+          if (data) {
+            const ROLE_TO_TRACK: Record<string, string> = {
+              "AI Engineer": "AI / LLM",
+              "AI Researcher": "AI / LLM",
+              "Full Stack Developer": "Full Stack",
+              "Frontend Developer": "Full Stack",
+              "Backend Developer": "Full Stack",
+              "DevOps Engineer": "DevOps / Infra",
+              "UI/UX Designer": "Product / Design",
+              "Product Builder": "Product / Design",
+            };
+            const filledFields: string[] = [];
+            if (data.name) { baseForm.fullName = data.name; filledFields.push("Full Name"); }
+            if (data.phone) { baseForm.phone = data.phone; filledFields.push("Phone"); }
+            if (data.college) { baseForm.college = data.college; filledFields.push("College"); }
+            if (data.branch) { baseForm.branch = data.branch; filledFields.push("Branch"); }
+            if (data.year) { baseForm.year = data.year; filledFields.push("Year"); }
+            if (data.github) { baseForm.github = data.github; filledFields.push("GitHub"); }
+            if (data.linkedin) { baseForm.linkedin = data.linkedin; filledFields.push("LinkedIn"); }
+            if (data.portfolio) { baseForm.portfolio = data.portfolio; filledFields.push("Portfolio"); }
+            if (data.skills?.length > 0) { baseForm.skills = data.skills; filledFields.push("Skills"); }
+            if (data.role && ROLE_TO_TRACK[data.role]) { baseForm.track = ROLE_TO_TRACK[data.role]; filledFields.push("Track"); }
+            if (filledFields.length > 0) {
+              setPrefilled(filledFields);
+              setShowPrefillBanner(true);
+            }
+          }
+        }
+      } catch { /* skip prefill if API call fails */ }
+
+      setForm(baseForm);
       setAuthChecked(true);
     });
     return unsub;
@@ -89,6 +131,25 @@ export default function BuilderOnboarding() {
           <h1 style={{ fontSize: 28, fontWeight: 700, color: "rgba(241,245,249,0.95)", marginBottom: 8 }}>Set up your profile</h1>
           <p style={{ fontSize: 14, color: "rgba(241,245,249,0.4)", lineHeight: 1.7 }}>Tell us about yourself so we can match you with the right challenges.</p>
         </motion.div>
+
+        <AnimatePresence>
+          {showPrefillBanner && (
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}
+              style={{ marginBottom: 32, padding: "14px 18px", borderRadius: 12, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <span style={{ fontSize: 16, marginTop: 1 }}>✦</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(129,140,248,0.95)", marginBottom: 4 }}>Application data found</p>
+                <p style={{ fontSize: 12, color: "rgba(241,245,249,0.45)", lineHeight: 1.6 }}>
+                  We found your application and pre-filled the following fields:{" "}
+                  <span style={{ color: "rgba(129,140,248,0.8)" }}>{prefilled.join(", ")}</span>.{" "}
+                  Review them and make any changes before submitting.
+                </p>
+              </div>
+              <button type="button" onClick={() => setShowPrefillBanner(false)}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(241,245,249,0.25)", fontSize: 16, lineHeight: 1, padding: 0 }}>✕</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <form onSubmit={handleSubmit}>
           {/* Personal */}

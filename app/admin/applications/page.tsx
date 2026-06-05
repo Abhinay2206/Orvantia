@@ -10,7 +10,10 @@ import { db, auth } from "@/lib/firebase";
 import * as XLSX from "xlsx";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type AppStatus = "pending" | "shortlisted" | "interview-scheduled" | "accepted" | "rejected";
+type AppStatus =
+  | "pending" | "reviewed" | "invited" | "builder-accepted" | "task-submitted"
+  | "under-review" | "shortlisted" | "contributor"
+  | "interview-scheduled" | "accepted" | "rejected";
 
 interface Application {
   id: string;
@@ -37,27 +40,46 @@ interface Application {
   availabilityHours: string;
   startDate: string;
   status: AppStatus;
+  invitedAt?: Timestamp | null;
+  invitationStatus?: "invited" | "resent";
+  invitedBy?: string;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const ALL_STATUSES: AppStatus[] = ["pending", "shortlisted", "interview-scheduled", "accepted", "rejected"];
+const ALL_STATUSES: AppStatus[] = [
+  "pending", "reviewed", "invited", "builder-accepted", "task-submitted",
+  "under-review", "shortlisted", "contributor",
+  "interview-scheduled", "accepted", "rejected",
+];
 
 const STATUS_STYLES: Record<AppStatus, { bg: string; border: string; text: string; dot: string }> = {
-  pending:              { bg: "rgba(99,102,241,0.10)",  border: "rgba(99,102,241,0.30)",  text: "#818cf8",          dot: "#818cf8" },
-  shortlisted:          { bg: "rgba(251,191,36,0.10)",  border: "rgba(251,191,36,0.35)",  text: "#fbbf24",          dot: "#fbbf24" },
-  "interview-scheduled":{ bg: "rgba(34,211,238,0.10)",  border: "rgba(34,211,238,0.30)",  text: "#22d3ee",          dot: "#22d3ee" },
-  accepted:             { bg: "rgba(34,197,94,0.10)",   border: "rgba(34,197,94,0.30)",   text: "#22c55e",          dot: "#22c55e" },
-  rejected:             { bg: "rgba(239,68,68,0.08)",   border: "rgba(239,68,68,0.25)",   text: "rgba(248,113,113,0.75)", dot: "#f87171" },
+  pending:              { bg: "rgba(99,102,241,0.10)",  border: "rgba(99,102,241,0.30)",  text: "#818cf8",                    dot: "#818cf8" },
+  reviewed:             { bg: "rgba(34,211,238,0.08)",  border: "rgba(34,211,238,0.25)",  text: "#22d3ee",                    dot: "#22d3ee" },
+  invited:              { bg: "rgba(168,85,247,0.10)",  border: "rgba(168,85,247,0.30)",  text: "#c084fc",                    dot: "#c084fc" },
+  "builder-accepted":   { bg: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.25)",   text: "#4ade80",                    dot: "#4ade80" },
+  "task-submitted":     { bg: "rgba(251,191,36,0.10)",  border: "rgba(251,191,36,0.30)",  text: "#fbbf24",                    dot: "#fbbf24" },
+  "under-review":       { bg: "rgba(56,189,248,0.10)",  border: "rgba(56,189,248,0.30)",  text: "#38bdf8",                    dot: "#38bdf8" },
+  shortlisted:          { bg: "rgba(251,191,36,0.10)",  border: "rgba(251,191,36,0.35)",  text: "#fbbf24",                    dot: "#fbbf24" },
+  contributor:          { bg: "rgba(250,204,21,0.10)",  border: "rgba(250,204,21,0.30)",  text: "#facc15",                    dot: "#facc15" },
+  "interview-scheduled":{ bg: "rgba(34,211,238,0.10)",  border: "rgba(34,211,238,0.30)",  text: "#22d3ee",                    dot: "#22d3ee" },
+  accepted:             { bg: "rgba(34,197,94,0.10)",   border: "rgba(34,197,94,0.30)",   text: "#22c55e",                    dot: "#22c55e" },
+  rejected:             { bg: "rgba(239,68,68,0.08)",   border: "rgba(239,68,68,0.25)",   text: "rgba(248,113,113,0.75)",      dot: "#f87171" },
 };
 
 const STATUS_LABELS: Record<AppStatus, string> = {
-  pending: "Pending",
-  shortlisted: "Shortlisted",
+  pending:               "Applied",
+  reviewed:              "Reviewed",
+  invited:               "Invited",
+  "builder-accepted":    "Accepted Challenge",
+  "task-submitted":      "Task Submitted",
+  "under-review":        "Under Review",
+  shortlisted:           "Shortlisted",
+  contributor:           "Contributor",
   "interview-scheduled": "Interview",
-  accepted: "Accepted",
-  rejected: "Rejected",
+  accepted:              "Accepted",
+  rejected:              "Rejected",
 };
 
 const ROLES = [
@@ -207,6 +229,17 @@ export default function ApplicationsDashboard() {
     return c;
   }, [apps]);
 
+  const invitationCounts = useMemo(() => {
+    const INVITED_BEYOND = ["invited", "builder-accepted", "task-submitted", "under-review", "shortlisted", "contributor"];
+    return {
+      totalInvited: apps.filter((a) => INVITED_BEYOND.includes(a.status) || !!a.invitedAt).length,
+      builderAccepted: apps.filter((a) => ["builder-accepted", "task-submitted", "under-review", "shortlisted", "contributor"].includes(a.status)).length,
+      submitted: apps.filter((a) => ["task-submitted", "under-review", "shortlisted", "contributor"].includes(a.status)).length,
+      reviewed: apps.filter((a) => ["under-review", "shortlisted", "contributor"].includes(a.status)).length,
+      contributors: apps.filter((a) => a.status === "contributor").length,
+    };
+  }, [apps]);
+
   // Filtered list
   const filtered = useMemo(() => {
     return apps.filter((a) => {
@@ -224,6 +257,11 @@ export default function ApplicationsDashboard() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  // ─── Invitation ───────────────────────────────────────────────────────────
+  const [inviting, setInviting] = useState(false);
+  const [forceResend, setForceResend] = useState(false);
+  const [inviteResult, setInviteResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   const toggleSelect = (id: string) =>
     setSelectedIds((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -243,6 +281,50 @@ export default function ApplicationsDashboard() {
     } finally {
       setDeleting(false);
       setConfirmDelete(false);
+    }
+  };
+
+  const handleInvite = async (overrideIds?: string[]) => {
+    const ids = overrideIds ?? Array.from(selectedIds);
+    if (ids.length === 0) return;
+    setInviting(true);
+    setInviteResult(null);
+    try {
+      const res = await fetch("/api/admin/invite-builders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationIds: ids, forceResend }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const msg = data.sent > 0
+          ? `${data.sent} invitation${data.sent !== 1 ? "s" : ""} sent successfully.${data.skipped > 0 ? ` ${data.skipped} skipped (already invited).` : ""}`
+          : `No new invitations sent. ${data.skipped} already invited.`;
+        setInviteResult({ ok: true, message: msg });
+        setSelectedIds(new Set());
+        triggerRefresh();
+      } else {
+        setInviteResult({ ok: false, message: data.error || "Failed to send invitations." });
+      }
+    } catch {
+      setInviteResult({ ok: false, message: "Network error. Please try again." });
+    } finally {
+      setInviting(false);
+      setTimeout(() => setInviteResult(null), 7000);
+    }
+  };
+
+  const handleMarkAsInvited = async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    setUpdating(true);
+    try {
+      const batch = writeBatch(db);
+      ids.forEach((id) => batch.update(doc(db, "applications", id), { status: "invited", updatedAt: new Date() }));
+      await batch.commit();
+      setSelectedIds(new Set());
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -533,14 +615,14 @@ export default function ApplicationsDashboard() {
         {/* Metrics */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-          gap: 12, marginBottom: 24,
+          gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+          gap: 12, marginBottom: 12,
         }}>
           {[
             { label: "Total", value: apps.length, color: "#818cf8" },
-            { label: "Pending", value: counts.pending, color: STATUS_STYLES.pending.text },
+            { label: "Applied", value: counts.pending, color: STATUS_STYLES.pending.text },
+            { label: "Reviewed", value: counts.reviewed, color: STATUS_STYLES.reviewed.text },
             { label: "Shortlisted", value: counts.shortlisted, color: STATUS_STYLES.shortlisted.text },
-            { label: "Interview", value: counts["interview-scheduled"], color: STATUS_STYLES["interview-scheduled"].text },
             { label: "Accepted", value: counts.accepted, color: STATUS_STYLES.accepted.text },
             { label: "Rejected", value: counts.rejected, color: STATUS_STYLES.rejected.text },
           ].map((m) => (
@@ -553,6 +635,54 @@ export default function ApplicationsDashboard() {
             </div>
           ))}
         </div>
+
+        {/* Invitation Metrics */}
+        <div style={{
+          background: "rgba(168,85,247,0.04)", border: "1px solid rgba(168,85,247,0.15)",
+          borderRadius: 12, padding: "16px 20px", marginBottom: 24,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#c084fc" }} />
+            <span style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(168,85,247,0.7)", fontWeight: 600 }}>Builder Journey</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 12 }}>
+            {[
+              { label: "Invitations Sent", value: invitationCounts.totalInvited, color: "#c084fc" },
+              { label: "Accounts Created", value: invitationCounts.builderAccepted, color: "#4ade80" },
+              { label: "Tasks Accepted", value: invitationCounts.builderAccepted, color: "#fbbf24" },
+              { label: "Tasks Submitted", value: invitationCounts.submitted, color: "#38bdf8" },
+              { label: "Reviews Done", value: invitationCounts.reviewed, color: "#818cf8" },
+              { label: "Contributors", value: invitationCounts.contributors, color: "#facc15" },
+            ].map((m) => (
+              <div key={m.label}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: m.color, lineHeight: 1, marginBottom: 4, fontVariantNumeric: "tabular-nums" }}>{m.value}</div>
+                <div style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(241,245,249,0.22)" }}>{m.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Invite result notification */}
+        {inviteResult && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10, marginBottom: 14,
+            padding: "12px 18px", borderRadius: 10,
+            background: inviteResult.ok ? "rgba(34,197,94,0.07)" : "rgba(239,68,68,0.07)",
+            border: `1px solid ${inviteResult.ok ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.25)"}`,
+          }}>
+            <div style={{
+              width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
+              background: inviteResult.ok ? "#22c55e" : "#f87171",
+            }} />
+            <span style={{ fontSize: 13, color: inviteResult.ok ? "rgba(74,222,128,0.9)" : "rgba(248,113,113,0.9)" }}>
+              {inviteResult.message}
+            </span>
+            <button
+              onClick={() => setInviteResult(null)}
+              style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "rgba(241,245,249,0.3)", fontSize: 18, lineHeight: 1, padding: 2 }}
+            >×</button>
+          </div>
+        )}
 
         {/* Search + Filters */}
         <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
@@ -629,47 +759,96 @@ export default function ApplicationsDashboard() {
         {selectedIds.size > 0 && (
           <div style={{
             display: "flex", alignItems: "center", gap: 12, marginBottom: 12,
-            padding: "10px 16px", borderRadius: 10,
-            background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)",
+            padding: "10px 16px", borderRadius: 10, flexWrap: "wrap",
+            background: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.2)",
           }}>
             <span style={{ fontSize: 13, color: "rgba(241,245,249,0.7)" }}>
-              <strong style={{ color: "rgba(248,113,113,0.9)" }}>{selectedIds.size}</strong> application{selectedIds.size !== 1 ? "s" : ""} selected
+              <strong style={{ color: "#818cf8" }}>{selectedIds.size}</strong> application{selectedIds.size !== 1 ? "s" : ""} selected
             </span>
             <button
               onClick={() => setSelectedIds(new Set())}
-              style={{
-                background: "none", border: "none", fontSize: 12, cursor: "pointer",
-                color: "rgba(241,245,249,0.35)", padding: 0,
-              }}
+              style={{ background: "none", border: "none", fontSize: 12, cursor: "pointer", color: "rgba(241,245,249,0.35)", padding: 0 }}
             >
               Deselect all
             </button>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+              {/* Send invitation */}
+              <button
+                onClick={() => handleInvite()}
+                disabled={inviting}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  padding: "7px 16px", borderRadius: 8, fontSize: 12, cursor: inviting ? "wait" : "pointer",
+                  background: "rgba(168,85,247,0.12)", border: "1px solid rgba(168,85,247,0.35)",
+                  color: "#c084fc", fontFamily: "inherit", opacity: inviting ? 0.6 : 1,
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => { if (!inviting) { e.currentTarget.style.background = "rgba(168,85,247,0.2)"; e.currentTarget.style.borderColor = "rgba(168,85,247,0.55)"; }}}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(168,85,247,0.12)"; e.currentTarget.style.borderColor = "rgba(168,85,247,0.35)"; }}
+              >
+                {inviting ? (
+                  <div style={{ width: 11, height: 11, borderRadius: "50%", border: "1.5px solid rgba(192,132,252,0.3)", borderTopColor: "#c084fc", animation: "spin 0.7s linear infinite" }} />
+                ) : (
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M1 6.5L12 1L7.5 12L6 7L1 6.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                {inviting ? "Sending…" : `Send Invitation${selectedIds.size !== 1 ? "s" : ""}`}
+              </button>
+
+              {/* Mark as Invited (no email) */}
+              <button
+                onClick={handleMarkAsInvited}
+                disabled={updating}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  padding: "7px 14px", borderRadius: 8, fontSize: 12, cursor: updating ? "wait" : "pointer",
+                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+                  color: "rgba(241,245,249,0.45)", fontFamily: "inherit", opacity: updating ? 0.6 : 1,
+                }}
+              >
+                Mark as Invited
+              </button>
+
+              {/* Resend toggle */}
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 11, color: "rgba(241,245,249,0.35)" }}>
+                <input
+                  type="checkbox"
+                  checked={forceResend}
+                  onChange={(e) => setForceResend(e.target.checked)}
+                  style={{ accentColor: "#818cf8", width: 13, height: 13 }}
+                />
+                Resend if already invited
+              </label>
+
+              <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.07)" }} />
+
+              {/* Delete */}
               {!confirmDelete ? (
                 <button
                   onClick={() => setConfirmDelete(true)}
                   style={{
                     display: "inline-flex", alignItems: "center", gap: 6,
-                    padding: "7px 16px", borderRadius: 8, fontSize: 12, cursor: "pointer",
-                    background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
-                    color: "rgba(248,113,113,0.9)", fontFamily: "inherit",
+                    padding: "7px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer",
+                    background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)",
+                    color: "rgba(248,113,113,0.8)", fontFamily: "inherit",
                   }}
                 >
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                     <path d="M2 3.5h9M5 3.5V2.5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1M5.5 6v3.5M7.5 6v3.5M3 3.5l.5 7a1 1 0 0 0 1 .9h4a1 1 0 0 0 1-.9l.5-7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                   </svg>
-                  Delete selected
+                  Delete
                 </button>
               ) : (
                 <>
                   <span style={{ fontSize: 12, color: "rgba(248,113,113,0.8)", alignSelf: "center" }}>
-                    Delete {selectedIds.size} record{selectedIds.size !== 1 ? "s" : ""}? This cannot be undone.
+                    Delete {selectedIds.size} record{selectedIds.size !== 1 ? "s" : ""}? Cannot be undone.
                   </span>
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
                     style={{
-                      padding: "7px 16px", borderRadius: 8, fontSize: 12, cursor: deleting ? "wait" : "pointer",
+                      padding: "7px 14px", borderRadius: 8, fontSize: 12, cursor: deleting ? "wait" : "pointer",
                       background: "rgba(239,68,68,0.2)", border: "1px solid rgba(239,68,68,0.4)",
                       color: "rgba(248,113,113,0.95)", fontFamily: "inherit", opacity: deleting ? 0.6 : 1,
                     }}
@@ -679,7 +858,7 @@ export default function ApplicationsDashboard() {
                   <button
                     onClick={() => setConfirmDelete(false)}
                     style={{
-                      padding: "7px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer",
+                      padding: "7px 12px", borderRadius: 8, fontSize: 12, cursor: "pointer",
                       background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)",
                       color: "rgba(241,245,249,0.4)", fontFamily: "inherit",
                     }}
@@ -748,6 +927,8 @@ export default function ApplicationsDashboard() {
               onClose={() => setSelected(null)}
               onStatusChange={updateStatus}
               updating={updating}
+              onInvite={(id) => handleInvite([id])}
+              inviting={inviting}
             />
           )}
         </div>
@@ -783,8 +964,22 @@ function AppRow({ app, selected, checked, onSelect, onCheck }: {
       </td>
       <td style={{ ...td, cursor: "pointer" }} onClick={() => onSelect(app)}>
         <div>
-          <div style={{ fontWeight: 500, color: "rgba(241,245,249,0.9)", marginBottom: 1 }}>{app.name}</div>
-          {app.year && <div style={{ fontSize: 11, color: "rgba(241,245,249,0.3)", fontFamily: "monospace" }}>{app.year}</div>}
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <span style={{ fontWeight: 500, color: "rgba(241,245,249,0.9)" }}>{app.name}</span>
+            {app.invitedAt && (
+              <span title="Invitation sent" style={{
+                display: "inline-flex", alignItems: "center", gap: 3,
+                padding: "2px 7px", borderRadius: 100, fontSize: 9, letterSpacing: "0.08em",
+                background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.25)", color: "#c084fc",
+              }}>
+                <svg width="8" height="8" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}>
+                  <path d="M1 6.5L12 1L7.5 12L6 7L1 6.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Invited
+              </span>
+            )}
+          </div>
+          {app.year && <div style={{ fontSize: 11, color: "rgba(241,245,249,0.3)", fontFamily: "monospace", marginTop: 1 }}>{app.year}</div>}
         </div>
       </td>
       <td style={{ ...td, color: "rgba(241,245,249,0.45)", cursor: "pointer" }} onClick={() => onSelect(app)}>{app.email}</td>
@@ -835,13 +1030,16 @@ function Checkbox({ checked, indeterminate, onChange }: {
 
 // ─── Detail Panel ──────────────────────────────────────────────────────────────
 function DetailPanel({
-  app, onClose, onStatusChange, updating,
+  app, onClose, onStatusChange, updating, onInvite, inviting,
 }: {
   app: Application;
   onClose: () => void;
   onStatusChange: (id: string, status: AppStatus) => void;
   updating: boolean;
+  onInvite: (id: string) => void;
+  inviting: boolean;
 }) {
+  const isInvited = app.invitedAt || ["invited", "builder-accepted", "task-submitted", "under-review", "shortlisted", "contributor"].includes(app.status);
   return (
     <div style={{
       background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)",
@@ -873,6 +1071,52 @@ function DetailPanel({
       </div>
 
       <div style={{ padding: "20px 24px" }}>
+        {/* Invitation action */}
+        <div style={{
+          marginBottom: 20, padding: "16px 18px", borderRadius: 10,
+          background: isInvited ? "rgba(168,85,247,0.06)" : "rgba(255,255,255,0.025)",
+          border: isInvited ? "1px solid rgba(168,85,247,0.2)" : "1px solid rgba(255,255,255,0.07)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div>
+              <PanelLabel>Builder Invitation</PanelLabel>
+              {isInvited ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#c084fc" }} />
+                  <span style={{ fontSize: 12, color: "#c084fc", fontWeight: 500 }}>
+                    {app.invitationStatus === "resent" ? "Resent" : "Invited"}
+                    {app.invitedAt ? ` · ${app.invitedAt.toDate().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}` : ""}
+                  </span>
+                </div>
+              ) : (
+                <span style={{ fontSize: 12, color: "rgba(241,245,249,0.35)" }}>No invitation sent yet</span>
+              )}
+            </div>
+            <button
+              onClick={() => onInvite(app.id)}
+              disabled={inviting}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                padding: "8px 16px", borderRadius: 8, fontSize: 12,
+                cursor: inviting ? "wait" : "pointer",
+                background: isInvited ? "rgba(168,85,247,0.08)" : "rgba(168,85,247,0.15)",
+                border: `1px solid ${isInvited ? "rgba(168,85,247,0.25)" : "rgba(168,85,247,0.4)"}`,
+                color: "#c084fc", fontFamily: "inherit",
+                opacity: inviting ? 0.6 : 1, transition: "all 0.2s",
+              }}
+            >
+              {inviting ? (
+                <div style={{ width: 11, height: 11, borderRadius: "50%", border: "1.5px solid rgba(192,132,252,0.3)", borderTopColor: "#c084fc", animation: "spin 0.7s linear infinite" }} />
+              ) : (
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path d="M1 6.5L12 1L7.5 12L6 7L1 6.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+              {inviting ? "Sending…" : isInvited ? "Resend Invitation" : "Send Invitation"}
+            </button>
+          </div>
+        </div>
+
         {/* Status selector */}
         <div style={{ marginBottom: 20 }}>
           <PanelLabel>Update Status</PanelLabel>

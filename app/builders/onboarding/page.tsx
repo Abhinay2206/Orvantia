@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 const SKILLS = ["React", "Next.js", "TypeScript", "Node.js", "Python", "Machine Learning", "LLMs / Prompt Engineering", "FastAPI", "Firebase", "AWS", "Docker", "UI/UX Design", "Figma", "Data Science", "Computer Vision", "NLP", "PostgreSQL", "MongoDB", "GraphQL", "DevOps", "Go", "Rust", "TailwindCSS", "Three.js"];
 const YEARS = ["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year", "Graduate", "Working Professional"];
+const TRACKS = ["AI / LLM", "Full Stack", "DevOps / Infra", "Product / Design"];
 
 export default function BuilderOnboarding() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function BuilderOnboarding() {
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [customSkill, setCustomSkill] = useState("");
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", college: "", branch: "", year: "", github: "", linkedin: "", skills: [] as string[] });
+  const [form, setForm] = useState({ fullName: "", email: "", phone: "", college: "", branch: "", year: "", github: "", linkedin: "", portfolio: "", track: "", bio: "", skills: [] as string[] });
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {
@@ -45,6 +46,7 @@ export default function BuilderOnboarding() {
     if (!form.college.trim()) e.college = "Required";
     if (!form.branch.trim()) e.branch = "Required";
     if (!form.year) e.year = "Required";
+    if (!form.track) e.track = "Select a track";
     if (form.skills.length === 0) e.skills = "Select at least one skill";
     return e;
   };
@@ -138,7 +140,7 @@ export default function BuilderOnboarding() {
           {/* Links */}
           <SectionHeader num="03" title="Links" />
           <div style={{ display: "grid", gap: 14, marginBottom: 32 }}>
-            {[{ id: "github", l: "GitHub", ph: "https://github.com/username" }, { id: "linkedin", l: "LinkedIn", ph: "https://linkedin.com/in/username" }].map((f) => (
+            {[{ id: "github", l: "GitHub", ph: "https://github.com/username" }, { id: "linkedin", l: "LinkedIn", ph: "https://linkedin.com/in/username" }, { id: "portfolio", l: "Portfolio / Personal Site", ph: "https://yoursite.com" }].map((f) => (
               <div key={f.id}>
                 <label style={lbl}>{f.l}</label>
                 <input type="url" value={form[f.id as keyof typeof form] as string} onChange={(e) => set(f.id, e.target.value)} placeholder={f.ph} style={inp}
@@ -148,8 +150,40 @@ export default function BuilderOnboarding() {
             ))}
           </div>
 
+          {/* Experience Track */}
+          <SectionHeader num="04" title="Experience Track *" />
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 12, color: "rgba(241,245,249,0.3)", marginBottom: 14, lineHeight: 1.6 }}>Pick the area you want to focus on. This helps us match you with the right challenges.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10 }}>
+              {TRACKS.map((t) => {
+                const active = form.track === t;
+                const colors: Record<string, string> = { "AI / LLM": "#818cf8", "Full Stack": "#22d3ee", "DevOps / Infra": "#a855f7", "Product / Design": "#fbbf24" };
+                const c = colors[t];
+                return (
+                  <motion.button key={t} type="button" onClick={() => set("track", t)} whileTap={{ scale: 0.97 }}
+                    style={{ padding: "14px 16px", borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: "pointer", textAlign: "left", background: active ? `${c}12` : "rgba(255,255,255,0.03)", border: active ? `1px solid ${c}40` : "1px solid rgba(255,255,255,0.07)", color: active ? c : "rgba(241,245,249,0.5)", transition: "all 0.15s", display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: active ? c : "rgba(255,255,255,0.15)", flexShrink: 0 }} />
+                    {t}
+                  </motion.button>
+                );
+              })}
+            </div>
+            {errors.track && <p style={{ fontSize: 11, color: "rgba(248,113,113,0.7)", marginTop: 8 }}>{errors.track}</p>}
+          </div>
+
+          {/* Bio */}
+          <SectionHeader num="05" title="About You" />
+          <div style={{ marginBottom: 32 }}>
+            <label style={lbl}>Short Bio <span style={{ color: "rgba(241,245,249,0.18)", fontWeight: 400, letterSpacing: 0, textTransform: "none" }}>(optional)</span></label>
+            <textarea value={form.bio} onChange={(e) => set("bio", e.target.value)} placeholder="Tell us what you've built, what excites you about AI, or anything that gives us a sense of who you are as a builder..." rows={4}
+              style={{ ...inp, resize: "vertical", minHeight: 96, lineHeight: 1.65 }}
+              onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
+              onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.09)")} />
+            <p style={{ fontSize: 11, color: "rgba(241,245,249,0.2)", marginTop: 6 }}>Max 300 characters · {form.bio.length}/300</p>
+          </div>
+
           {/* Skills */}
-          <SectionHeader num="04" title="Skills *" />
+          <SectionHeader num="06" title="Skills *" />
           <div style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
               {SKILLS.map((s) => {

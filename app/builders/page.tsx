@@ -294,7 +294,6 @@ export default function BuildersLanding() {
       <section style={{ padding: "60px 32px", maxWidth: 1000, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
           <StatPill value="3" label="Live Products" delay={0} />
-          <StatPill value="20+" label="Open Challenges" delay={0.07} />
           <StatPill value="5" label="Review Dimensions" delay={0.14} />
           <StatPill value="100%" label="Real Codebase" delay={0.21} />
         </div>
@@ -346,9 +345,9 @@ export default function BuildersLanding() {
           <h2 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-0.02em", color: "rgba(241,245,249,0.9)" }}>Build on real products</h2>
         </motion.div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
-          <ProductCard name="Enteraflux" desc="Enterprise Agent OS — autonomous workflows for modern organizations." color="#818cf8" delay={0} />
-          <ProductCard name="Continuum" desc="Autonomous Engineering Platform — AI that builds, reviews, and ships." color="#22d3ee" delay={0.1} />
-          <ProductCard name="ClinicalAgents" desc="Healthcare Intelligence Platform — clinical AI at the point of care." color="#a855f7" delay={0.2} />
+          <ProductCard name="Enteraflux" desc="GLP-1 Companion." color="#818cf8" delay={0} />
+          <ProductCard name="Continuum" desc="Autonomous Engineering Platform - AI that builds, reviews, and ships." color="#22d3ee" delay={0.1} />
+          <ProductCard name="ClinicalAgents" desc="Healthcare Intelligence Platform - clinical AI at the point of care." color="#a855f7" delay={0.2} />
         </div>
       </section>
 
@@ -363,7 +362,7 @@ export default function BuildersLanding() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 28 }}>
           {[
             { num: "01", title: "Create your account", desc: "Sign up and complete your builder profile with your skills, background, and links." },
-            { num: "02", title: "Pick a track + challenge", desc: "Browse tasks across AI, full stack, DevOps, and design — built around real products." },
+            { num: "02", title: "Pick a track + challenge", desc: "Browse tasks across AI, full stack, DevOps, and design - built around real products." },
             { num: "03", title: "Build and submit", desc: "Work at your own pace. Submit your repo, a Loom walkthrough, and a short write-up." },
             { num: "04", title: "Get reviewed", desc: "The Orvantia team reviews your work and schedules a live technical discussion." },
             { num: "05", title: "Receive your score", desc: "See scores across 5 dimensions with detailed written feedback from the team." },
@@ -382,7 +381,7 @@ export default function BuildersLanding() {
         </motion.div>
         <div>
           {[
-            { q: "Who can apply to the Builder Program?", a: "Anyone — students, recent graduates, or working professionals. We care about what you can build, not your pedigree. If you have a GitHub and something to show, apply." },
+            { q: "Who can apply to the Builder Program?", a: "Anyone - students, recent graduates, or working professionals. We care about what you can build, not your pedigree. If you have a GitHub and something to show, apply." },
             { q: "Is this a paid opportunity?", a: "At this stage there is no guaranteed stipend or salary. The program is designed for builders who want real experience, a portfolio of production work, and visibility to the founding team. Paid opportunities open as our products and client engagements grow." },
             { q: "How long does a challenge take?", a: "Challenges are scoped for 1–2 weeks of focused work. You pick your own timeline, but the team reviews submissions on a rolling basis." },
             { q: "What happens after I complete a challenge?", a: "You receive a score, written feedback, and a 1-on-1 discussion with the team. Standout builders are shortlisted for contributor roles on live products. You also receive a completion certificate you can reference on your resume or LinkedIn." },

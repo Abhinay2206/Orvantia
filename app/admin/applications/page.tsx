@@ -127,10 +127,16 @@ const td: React.CSSProperties = {
   color: "rgba(241,245,249,0.75)", verticalAlign: "middle",
 };
 
+interface BuilderProfile {
+  email: string;
+  builderStatus?: string;
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ApplicationsDashboard() {
   const router = useRouter();
   const [apps, setApps] = useState<Application[]>([]);
+  const [builderProfiles, setBuilderProfiles] = useState<BuilderProfile[]>([]);
   const [selected, setSelected] = useState<Application | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -189,6 +195,15 @@ export default function ApplicationsDashboard() {
     return unsub;
   }, [authChecked, refreshKey]);
 
+  // Builder profiles listener — drives the Journey stats
+  useEffect(() => {
+    if (!authChecked) return;
+    const unsub = onSnapshot(collection(db, "builder_profiles"), (snap) => {
+      setBuilderProfiles(snap.docs.map((d) => d.data() as BuilderProfile));
+    });
+    return unsub;
+  }, [authChecked]);
+
   // 5-second countdown + auto-refresh
   useEffect(() => {
     if (!authChecked) return;
@@ -231,14 +246,19 @@ export default function ApplicationsDashboard() {
 
   const invitationCounts = useMemo(() => {
     const INVITED_BEYOND = ["invited", "builder-accepted", "task-submitted", "under-review", "shortlisted", "contributor"];
+    const TASK_ACCEPTED_STATUSES = ["task_accepted", "submitted", "reviewed", "shortlisted", "contributor", "core_contributor"];
+    const SUBMITTED_STATUSES = ["submitted", "reviewed", "shortlisted", "contributor", "core_contributor"];
+    const REVIEWED_STATUSES = ["reviewed", "shortlisted", "contributor", "core_contributor"];
+    const CONTRIBUTOR_STATUSES = ["contributor", "core_contributor"];
     return {
       totalInvited: apps.filter((a) => INVITED_BEYOND.includes(a.status) || !!a.invitedAt).length,
-      builderAccepted: apps.filter((a) => ["builder-accepted", "task-submitted", "under-review", "shortlisted", "contributor"].includes(a.status)).length,
-      submitted: apps.filter((a) => ["task-submitted", "under-review", "shortlisted", "contributor"].includes(a.status)).length,
-      reviewed: apps.filter((a) => ["under-review", "shortlisted", "contributor"].includes(a.status)).length,
-      contributors: apps.filter((a) => a.status === "contributor").length,
+      accountsCreated: builderProfiles.length,
+      tasksAccepted: builderProfiles.filter((b) => TASK_ACCEPTED_STATUSES.includes(b.builderStatus ?? "")).length,
+      submitted: builderProfiles.filter((b) => SUBMITTED_STATUSES.includes(b.builderStatus ?? "")).length,
+      reviewed: builderProfiles.filter((b) => REVIEWED_STATUSES.includes(b.builderStatus ?? "")).length,
+      contributors: builderProfiles.filter((b) => CONTRIBUTOR_STATUSES.includes(b.builderStatus ?? "")).length,
     };
-  }, [apps]);
+  }, [apps, builderProfiles]);
 
   // Filtered list
   const filtered = useMemo(() => {
@@ -648,8 +668,8 @@ export default function ApplicationsDashboard() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 12 }}>
             {[
               { label: "Invitations Sent", value: invitationCounts.totalInvited, color: "#c084fc" },
-              { label: "Accounts Created", value: invitationCounts.builderAccepted, color: "#4ade80" },
-              { label: "Tasks Accepted", value: invitationCounts.builderAccepted, color: "#fbbf24" },
+              { label: "Accounts Created", value: invitationCounts.accountsCreated, color: "#4ade80" },
+              { label: "Tasks Accepted", value: invitationCounts.tasksAccepted, color: "#fbbf24" },
               { label: "Tasks Submitted", value: invitationCounts.submitted, color: "#38bdf8" },
               { label: "Reviews Done", value: invitationCounts.reviewed, color: "#818cf8" },
               { label: "Contributors", value: invitationCounts.contributors, color: "#facc15" },

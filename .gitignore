@@ -44,3 +44,5 @@ next-env.d.ts
 .firebaserc
 firebase.json
 firestore.rules
+.claude/
+.claude-flow/

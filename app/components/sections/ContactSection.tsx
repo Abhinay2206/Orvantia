@@ -99,7 +99,7 @@ function Globe() {
   );
 }
 
-const BUDGETS = ["< ₹5 Lakh", "₹5–25 Lakh", "₹25–75 Lakh", "₹75 Lakh+"];
+const BUDGETS = ["< ₹10 K", "₹10 K - 50 K", "₹50 K - 1 L", "₹1 L+"];
 const TIMELINES = ["ASAP", "1–3 months", "3–6 months", "Exploring"];
 const SERVICES = ["SaaS Platform", "AI / ML", "Web App", "Mobile App", "Automation", "Custom Software"];
 

@@ -22,7 +22,6 @@ function buildLines(pos: Float32Array, count: number) {
       const d = dx * dx + dy * dy + dz * dz;
       if (d < CONNECT_DIST * CONNECT_DIST) {
         lines.push(ax, ay, az, pos[j * 3], pos[j * 3 + 1], pos[j * 3 + 2]);
-        // Fade by distance
         const fade = 1 - Math.sqrt(d) / CONNECT_DIST;
         cols.push(fade, fade, fade, fade, fade, fade);
         c++;
@@ -46,7 +45,6 @@ export function NodeCloud({ mouseRef, scrollRef }: { mouseRef: React.MutableRefO
     const siz = new Float32Array(NODE_COUNT);
 
     for (let i = 0; i < NODE_COUNT; i++) {
-      // Spherical distribution, denser toward center
       const r = Math.pow(Math.random(), 0.6) * 26;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
@@ -54,16 +52,15 @@ export function NodeCloud({ mouseRef, scrollRef }: { mouseRef: React.MutableRefO
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.55;
       pos[i * 3 + 2] = r * Math.cos(phi);
 
-      // Color: bright white, indigo, violet, cyan — keep saturated for bloom
       const t2 = Math.random();
       if (t2 < 0.45) {
-        col[i * 3] = 1.0; col[i * 3 + 1] = 1.0; col[i * 3 + 2] = 1.0;   // white
+        col[i * 3] = 1.0; col[i * 3 + 1] = 1.0; col[i * 3 + 2] = 1.0;
       } else if (t2 < 0.65) {
-        col[i * 3] = 0.45; col[i * 3 + 1] = 0.40; col[i * 3 + 2] = 1.0;  // indigo
+        col[i * 3] = 0.45; col[i * 3 + 1] = 0.40; col[i * 3 + 2] = 1.0;
       } else if (t2 < 0.8) {
-        col[i * 3] = 0.65; col[i * 3 + 1] = 0.20; col[i * 3 + 2] = 1.0;  // violet
+        col[i * 3] = 0.65; col[i * 3 + 1] = 0.20; col[i * 3 + 2] = 1.0;
       } else {
-        col[i * 3] = 0.05; col[i * 3 + 1] = 0.85; col[i * 3 + 2] = 1.0;  // cyan
+        col[i * 3] = 0.05; col[i * 3 + 1] = 0.85; col[i * 3 + 2] = 1.0;
       }
 
       siz[i] = Math.random() * 3.0 + 0.4;
@@ -84,7 +81,6 @@ export function NodeCloud({ mouseRef, scrollRef }: { mouseRef: React.MutableRefO
 
   return (
     <group ref={groupRef}>
-      {/* Connection mesh */}
       <lineSegments>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[lines.positions, 3]} />
@@ -99,7 +95,6 @@ export function NodeCloud({ mouseRef, scrollRef }: { mouseRef: React.MutableRefO
         />
       </lineSegments>
 
-      {/* Node points */}
       <points>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
@@ -137,7 +132,6 @@ export function CameraRig({
     const scroll = scrollRef?.current ?? 0;
     const tx = mx * 5;
     const ty = -my * 2.5 - scroll * 4;
-    // Cinematic dolly — fly into the network as the hero scrolls away.
     const tz = 30 - scroll * 16;
 
     pos.current.x += (tx - pos.current.x) * delta * 1.8;

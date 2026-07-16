@@ -1,39 +1,47 @@
 "use client";
 
-import { useRef, Suspense, useEffect } from "react";
+import { useRef, Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { NodeCloud, CameraRig } from "./IntelligenceNetwork";
-import AuroraField from "./AuroraField";
+import DeepSpaceField from "./AuroraField";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import gsap from "gsap";
 import MagneticButton from "../ui/MagneticButton";
 import { useModal } from "@/app/components/providers/ModalProvider";
 import * as THREE from "three";
 
-/* Headline: mix of solid + gradient-outlined words for editorial contrast */
+/* ─── Headline config ────────────────────────────────────── */
 const LINES: Array<Array<{ t: string; style: "solid" | "grad" | "outline" }>> = [
   [{ t: "Building", style: "solid" }, { t: "Intelligent", style: "grad" }],
   [{ t: "Software", style: "solid" }, { t: "for", style: "solid" }],
   [{ t: "Modern", style: "outline" }, { t: "Businesses", style: "grad" }],
 ];
 
-const MARQUEE = ["Enterprise SaaS", "AI Applications", "Custom Software", "Cloud Infrastructure", "Intelligent Automation", "UI / UX Engineering"];
+/* ─── Trust items ────────────────────────────────────────── */
+const TRUST_ITEMS = [
+  { name: "FactoryFlow", tag: "Enterprise", icon: "⬡", color: "rgba(99,102,241,0.5)" },
+  { name: "Continuum OS", tag: "Open Source", icon: "◈", color: "rgba(34,211,238,0.5)" },
+  { name: "EnteraFlux", tag: "Research", icon: "◆", color: "rgba(168,85,247,0.5)" },
+  { name: "Future Innovations", tag: "Coming Soon", icon: "✦", color: "rgba(129,140,248,0.5)" },
+];
 
+/* ─── Main Hero ──────────────────────────────────────────── */
 export default function HeroScene() {
   const mouseRef = useRef<[number, number]>([0, 0]);
   const scrollRef = useRef<number>(0);
   const { openModal } = useModal();
   const sectionRef = useRef<HTMLElement>(null);
   const lineRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const [sceneReady, setSceneReady] = useState(false);
 
-  /* Mouse parallax for the headline (springed) */
+  /* Mouse parallax */
   const px = useMotionValue(0);
   const py = useMotionValue(0);
   const spx = useSpring(px, { stiffness: 60, damping: 18, mass: 0.5 });
   const spy = useSpring(py, { stiffness: 60, damping: 18, mass: 0.5 });
 
-  /* Scroll-driven cinematic exit */
+  /* Scroll exit */
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
   const contentY = useTransform(scrollYProgress, [0, 1], [0, -80]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
@@ -46,15 +54,24 @@ export default function HeroScene() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* GSAP headline line reveal */
   useEffect(() => {
+    const timer = setTimeout(() => setSceneReady(true), 200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  /* GSAP headline reveal */
+  useEffect(() => {
+    if (!sceneReady) return;
     const lines = lineRefs.current.filter(Boolean) as HTMLSpanElement[];
     const ctx = gsap.context(() => {
       gsap.set(lines, { yPercent: 120, opacity: 0, skewY: 4 });
-      gsap.to(lines, { yPercent: 0, opacity: 1, skewY: 0, duration: 1.2, ease: "expo.out", stagger: 0.1, delay: 0.3 });
+      gsap.to(lines, {
+        yPercent: 0, opacity: 1, skewY: 0,
+        duration: 1.2, ease: "expo.out", stagger: 0.1, delay: 0.3,
+      });
     });
     return () => ctx.revert();
-  }, []);
+  }, [sceneReady]);
 
   const onMouseMove = (e: React.MouseEvent) => {
     const nx = (e.clientX / window.innerWidth) * 2 - 1;
@@ -85,7 +102,7 @@ export default function HeroScene() {
       style={{ background: "#04040a" }}
       onMouseMove={onMouseMove}
     >
-      {/* ─── One canvas: aurora shader + particle network ─ */}
+      {/* ─── Canvas ─ */}
       <div className="absolute inset-0" style={{ zIndex: 0 }}>
         <Canvas
           camera={{ position: [0, 2, 32], fov: 56, near: 0.1, far: 200 }}
@@ -94,7 +111,7 @@ export default function HeroScene() {
           performance={{ min: 0.5 }}
         >
           <Suspense fallback={null}>
-            <AuroraField mouseRef={mouseRef} />
+            <DeepSpaceField mouseRef={mouseRef} />
             <CameraRig mouseRef={mouseRef} scrollRef={scrollRef} />
             <NodeCloud mouseRef={mouseRef} scrollRef={scrollRef} />
             <EffectComposer>
@@ -104,14 +121,32 @@ export default function HeroScene() {
         </Canvas>
       </div>
 
-      {/* ─── Framing overlays ─────────────────────────── */}
+      {/* ─── Overlays ─ */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(4,4,10,0.55) 0%, transparent 26%, transparent 74%, rgba(4,4,10,0.95) 100%)" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(4,4,10,0.5), transparent 30%, transparent 70%, rgba(4,4,10,0.4))" }} />
       </div>
 
+      {/* ─── Ambient particles ─ */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 2 }}>
+        {Array.from({ length: 15 }).map((_, i) => (
+          <div
+            key={i}
+            className="hero-particle"
+            style={{
+              left: `${10 + Math.random() * 80}%`,
+              top: `${10 + Math.random() * 80}%`,
+              width: 1 + Math.random() * 1.5,
+              height: 1 + Math.random() * 1.5,
+              opacity: 0.1 + Math.random() * 0.2,
+              animationDuration: `${14 + Math.random() * 18}s`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
+      </div>
 
-      {/* ─── Vertical accent (right edge) ─────────────── */}
+      {/* ─── Right vertical accent ─ */}
       <motion.div
         className="absolute hidden lg:flex items-center pointer-events-none"
         style={{ right: 34, top: "50%", transform: "translateY(-50%) rotate(90deg)", transformOrigin: "center", gap: 14, zIndex: 3, opacity: contentOpacity }}
@@ -123,7 +158,7 @@ export default function HeroScene() {
         <div style={{ width: 26, height: 1, background: "rgba(129,140,248,0.3)" }} />
       </motion.div>
 
-      {/* ─── Editorial content (left-aligned) ─────────── */}
+      {/* ─── Editorial content (left-aligned) ─ */}
       <motion.div
         className="absolute inset-0 flex flex-col justify-center"
         style={{ zIndex: 4, y: contentY, opacity: contentOpacity, filter: contentBlur, padding: "0 clamp(24px, 6vw, 96px)" }}
@@ -132,7 +167,7 @@ export default function HeroScene() {
           {/* Eyebrow */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={sceneReady ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: "clamp(20px, 3vh, 34px)" }}
           >
@@ -149,12 +184,9 @@ export default function HeroScene() {
           {/* Headline — kinetic + mouse parallax */}
           <motion.h1
             style={{
-              x: spx,
-              y: spy,
-              fontFamily: "var(--font)",
-              fontWeight: 600,
-              letterSpacing: "-0.04em",
-              lineHeight: 0.98,
+              x: spx, y: spy,
+              fontFamily: "var(--font)", fontWeight: 600,
+              letterSpacing: "-0.04em", lineHeight: 0.98,
               fontSize: "clamp(38px, 7vw, 108px)",
             }}
           >
@@ -171,11 +203,11 @@ export default function HeroScene() {
             ))}
           </motion.h1>
 
-          {/* Subcopy + CTAs */}
+          {/* Subcopy + CTAs row */}
           <div style={{ marginTop: "clamp(26px, 4vh, 40px)", display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 28 }}>
             <motion.p
               initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={sceneReady ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 1.0, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               style={{ fontSize: "clamp(14px, 1.25vw, 18px)", lineHeight: 1.65, color: "var(--text-2)", maxWidth: "42ch" }}
             >
@@ -185,41 +217,74 @@ export default function HeroScene() {
 
             <motion.div
               initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={sceneReady ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 1.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0 }}
             >
-              <MagneticButton className="btn-primary" style={{ padding: "15px 32px" }} onClick={() => openModal("schedule")}>
-                Start Your Project
+              <MagneticButton
+                className="hero-cta-primary"
+                style={{ padding: "15px 32px" }}
+                onClick={() => openModal("schedule")}
+              >
+                <span style={{ position: "relative", zIndex: 1, fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "white" }}>
+                  Start Your Project
+                </span>
               </MagneticButton>
+
               <button
-                className="hero-textlink"
+                className="hero-cta-secondary"
                 data-cursor-hover
                 onClick={() => document.querySelector("#case-study")?.scrollIntoView({ behavior: "smooth" })}
-                style={{ display: "inline-flex", alignItems: "center", gap: 9, background: "transparent", border: "none", cursor: "none", fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-2)" }}
               >
-                View Our Work
-                <span aria-hidden style={{ display: "inline-block" }}>→</span>
+                <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-2)" }}>
+                  View Our Work
+                </span>
+                <span className="hero-cta-arrow" aria-hidden>→</span>
               </button>
             </motion.div>
           </div>
         </div>
       </motion.div>
 
-      {/* ─── Bottom marquee strip ─────────────────────── */}
+      {/* ─── Bottom trust bar ─ */}
       <motion.div
         className="absolute inset-x-0 bottom-0 overflow-hidden"
         style={{ zIndex: 4, opacity: contentOpacity, borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(4,4,10,0.4)", backdropFilter: "blur(6px)", padding: "12px 0" }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={sceneReady ? { opacity: 1 } : {}}
         transition={{ delay: 1.5, duration: 0.9 }}
       >
-        <div className="flex w-max animate-marquee-left">
-          {[...MARQUEE, ...MARQUEE, ...MARQUEE].map((t, i) => (
-            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 28, paddingRight: 28, fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-3)", whiteSpace: "nowrap" }}>
-              {t}
-              <span style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(129,140,248,0.5)" }} />
-            </span>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          gap: "clamp(12px, 2vw, 28px)", flexWrap: "wrap",
+          padding: "0 clamp(24px, 5vw, 80px)",
+        }}>
+          <span
+            className="hidden sm:block"
+            style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(241,245,249,0.15)", whiteSpace: "nowrap", marginRight: 8 }}
+          >
+            Building For
+          </span>
+
+          {TRUST_ITEMS.map((item, i) => (
+            <motion.div
+              key={item.name}
+              className="hero-trust-card"
+              initial={{ opacity: 0, y: 10 }}
+              animate={sceneReady ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 1.6 + i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              style={{ "--trust-color": item.color } as React.CSSProperties}
+            >
+              <span style={{ fontSize: 13, lineHeight: 1, opacity: 0.5 }}>{item.icon}</span>
+              <div>
+                <div style={{ fontFamily: "var(--font)", fontSize: "clamp(10px, 0.85vw, 12px)", fontWeight: 500, color: "rgba(241,245,249,0.6)", whiteSpace: "nowrap", lineHeight: 1.2 }}>
+                  {item.name}
+                </div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 7, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(241,245,249,0.2)", marginTop: 1 }}>
+                  {item.tag}
+                </div>
+              </div>
+            </motion.div>
           ))}
         </div>
       </motion.div>

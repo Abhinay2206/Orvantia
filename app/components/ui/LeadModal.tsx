@@ -109,6 +109,7 @@ export default function LeadModal({ type, onClose }: Props) {
     <AnimatePresence>
       <motion.div
         key="overlay"
+        data-lenis-prevent="true"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

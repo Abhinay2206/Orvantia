@@ -16,10 +16,16 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       infinite: false,
       smoothWheel: true,
     });
+    
+    // Expose for global modal controls
+    (window as any).lenis = lenis;
 
-    lenis.on("scroll", ScrollTrigger.update);
+    lenis.on('scroll', ScrollTrigger.update);
 
-    const ticker = (time: number) => lenis.raf(time * 1000);
+    const ticker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    
     gsap.ticker.add(ticker);
     gsap.ticker.lagSmoothing(0);
 

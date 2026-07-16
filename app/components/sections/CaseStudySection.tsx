@@ -1,9 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Section, Eyebrow, SplitHeadline, Reveal, EASE } from "./_shared";
 import AnimatedCounter from "../ui/AnimatedCounter";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ─── Animated dashboard mockup (browser-framed) ─────────── */
 const BARS = [42, 68, 55, 80, 62, 91, 74, 88, 60, 96, 70, 84];
@@ -15,11 +19,15 @@ function DashboardMock() {
   return (
     <div
       ref={ref}
-      className="frosted"
+      className="frosted dashboard-mock-container"
       style={{
         borderRadius: 16,
         overflow: "hidden",
         boxShadow: "0 40px 120px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.05)",
+        transformOrigin: "center center",
+        willChange: "transform, opacity",
+        opacity: 0,
+        transform: "translateY(40px)",
       }}
     >
       {/* Browser chrome */}
@@ -128,19 +136,21 @@ function DashboardMock() {
 
 /* ─── Phone mockup ───────────────────────────────────────── */
 function PhoneMock() {
+  const ref = useRef<HTMLDivElement>(null);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30, rotate: -4 }}
-      whileInView={{ opacity: 1, y: 0, rotate: -6 }}
-      viewport={{ once: true, margin: "-15%" }}
-      transition={{ duration: 1, ease: EASE, delay: 0.3 }}
-      className="frosted"
+    <div
+      ref={ref}
+      className="frosted phone-mock-container"
       style={{
         width: 148,
         borderRadius: 26,
         padding: 8,
         boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
         background: "rgba(10,10,20,0.9)",
+        willChange: "transform, opacity",
+        opacity: 0,
+        transform: "translateY(60px)",
       }}
     >
       <div style={{ borderRadius: 20, overflow: "hidden", background: "rgba(255,255,255,0.02)", padding: 14 }}>
@@ -159,7 +169,7 @@ function PhoneMock() {
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -180,9 +190,111 @@ const FEATURES = [
 ];
 
 export default function CaseStudySection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const mockContainerRef = useRef<HTMLDivElement>(null);
+  const contentOverlayRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current || !mockContainerRef.current || !contentOverlayRef.current) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      const ctx = gsap.context(() => {
+        // 1. Professional Entrance Reveal (Clean Fade & Slide)
+        gsap.to(".dashboard-mock-container", {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: mockContainerRef.current,
+            start: "top 80%",
+          }
+        });
+
+        gsap.to(".phone-mock-container", {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          delay: 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: mockContainerRef.current,
+            start: "top 80%",
+          }
+        });
+
+        // 2. Subtle Parallax Pinned Transition with pinSpacing: false
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: mockContainerRef.current,
+            start: "center center",
+            end: "+=800px", // Scroll duration
+            pin: true,
+            pinSpacing: false,
+            scrub: true,
+          }
+        });
+
+        tl.to(".dashboard-mock-container", {
+          opacity: 0.15,
+          y: -80,
+          ease: "none",
+        }, 0);
+
+        tl.to(".phone-mock-container", {
+          opacity: 0,
+          y: 40,
+          ease: "none",
+        }, 0);
+
+        // Fade in the challenge/solution content gracefully
+        gsap.fromTo(
+          contentOverlayRef.current,
+          { opacity: 0, y: 80 },
+          {
+            opacity: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: contentOverlayRef.current,
+              start: "top 80%",
+              end: "top 40%",
+              scrub: true,
+            }
+          }
+        );
+
+        // Stagger features
+        const featureItems = gsap.utils.toArray(".feature-item");
+        gsap.fromTo(
+          featureItems,
+          { opacity: 0, x: -20 },
+          {
+            opacity: 1,
+            x: 0,
+            stagger: 0.05,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: featuresRef.current,
+              start: "top 80%",
+            }
+          }
+        );
+      });
+      return () => ctx.revert();
+    });
+
+    return () => mm.revert();
+  }, []);
+
   return (
     <Section
       id="case-study"
+      ref={sectionRef}
+      style={{ position: "relative", zIndex: 10 }}
       glow="radial-gradient(ellipse 70% 60% at 50% 0%, rgba(34,211,238,0.08), transparent 60%)"
     >
       {/* Header */}
@@ -238,20 +350,21 @@ export default function CaseStudySection() {
         </div>
       </div>
 
-      {/* Device showcase */}
-      <div style={{ position: "relative", marginTop: "clamp(44px, 6vw, 80px)" }}>
-        <Reveal>
-          <DashboardMock />
-        </Reveal>
+      {/* Device showcase (Pinned on Desktop) */}
+      <div ref={mockContainerRef} style={{ position: "relative", marginTop: "clamp(44px, 6vw, 80px)", zIndex: 1 }}>
+        <DashboardMock />
         <div style={{ position: "absolute", right: "clamp(-8px, 2vw, 40px)", bottom: "-48px" }} className="hidden md:block">
           <PhoneMock />
         </div>
       </div>
 
-      {/* Challenge / Solution */}
+      {/* Challenge / Solution (Scrolls over pinned mockup) */}
       <div
+        ref={contentOverlayRef}
         style={{
-          marginTop: "clamp(72px, 9vw, 120px)",
+          position: "relative",
+          zIndex: 2,
+          marginTop: "clamp(72px, 9vw, 120px)", // On desktop, this will overlap because of the pin
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
           gap: "clamp(16px, 2vw, 28px)",
@@ -262,7 +375,7 @@ export default function CaseStudySection() {
           { t: "The Solution", c: "#22d3ee", b: "A secure, intuitive dashboard that centralizes task assignment, workflow tracking, and team collaboration — with role-based access, activity timelines, and real-time analytics so every department can see exactly where work stands." },
         ].map((x, i) => (
           <Reveal key={x.t} delay={i * 0.08}>
-            <div className="glass-card" style={{ padding: "clamp(28px, 3vw, 40px)", borderRadius: "var(--radius-lg)", height: "100%" }}>
+            <div className="glass-card" style={{ padding: "clamp(28px, 3vw, 40px)", borderRadius: "var(--radius-lg)", height: "100%", background: "rgba(10,10,20,0.6)", backdropFilter: "blur(12px)" }}>
               <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: x.c, marginBottom: 16 }}>
                 {x.t}
               </div>
@@ -273,9 +386,9 @@ export default function CaseStudySection() {
       </div>
 
       {/* Key Features */}
-      <div style={{ marginTop: "clamp(28px, 4vw, 48px)" }}>
+      <div ref={featuresRef} style={{ marginTop: "clamp(28px, 4vw, 48px)", position: "relative", zIndex: 2 }}>
         <Reveal>
-          <div className="glass-card" style={{ padding: "clamp(28px, 3vw, 44px)", borderRadius: "var(--radius-lg)" }}>
+          <div className="glass-card" style={{ padding: "clamp(28px, 3vw, 44px)", borderRadius: "var(--radius-lg)", background: "rgba(10,10,20,0.6)", backdropFilter: "blur(12px)" }}>
             <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 24 }}>
               Key Features
             </div>
@@ -287,7 +400,7 @@ export default function CaseStudySection() {
               }}
             >
               {FEATURES.map((f) => (
-                <div key={f} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div key={f} className="feature-item" style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#6366f1", boxShadow: "0 0 10px #6366f1", flexShrink: 0 }} />
                   <span style={{ fontSize: 15, color: "var(--text)" }}>{f}</span>
                 </div>

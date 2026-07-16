@@ -7,15 +7,6 @@ const ROW1 = [
   "ORVANTIA STUDIO", "·", "INTELLIGENT AUTOMATION", "·",
 ];
 
-const ROW2 = [
-  "40+ SYSTEMS SHIPPED", "·", "CLOUD-NATIVE ARCHITECTURE", "·",
-  "99.98% UPTIME", "·", "SOC 2 TYPE II", "·",
-  "ENTERPRISE GRADE", "·", "PRODUCTION READY", "·",
-  "40+ SYSTEMS SHIPPED", "·", "CLOUD-NATIVE ARCHITECTURE", "·",
-  "99.98% UPTIME", "·", "SOC 2 TYPE II", "·",
-  "ENTERPRISE GRADE", "·", "PRODUCTION READY", "·",
-];
-
 export default function Marquee() {
   return (
     <div
@@ -30,22 +21,6 @@ export default function Marquee() {
             className="text-[10px] tracking-[0.22em] whitespace-nowrap px-3 font-mono"
             style={{
               color: t === "·" ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.18)",
-              fontFamily: "var(--mono)",
-            }}
-          >
-            {t}
-          </span>
-        ))}
-      </div>
-
-      {/* Row 2 — right */}
-      <div className="flex w-max animate-marquee-right">
-        {ROW2.map((t, i) => (
-          <span
-            key={i}
-            className="text-[10px] tracking-[0.22em] whitespace-nowrap px-3"
-            style={{
-              color: t === "·" ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.12)",
               fontFamily: "var(--mono)",
             }}
           >

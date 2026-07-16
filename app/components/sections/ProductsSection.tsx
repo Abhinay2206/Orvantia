@@ -1,10 +1,38 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Section, Eyebrow, SplitHeadline, Reveal, EASE } from "./_shared";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ─── Architecture node graphic (SVG) ────────────────────── */
 function ArchGraphic() {
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    if (!svgRef.current) return;
+    const paths = svgRef.current.querySelectorAll("line");
+    gsap.fromTo(
+      paths,
+      { strokeDasharray: "0, 1000" },
+      {
+        strokeDasharray: "1000, 1000",
+        ease: "none",
+        scrollTrigger: {
+          trigger: svgRef.current,
+          start: "left center",
+          end: "right center",
+          horizontal: true,
+          scrub: 1,
+          containerAnimation: gsap.getById("products-scroll"),
+        },
+      }
+    );
+  }, []);
+
   const nodes = [
     { x: 130, y: 40, r: 20, label: "Core" },
     { x: 40, y: 120, r: 13 },
@@ -17,9 +45,9 @@ function ArchGraphic() {
     [0, 1], [0, 2], [0, 3], [2, 4], [2, 5], [1, 4], [3, 5],
   ];
   return (
-    <svg viewBox="0 0 260 240" style={{ width: "100%", height: "auto" }}>
+    <svg ref={svgRef} viewBox="0 0 260 240" style={{ width: "100%", height: "auto" }}>
       {edges.map(([a, b], i) => (
-        <motion.line
+        <line
           key={i}
           x1={nodes[a].x}
           y1={nodes[a].y}
@@ -27,10 +55,6 @@ function ArchGraphic() {
           y2={nodes[b].y}
           stroke="rgba(99,102,241,0.35)"
           strokeWidth={1}
-          initial={{ pathLength: 0, opacity: 0 }}
-          whileInView={{ pathLength: 1, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.9, ease: EASE, delay: 0.2 + i * 0.08 }}
         />
       ))}
       {nodes.map((n, i) => (
@@ -55,8 +79,26 @@ function ArchGraphic() {
 
 /* ─── Research / concept graphic (orbiting rings) ────────── */
 function ResearchGraphic() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    gsap.to(containerRef.current, {
+      rotate: 360,
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "left right",
+        end: "right left",
+        horizontal: true,
+        scrub: 0.5,
+        containerAnimation: gsap.getById("products-scroll"),
+      },
+    });
+  }, []);
+
   return (
-    <div style={{ position: "relative", width: "100%", aspectRatio: "1", maxWidth: 260, margin: "0 auto" }}>
+    <div ref={containerRef} style={{ position: "relative", width: "100%", aspectRatio: "1", maxWidth: 260, margin: "0 auto" }}>
       {[0, 1, 2].map((i) => (
         <div
           key={i}
@@ -108,7 +150,7 @@ function ContinuumPanel() {
     <div
       id="continuum"
       className="product-card glass-card"
-      style={{ borderRadius: "var(--radius-xl)", padding: "clamp(32px, 4vw, 64px)", "--card-accent": "linear-gradient(90deg, #6366f1, #22d3ee)" } as React.CSSProperties}
+      style={{ borderRadius: "var(--radius-xl)", padding: "clamp(32px, 4vw, 64px)", width: "85vw", maxWidth: 1000, flexShrink: 0, "--card-accent": "linear-gradient(90deg, #6366f1, #22d3ee)" } as React.CSSProperties}
     >
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.35fr) minmax(0, 1fr)", gap: "clamp(32px, 5vw, 72px)", alignItems: "center" }} className="product-grid">
         <div>
@@ -207,7 +249,7 @@ function EnterafluxPanel() {
     <div
       id="enteraflux"
       className="product-card glass-card"
-      style={{ borderRadius: "var(--radius-xl)", padding: "clamp(32px, 4vw, 64px)", "--card-accent": "linear-gradient(90deg, #a855f7, #6366f1)" } as React.CSSProperties}
+      style={{ borderRadius: "var(--radius-xl)", padding: "clamp(32px, 4vw, 64px)", width: "85vw", maxWidth: 1000, flexShrink: 0, "--card-accent": "linear-gradient(90deg, #a855f7, #6366f1)" } as React.CSSProperties}
     >
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.35fr)", gap: "clamp(32px, 5vw, 72px)", alignItems: "center" }} className="product-grid product-grid-rev">
         {/* Concept visual */}
@@ -309,10 +351,43 @@ function EnterafluxPanel() {
 }
 
 export default function ProductsSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current || !containerRef.current) return;
+
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 1024px)", () => {
+      const panels = gsap.utils.toArray(".product-card");
+      
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          pin: true,
+          scrub: 1,
+          start: "center center",
+          end: () => `+=${containerRef.current!.scrollWidth - window.innerWidth}`,
+          id: "products-scroll",
+        },
+      });
+
+      tl.to(containerRef.current, {
+        x: () => -(containerRef.current!.scrollWidth - window.innerWidth + 80),
+        ease: "none",
+      });
+
+      return () => tl.kill();
+    });
+
+    return () => mm.revert();
+  }, []);
+
   return (
     <Section
       id="products"
-      style={{ background: "var(--bg-2)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}
+      ref={sectionRef}
+      style={{ background: "var(--bg-2)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", overflow: "hidden" }}
       glow="radial-gradient(ellipse 60% 50% at 50% 30%, rgba(99,102,241,0.07), transparent 60%)"
     >
       <div style={{ maxWidth: 820, marginBottom: "clamp(48px, 6vw, 80px)" }}>
@@ -331,13 +406,9 @@ export default function ProductsSection() {
         </Reveal>
       </div>
 
-      <div style={{ display: "grid", gap: "clamp(20px, 2.5vw, 32px)" }}>
-        <Reveal>
-          <ContinuumPanel />
-        </Reveal>
-        <Reveal>
-          <EnterafluxPanel />
-        </Reveal>
+      <div ref={containerRef} data-cursor-text="DRAG" style={{ display: "flex", gap: "clamp(20px, 2.5vw, 32px)", width: "max-content", paddingRight: 80, cursor: "none" }}>
+        <ContinuumPanel />
+        <EnterafluxPanel />
       </div>
     </Section>
   );

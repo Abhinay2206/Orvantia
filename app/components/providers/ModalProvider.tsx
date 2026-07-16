@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import LeadModal, { type ModalType } from "@/app/components/ui/LeadModal";
 
 interface ModalContextValue {
@@ -15,6 +15,16 @@ export function useModal() {
 
 export default function ModalProvider({ children }: { children: React.ReactNode }) {
   const [activeType, setActiveType] = useState<ModalType | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (activeType) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
+  }, [activeType]);
 
   return (
     <ModalContext.Provider value={{ openModal: setActiveType }}>

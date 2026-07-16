@@ -1,7 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type Service = { n: string; k: string; d: string; c: string };
 
@@ -27,78 +31,125 @@ function ServiceCard({ s, i }: { s: Service; i: number }) {
   };
 
   return (
-    <Reveal delay={(i % 3) * 0.06}>
+    <div
+      ref={ref}
+      onMouseMove={onMove}
+      data-cursor-hover
+      className="service-card glass-card hover-lift service-card-anim"
+      style={
+        {
+          "--svc": s.c,
+          position: "relative",
+          height: "100%",
+          minHeight: 210,
+          padding: "clamp(24px, 2.4vw, 34px)",
+          borderRadius: "var(--radius-lg)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          overflow: "hidden",
+          willChange: "transform, opacity",
+        } as React.CSSProperties
+      }
+    >
+      {/* Spotlight */}
       <div
-        ref={ref}
-        onMouseMove={onMove}
-        data-cursor-hover
-        className="service-card glass-card hover-lift"
-        style={
-          {
-            "--svc": s.c,
-            position: "relative",
-            height: "100%",
-            minHeight: 210,
-            padding: "clamp(24px, 2.4vw, 34px)",
-            borderRadius: "var(--radius-lg)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            overflow: "hidden",
-          } as React.CSSProperties
-        }
-      >
-        {/* Spotlight */}
-        <div
-          className="service-spot"
+        className="service-spot"
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          opacity: 0,
+          transition: "opacity 0.3s",
+          background:
+            "radial-gradient(340px circle at var(--mx) var(--my), color-mix(in srgb, var(--svc) 16%, transparent), transparent 65%)",
+        }}
+      />
+
+      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--text-3)" }}>{s.n}</span>
+        <span
           style={{
-            position: "absolute",
-            inset: 0,
-            pointerEvents: "none",
-            opacity: 0,
-            transition: "opacity 0.3s",
-            background:
-              "radial-gradient(340px circle at var(--mx) var(--my), color-mix(in srgb, var(--svc) 16%, transparent), transparent 65%)",
+            width: 9,
+            height: 9,
+            borderRadius: "50%",
+            background: s.c,
+            boxShadow: `0 0 14px ${s.c}`,
           }}
         />
-
-        <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--text-3)" }}>{s.n}</span>
-          <span
-            style={{
-              width: 9,
-              height: 9,
-              borderRadius: "50%",
-              background: s.c,
-              boxShadow: `0 0 14px ${s.c}`,
-            }}
-          />
-        </div>
-
-        <div style={{ position: "relative" }}>
-          <h3
-            style={{
-              fontFamily: "var(--font)",
-              fontSize: "clamp(19px, 1.9vw, 24px)",
-              fontWeight: 600,
-              letterSpacing: "-0.02em",
-              color: "var(--text)",
-              marginBottom: 10,
-            }}
-          >
-            {s.k}
-          </h3>
-          <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--text-2)" }}>{s.d}</p>
-        </div>
       </div>
-    </Reveal>
+
+      <div style={{ position: "relative" }}>
+        <h3
+          style={{
+            fontFamily: "var(--font)",
+            fontSize: "clamp(19px, 1.9vw, 24px)",
+            fontWeight: 600,
+            letterSpacing: "-0.02em",
+            color: "var(--text)",
+            marginBottom: 10,
+          }}
+        >
+          {s.k}
+        </h3>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--text-2)" }}>{s.d}</p>
+      </div>
+    </div>
   );
 }
 
 export default function ServicesSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current || !gridRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // 1. Fade up cards initially
+      const cards = gsap.utils.toArray(".service-card-anim");
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.05,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: "top 80%",
+            end: "top 40%",
+            scrub: 1,
+          },
+        }
+      );
+
+      // 2. Parallax scale down effect as it leaves (Sticky depth)
+      gsap.to(cards, {
+        scale: 0.85,
+        opacity: 0,
+        rotateX: -10,
+        y: -100,
+        stagger: 0.04,
+        ease: "power2.inOut",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "center top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <Section
       id="services"
+      ref={sectionRef}
       style={{ background: "var(--bg-2)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}
       glow="radial-gradient(ellipse 50% 40% at 85% 10%, rgba(168,85,247,0.08), transparent 60%)"
     >
@@ -121,6 +172,7 @@ export default function ServicesSection() {
       </div>
 
       <div
+        ref={gridRef}
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",

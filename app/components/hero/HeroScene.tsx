@@ -246,10 +246,9 @@ export default function HeroScene() {
         </div>
       </motion.div>
 
-      {/* ─── Bottom trust bar ─ */}
       <motion.div
         className="absolute inset-x-0 bottom-0 overflow-hidden"
-        style={{ zIndex: 4, opacity: contentOpacity, borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(4,4,10,0.4)", backdropFilter: "blur(6px)", padding: "12px 0" }}
+        style={{ zIndex: 4, opacity: contentOpacity, padding: "12px 0", paddingBottom: "24px" }}
         initial={{ opacity: 0 }}
         animate={sceneReady ? { opacity: 1 } : {}}
         transition={{ delay: 1.5, duration: 0.9 }}

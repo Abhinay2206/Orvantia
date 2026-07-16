@@ -1,18 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Section, Eyebrow, Reveal, EASE } from "./_shared";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ─── Interactive globe (pure CSS/SVG, lightweight) ──────── */
 function Globe() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    // Cinematic scale up on scroll
+    gsap.fromTo(
+      containerRef.current,
+      { scale: 0.5, opacity: 0, y: 100 },
+      {
+        scale: 1,
+        opacity: 1,
+        y: 0,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 85%",
+          end: "top 40%",
+          scrub: 1,
+        },
+      }
+    );
+  }, []);
+
   const arcs = [
     { d: "M 60 150 Q 150 40 240 150", delay: 0 },
     { d: "M 40 120 Q 150 220 260 120", delay: 0.6 },
     { d: "M 80 60 Q 150 150 220 240", delay: 1.2 },
   ];
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: 380, aspectRatio: "1", margin: "0 auto" }}>
+    <div ref={containerRef} style={{ position: "relative", width: "100%", maxWidth: 380, aspectRatio: "1", margin: "0 auto", willChange: "transform, opacity" }}>
       {/* Glow */}
       <div
         style={{
@@ -160,6 +187,29 @@ export default function ContactSection() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
 
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (!formRef.current) return;
+    // Sequence form elements sliding up
+    const elements = formRef.current.querySelectorAll(".form-anim");
+    gsap.fromTo(
+      elements,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: formRef.current,
+          start: "top 80%",
+        }
+      }
+    );
+  }, [status]); // Re-run if status changes so the success message or form re-animates
+
   const toggleService = (s: string) =>
     setServices((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
 
@@ -200,6 +250,7 @@ export default function ContactSection() {
   return (
     <Section
       id="contact"
+      style={{ position: "relative", zIndex: 10 }}
       glow="radial-gradient(ellipse 80% 70% at 50% 100%, rgba(30,10,80,0.35), transparent 65%)"
     >
       <div style={{ maxWidth: 760, margin: "0 auto clamp(48px, 6vw, 80px)", textAlign: "center" }}>
@@ -236,9 +287,9 @@ export default function ContactSection() {
         }}
       >
         {/* Globe + reassurance */}
-        <Reveal>
-          <div>
-            <Globe />
+        <div>
+          <Globe />
+          <Reveal delay={0.2}>
             <div style={{ marginTop: 32, textAlign: "center", maxWidth: 380, marginLeft: "auto", marginRight: "auto" }}>
               <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--text-2)" }}>
                 Tell us what you&apos;re building. We reply within 1–2 business days with a
@@ -251,148 +302,147 @@ export default function ContactSection() {
                 </span>
               </div>
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
 
         {/* Form */}
-        <Reveal delay={0.1}>
-          <div className="frosted" style={{ borderRadius: "var(--radius-xl)", padding: "clamp(28px, 3.5vw, 48px)" }}>
-            {status === "success" ? (
-              <div style={{ textAlign: "center", padding: "40px 0" }}>
-                <div
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: "50%",
-                    background: "rgba(34,197,94,0.12)",
-                    border: "1px solid rgba(34,197,94,0.3)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 22px",
-                    fontSize: 26,
-                    color: "#4ade80",
-                  }}
-                >
-                  ✓
-                </div>
-                <h3 style={{ fontFamily: "var(--font)", fontSize: 24, fontWeight: 600, color: "var(--text)", marginBottom: 12 }}>
-                  Message received.
-                </h3>
-                <p style={{ fontSize: 15, color: "var(--text-2)", lineHeight: 1.65 }}>
-                  Thanks — we&apos;ll be in touch within 1–2 business days.
-                </p>
+        <div className="frosted" style={{ borderRadius: "var(--radius-xl)", padding: "clamp(28px, 3.5vw, 48px)" }}>
+          {status === "success" ? (
+            <div style={{ textAlign: "center", padding: "40px 0" }}>
+              <div
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  background: "rgba(34,197,94,0.12)",
+                  border: "1px solid rgba(34,197,94,0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 22px",
+                  fontSize: 26,
+                  color: "#4ade80",
+                }}
+              >
+                ✓
               </div>
-            ) : (
-              <form onSubmit={submit}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }} className="contact-row">
-                  <div>
-                    <label style={labelStyle}>Name <span style={{ color: "var(--indigo)" }}>*</span></label>
-                    <input
-                      value={form.name}
-                      onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                      placeholder="Alex Chen"
-                      style={inputStyle}
-                      onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
-                      onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Email <span style={{ color: "var(--indigo)" }}>*</span></label>
-                    <input
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                      placeholder="alex@company.com"
-                      style={inputStyle}
-                      onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
-                      onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 22 }}>
-                  <label style={labelStyle}>Company</label>
+              <h3 style={{ fontFamily: "var(--font)", fontSize: 24, fontWeight: 600, color: "var(--text)", marginBottom: 12 }}>
+                Message received.
+              </h3>
+              <p style={{ fontSize: 15, color: "var(--text-2)", lineHeight: 1.65 }}>
+                Thanks — we&apos;ll be in touch within 1–2 business days.
+              </p>
+            </div>
+          ) : (
+            <form ref={formRef} onSubmit={submit}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }} className="contact-row form-anim">
+                <div>
+                  <label style={labelStyle}>Name <span style={{ color: "var(--indigo)" }}>*</span></label>
                   <input
-                    value={form.company}
-                    onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
-                    placeholder="Acme Corp"
+                    value={form.name}
+                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="Alex Chen"
                     style={inputStyle}
                     onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
                     onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
-
-                <div style={{ marginBottom: 22 }}>
-                  <label style={labelStyle}>What do you need?</label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {SERVICES.map((s) => (
-                      <Chip key={s} active={services.includes(s)} onClick={() => toggleService(s)}>{s}</Chip>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 22 }}>
-                  <label style={labelStyle}>Budget</label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {BUDGETS.map((b) => (
-                      <Chip key={b} active={budget === b} onClick={() => setBudget(budget === b ? "" : b)}>{b}</Chip>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 22 }}>
-                  <label style={labelStyle}>Timeline</label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {TIMELINES.map((t) => (
-                      <Chip key={t} active={timeline === t} onClick={() => setTimeline(timeline === t ? "" : t)}>{t}</Chip>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 24 }}>
-                  <label style={labelStyle}>Project details <span style={{ color: "var(--indigo)" }}>*</span></label>
-                  <textarea
-                    value={form.message}
-                    onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                    placeholder="Tell us about your product, goals, and where you are today…"
-                    rows={4}
-                    style={{ ...inputStyle, resize: "vertical", minHeight: 110 }}
+                <div>
+                  <label style={labelStyle}>Email <span style={{ color: "var(--indigo)" }}>*</span></label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="alex@company.com"
+                    style={inputStyle}
                     onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
                     onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
+              </div>
 
-                {error && (
-                  <p
-                    style={{
-                      fontFamily: "var(--mono)",
-                      fontSize: 11,
-                      color: "rgba(248,113,113,0.9)",
-                      marginBottom: 16,
-                      padding: "10px 14px",
-                      background: "rgba(239,68,68,0.08)",
-                      border: "1px solid rgba(239,68,68,0.2)",
-                      borderRadius: 8,
-                    }}
-                  >
-                    {error}
-                  </p>
-                )}
+              <div style={{ marginBottom: 22 }} className="form-anim">
+                <label style={labelStyle}>Company</label>
+                <input
+                  value={form.company}
+                  onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+                  placeholder="Acme Corp"
+                  style={inputStyle}
+                  onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
+                  onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
+                />
+              </div>
 
-                <button
-                  type="submit"
-                  disabled={status === "loading"}
-                  className="btn-primary"
-                  data-cursor-hover
-                  style={{ width: "100%", cursor: status === "loading" ? "wait" : "pointer", opacity: status === "loading" ? 0.7 : 1 }}
+              <div style={{ marginBottom: 22 }} className="form-anim">
+                <label style={labelStyle}>What do you need?</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {SERVICES.map((s) => (
+                    <Chip key={s} active={services.includes(s)} onClick={() => toggleService(s)}>{s}</Chip>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 22 }} className="form-anim">
+                <label style={labelStyle}>Budget</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {BUDGETS.map((b) => (
+                    <Chip key={b} active={budget === b} onClick={() => setBudget(budget === b ? "" : b)}>{b}</Chip>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 22 }} className="form-anim">
+                <label style={labelStyle}>Timeline</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {TIMELINES.map((t) => (
+                    <Chip key={t} active={timeline === t} onClick={() => setTimeline(timeline === t ? "" : t)}>{t}</Chip>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 24 }} className="form-anim">
+                <label style={labelStyle}>Project details <span style={{ color: "var(--indigo)" }}>*</span></label>
+                <textarea
+                  value={form.message}
+                  onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                  placeholder="Tell us about your product, goals, and where you are today…"
+                  rows={4}
+                  style={{ ...inputStyle, resize: "vertical", minHeight: 110 }}
+                  onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
+                  onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
+                />
+              </div>
+
+              {error && (
+                <p
+                  className="form-anim"
+                  style={{
+                    fontFamily: "var(--mono)",
+                    fontSize: 11,
+                    color: "rgba(248,113,113,0.9)",
+                    marginBottom: 16,
+                    padding: "10px 14px",
+                    background: "rgba(239,68,68,0.08)",
+                    border: "1px solid rgba(239,68,68,0.2)",
+                    borderRadius: 8,
+                  }}
                 >
-                  {status === "loading" ? "Sending…" : "Start Your Project →"}
-                </button>
-              </form>
-            )}
-          </div>
-        </Reveal>
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="btn-primary form-anim"
+                data-cursor-hover
+                style={{ width: "100%", cursor: status === "loading" ? "wait" : "pointer", opacity: status === "loading" ? 0.7 : 1 }}
+              >
+                {status === "loading" ? "Sending…" : "Start Your Project →"}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </Section>
   );

@@ -96,24 +96,38 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
   const progress = Math.min((visible.length / LINES.length) * 100, 100);
 
   useEffect(() => {
+    // Reset state in case of StrictMode or HMR re-runs
+    setVisible([]);
+    setPhase("terminal");
+
     let i = 0;
     const delays = [250, 90, 90, 90, 55, 55, 55, 80, 200];
+    let logoTimer: NodeJS.Timeout;
+    let exitTimer: NodeJS.Timeout;
+    let completeTimer: NodeJS.Timeout;
+
     const tick = () => {
       if (i < LINES.length) {
         setVisible((p) => [...p, i]);
         timer.current = setTimeout(tick, delays[i] ?? 65);
         i++;
       } else {
-        setTimeout(() => setPhase("logo"), 120);
-        setTimeout(() => setPhase("exiting"), 2000);
-        setTimeout(onComplete, 2700);
+        logoTimer = setTimeout(() => setPhase("logo"), 120);
+        exitTimer = setTimeout(() => setPhase("exiting"), 2000);
+        completeTimer = setTimeout(() => {
+          onComplete();
+        }, 2700);
       }
     };
     timer.current = setTimeout(tick, 150);
+    
     return () => {
       if (timer.current) clearTimeout(timer.current);
+      if (logoTimer) clearTimeout(logoTimer);
+      if (exitTimer) clearTimeout(exitTimer);
+      if (completeTimer) clearTimeout(completeTimer);
     };
-  }, [onComplete]);
+  }, []); // Empty dependency array to ensure it only runs once
 
   return (
     <AnimatePresence>
@@ -152,6 +166,7 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
           <AnimatePresence>
             {phase === "terminal" && (
               <motion.div
+                key="terminal"
                 className="absolute inset-0 flex items-center justify-center"
                 style={{ zIndex: 2 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -239,6 +254,7 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
           <AnimatePresence>
             {phase === "logo" && (
               <motion.div
+                key="logo"
                 className="absolute inset-0 flex flex-col items-center justify-center"
                 style={{ zIndex: 2 }}
                 initial={{ opacity: 0 }}

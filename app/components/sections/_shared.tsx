@@ -3,8 +3,8 @@
 import { motion, useInView, type Variants } from "framer-motion";
 import { useRef, type ReactNode, type CSSProperties } from "react";
 
-/* ─── Shared easing ──────────────────────────────────────── */
-export const EASE = [0.16, 1, 0.3, 1] as const;
+/* ─── Shared easing (Expo-like Snappy) ───────────────────── */
+export const EASE = [0.19, 1, 0.22, 1] as const;
 
 /* ─── Reveal — fade + rise on scroll into view ───────────── */
 export function Reveal({
@@ -32,8 +32,8 @@ export function Reveal({
     <MotionTag
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y, rotateX: 10, filter: "blur(6px)" }}
-      animate={inView ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.95, ease: EASE, delay }}
       style={{ transformPerspective: 1200, transformOrigin: "center bottom", ...style }}
     >
@@ -119,10 +119,10 @@ export function SplitHeadline({
         >
           <motion.span
             className={w.startsWith("*") ? gradientClass : undefined}
-            style={{ display: "inline-block", transformOrigin: "left bottom" }}
-            initial={{ y: "115%", rotate: 4, filter: "blur(4px)" }}
-            animate={inView ? { y: "0%", rotate: 0, filter: "blur(0px)" } : {}}
-            transition={{ duration: 0.95, ease: EASE, delay: i * wordDelay }}
+            style={{ display: "inline-block" }}
+            initial={{ y: "120%" }}
+            animate={inView ? { y: "0%" } : {}}
+            transition={{ duration: 1.1, ease: EASE, delay: i * wordDelay }}
           >
             {w.replace("*", "")}
             {i < words.length - 1 ? " " : ""}
@@ -134,22 +134,23 @@ export function SplitHeadline({
 }
 
 /* ─── Section wrapper — consistent padding + ambient glow ── */
-export function Section({
-  id,
-  children,
-  glow,
-  style,
-  className,
-}: {
-  id?: string;
-  children: ReactNode;
-  glow?: string;
-  style?: CSSProperties;
-  className?: string;
-}) {
+import { forwardRef } from "react";
+
+/* ─── Section wrapper — consistent padding + ambient glow ── */
+export const Section = forwardRef<
+  HTMLElement,
+  {
+    id?: string;
+    children: ReactNode;
+    glow?: string;
+    style?: CSSProperties;
+    className?: string;
+  }
+>(function Section({ id, children, glow, style, className }, ref) {
   return (
     <section
       id={id}
+      ref={ref}
       className={className}
       style={{
         position: "relative",
@@ -169,4 +170,4 @@ export function Section({
       </div>
     </section>
   );
-}
+});

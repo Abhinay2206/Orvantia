@@ -70,9 +70,8 @@ export default function ScrollProgress() {
         }}
       />
 
-      {/* Right section rail (desktop) */}
       <div
-        className="hidden lg:flex fixed flex-col items-end gap-3.5"
+        className="hidden lg:flex fixed flex-col items-end gap-3.5 group/nav"
         style={{ right: 26, top: "50%", transform: "translateY(-50%)", zIndex: 90 }}
       >
         {SECTIONS.map((s) => {
@@ -86,27 +85,23 @@ export default function ScrollProgress() {
               style={{ background: "transparent", border: "none", cursor: "none" }}
             >
               <span
-                className="transition-all duration-300"
+                className={`transition-all duration-300 origin-right ${on ? "opacity-100 translate-x-0 scale-100" : "opacity-0 translate-x-1.5 scale-95"} group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-110 group-hover/nav:opacity-75 group-hover/nav:translate-x-0 group-hover/nav:scale-100`}
                 style={{
                   fontFamily: "var(--mono)",
                   fontSize: 9,
                   letterSpacing: "0.16em",
                   textTransform: "uppercase",
                   color: on ? "var(--text)" : "var(--text-3)",
-                  opacity: on ? 1 : 0,
-                  transform: on ? "translateX(0)" : "translateX(6px)",
                 }}
               >
                 {s.label}
               </span>
               <span
-                className="transition-all duration-300"
+                className={`transition-all duration-300 ${on ? "w-[22px] bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" : "w-[14px] bg-white/20"} group-hover:w-[28px] group-hover:bg-cyan-400 group-hover:shadow-[0_0_12px_rgba(34,211,238,0.6)]`}
                 style={{
-                  width: on ? 22 : 14,
                   height: 2,
                   borderRadius: 2,
-                  background: on ? "linear-gradient(90deg,#6366f1,#a855f7)" : "rgba(255,255,255,0.18)",
-                  boxShadow: on ? "0 0 8px rgba(99,102,241,0.6)" : "none",
+                  background: on ? "linear-gradient(90deg,#6366f1,#a855f7)" : undefined,
                 }}
               />
             </button>

@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useModal } from "@/app/components/providers/ModalProvider";
 
 const LINKS = [
+  { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Case Study", href: "#case-study" },
   { label: "Products", href: "#products" },
-  { label: "Continuum", href: "#continuum" },
-  { label: "Enteraflux", href: "#enteraflux" },
-  { label: "ClinicalAgents", href: "#clinical" },
-  { label: "Ecosystem", href: "#ecosystem" },
+  { label: "Process", href: "#process" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function Nav({ show }: { show: boolean }) {
@@ -99,9 +100,9 @@ export default function Nav({ show }: { show: boolean }) {
                 className="btn-secondary"
                 style={{ padding: "9px 20px" }}
                 data-cursor-hover
-                onClick={() => openModal("book-demo")}
+                onClick={() => go("#contact")}
               >
-                Book Demo
+                Let&apos;s Talk
               </button>
               <button
                 className="btn-primary"
@@ -109,7 +110,7 @@ export default function Nav({ show }: { show: boolean }) {
                 data-cursor-hover
                 onClick={() => openModal("schedule")}
               >
-                Partner with Us
+                Start Your Project
               </button>
             </div>
 
@@ -166,8 +167,8 @@ export default function Nav({ show }: { show: boolean }) {
                   </motion.button>
                 ))}
                 <div className="pt-3 flex gap-3">
-                  <button className="btn-secondary flex-1" style={{ padding: "10px 0" }} onClick={() => { setOpen(false); openModal("book-demo"); }}>Book Demo</button>
-                  <button className="btn-primary flex-1" style={{ padding: "10px 0" }} onClick={() => { setOpen(false); openModal("schedule"); }}>Partner with Us</button>
+                  <button className="btn-secondary flex-1" style={{ padding: "10px 0" }} onClick={() => go("#contact")}>Let&apos;s Talk</button>
+                  <button className="btn-primary flex-1" style={{ padding: "10px 0" }} onClick={() => { setOpen(false); openModal("schedule"); }}>Start Project</button>
                 </div>
               </motion.div>
             )}

@@ -13,6 +13,7 @@ const TITLES: Record<ModalType, string> = {
 };
 
 const INQUIRY_OPTIONS = [
+  "Start Your Project",
   "Book a Demo",
   "Schedule a Consultation",
   "Discuss My Use Case",
@@ -20,7 +21,7 @@ const INQUIRY_OPTIONS = [
   "Other",
 ];
 
-const PRODUCTS = ["Enteraflux", "Continuum", "ClinicalAgents", "Not sure yet"];
+const PRODUCTS = ["Enterprise SaaS", "AI Integration", "Custom Software", "Automation", "Not sure yet"];
 
 const DEFAULT_INQUIRY: Record<ModalType, string> = {
   "book-demo": "Book a Demo",

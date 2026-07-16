@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-16T07:21:49.592Z",
+  "projectRoot": "/Users/abhinay/Abhi/orvantia",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1784186509592
+}

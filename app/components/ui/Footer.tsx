@@ -7,16 +7,18 @@ const NAV = [
   {
     heading: "Products",
     links: [
-      { label: "Enteraflux", sub: "GLP-1 Therapy Companion", href: "https://www.enteraflux.tech/" },
-      { label: "Continuum", sub: "Autonomous Engineering", href: "https://continuumos.vercel.app/" },
-      { label: "ClinicalAgent", sub: "Clinical Research AI", href: "https://clinicalagent.vercel.app/" },
+      { label: "Continuum OS", sub: "Open-Source Engineering OS", href: "https://continuumos.vercel.app/" },
+      { label: "EnteraFlux", sub: "Research Stage", href: "https://www.enteraflux.tech/" },
     ],
   },
   {
-    heading: "Company",
+    heading: "Studio",
     links: [
-      { label: "About" },
-      { label: "Contact" },
+      { label: "About", href: "#about" },
+      { label: "Services", href: "#services" },
+      { label: "Case Study", href: "#case-study" },
+      { label: "Process", href: "#process" },
+      { label: "Contact", href: "#contact" },
     ],
   },
 ];
@@ -87,8 +89,8 @@ export default function Footer() {
               marginBottom: 24,
             }}
           >
-            Building autonomous AI products for enterprises, engineering teams,
-            and healthcare organizations.
+            A premium software studio building enterprise SaaS platforms, AI-powered
+            applications, and custom software for modern businesses.
           </p>
 
           {/* Status */}

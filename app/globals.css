@@ -489,3 +489,72 @@ html { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.2) transparent;
 .perspective-1000 { perspective: 1000px; }
 .perspective-1200 { perspective: 1200px; }
 .preserve-3d      { transform-style: preserve-3d; }
+
+/* ─── Redesign: About pillar hover ───────────────────────── */
+.about-pillar { transition: background 0.3s; }
+.about-pillar:hover { background: var(--surface-hover) !important; }
+
+/* ─── Redesign: Service card spotlight ───────────────────── */
+.service-card:hover .service-spot { opacity: 1 !important; }
+.service-card::before { background: var(--svc, rgba(99,102,241,0.4)); }
+
+/* ─── Redesign: Product panel responsive grid ────────────── */
+@media (max-width: 900px) {
+  .product-grid { grid-template-columns: 1fr !important; }
+  .product-grid-rev .enteraflux-visual { order: 2; }
+  .contact-row { grid-template-columns: 1fr !important; }
+}
+
+/* ─── Redesign: Portfolio bento responsive ───────────────── */
+@media (max-width: 900px) {
+  .bento-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .bento-tile { grid-column: span 1 !important; grid-row: span 1 !important; }
+}
+@media (max-width: 560px) {
+  .bento-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ─── Redesign: Hero floating widgets / aurora ───────────── */
+@keyframes aurora-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2%, -2%, 0) scale(1.05); }
+}
+.hero-aurora { animation: aurora-drift 16s ease-in-out infinite; will-change: transform; }
+
+/* Perspective grid floor — cinematic depth at hero base */
+.hero-grid-floor {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 220%;
+  height: 45%;
+  transform: translateX(-50%) perspective(420px) rotateX(72deg);
+  transform-origin: bottom center;
+  background-image:
+    linear-gradient(rgba(129,140,248,0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129,140,248,0.10) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to top, #000 8%, transparent 82%);
+  -webkit-mask-image: linear-gradient(to top, #000 8%, transparent 82%);
+  opacity: 0.85;
+  animation: grid-flow 8s linear infinite;
+}
+@keyframes grid-flow {
+  from { background-position: 0 0; }
+  to { background-position: 0 56px; }
+}
+
+.hero-textlink { transition: color 0.25s; }
+.hero-textlink:hover { color: var(--text) !important; }
+.hero-textlink span[aria-hidden] { transition: transform 0.25s cubic-bezier(0.16,1,0.3,1); }
+.hero-textlink:hover span[aria-hidden] { transform: translateX(5px); }
+
+/* ─── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

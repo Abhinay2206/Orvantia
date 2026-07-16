@@ -4,17 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const LINES = [
-  { text: "ORVANTIA AI: INITIATING SHOWCASE", type: "sys" },
-  { text: "Loading enterprise intelligence systems...", type: "init" },
-  { text: "Loading autonomous engineering platforms...", type: "init" },
-  { text: "Loading healthcare AI solutions...", type: "init" },
-  { text: "[OK]   Enteraflux: ONLINE", type: "ok" },
-  { text: "[OK]   Continuum: ONLINE", type: "ok" },
-  { text: "[OK]   ClinicalAgent: ONLINE", type: "ok" },
-  { text: "Synchronizing autonomous agents...", type: "init" },
-  { text: "Intelligence network: ACTIVE", type: "sys" },
+  { text: "ORVANTIA STUDIO: INITIATING EXPERIENCE", type: "sys" },
+  { text: "Compiling enterprise SaaS platforms...", type: "init" },
+  { text: "Loading AI-powered application layer...", type: "init" },
+  { text: "Provisioning cloud infrastructure...", type: "init" },
+  { text: "[OK]   Continuum OS: ONLINE", type: "ok" },
+  { text: "[OK]   EnteraFlux: RESEARCH", type: "ok" },
+  { text: "[OK]   Design system: LOADED", type: "ok" },
+  { text: "Optimizing intelligent automation...", type: "init" },
+  { text: "Software studio: READY", type: "sys" },
   { text: "────────────────────────────────────────────", type: "dim" },
-  { text: "WELCOME TO ORVANTIA AI.", type: "ready" },
+  { text: "WELCOME TO ORVANTIA.", type: "ready" },
 ];
 
 const LINE_COLORS: Record<string, string> = {
@@ -209,35 +209,6 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
                       </motion.span>
                     ))}
                   </h1>
-
-                  {/* Tagline */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.72, duration: 0.5 }}
-                    style={{
-                      marginTop: 16,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 12,
-                    }}
-                  >
-                    <div style={{ flex: 1, height: 1, background: "linear-gradient(to right, transparent, rgba(99,102,241,0.35))" }} />
-                    <span
-                      style={{
-                        fontFamily: "var(--mono)",
-                        fontSize: 9,
-                        letterSpacing: "0.42em",
-                        textTransform: "uppercase",
-                        color: "rgba(241,245,249,0.22)",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      Autonomous Intelligence
-                    </span>
-                    <div style={{ flex: 1, height: 1, background: "linear-gradient(to left, transparent, rgba(99,102,241,0.35))" }} />
-                  </motion.div>
                 </div>
               </motion.div>
             )}

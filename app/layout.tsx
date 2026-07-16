@@ -18,13 +18,21 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Orvantia AI",
+  title: "Orvantia — Intelligent Software for Modern Businesses",
   description:
-    "Orvantia AI builds autonomous AI operating systems — Continuum, Enteraflux, ClinicalAgents. Intelligence that thinks, acts, and delivers.",
-  keywords: ["AI OS", "autonomous agents", "enterprise AI", "agentic AI", "healthcare AI"],
+    "Orvantia is a premium software studio building enterprise SaaS platforms, AI-powered applications, custom software, and intelligent automation that help businesses scale faster.",
+  keywords: [
+    "software studio",
+    "enterprise SaaS",
+    "AI applications",
+    "custom software",
+    "intelligent automation",
+    "cloud applications",
+  ],
   openGraph: {
-    title: "Orvantia AI",
-    description: "Building Autonomous Intelligence.",
+    title: "Orvantia — Building Intelligent Software for Modern Businesses",
+    description:
+      "Enterprise SaaS platforms, AI-powered applications, custom software, and intelligent automation.",
     type: "website",
   },
 };

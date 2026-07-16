@@ -7,11 +7,14 @@ import Nav from "./components/navigation/Nav";
 import CustomCursor from "./components/ui/CustomCursor";
 import Marquee from "./components/ui/Marquee";
 import Footer from "./components/ui/Footer";
-import ManifestoCTA from "./components/ui/ManifestoCTA";
-import ManifestoScroll from "./components/sections/ManifestoScroll";
-import ProductsShowcase from "./components/sections/ProductsShowcase";
-import EcosystemSection from "./components/sections/EcosystemSection";
+import ScrollProgress from "./components/ui/ScrollProgress";
 import SmoothScroll from "./components/providers/SmoothScroll";
+import AboutSection from "./components/sections/AboutSection";
+import ServicesSection from "./components/sections/ServicesSection";
+import CaseStudySection from "./components/sections/CaseStudySection";
+import ProductsSection from "./components/sections/ProductsSection";
+import ProcessSection from "./components/sections/ProcessSection";
+import ContactSection from "./components/sections/ContactSection";
 
 const HeroScene = dynamic(() => import("./components/hero/HeroScene"), {
   ssr: false,
@@ -57,25 +60,32 @@ export default function Home() {
 
           <SmoothScroll>
             <Nav show={navVisible} />
+            <ScrollProgress />
 
             <main>
-              {/* Hero — full viewport Three.js + bloom */}
+              {/* 01 · Hero — full viewport Three.js + bloom */}
               <HeroScene />
 
               {/* Ticker */}
               <Marquee />
 
-              {/* Cinema manifesto scroll — 500vh pinned */}
-              <ManifestoScroll />
+              {/* 02 · About — premium software studio */}
+              <AboutSection />
 
-              {/* Products horizontal showcase — 350vh pinned */}
-              <ProductsShowcase />
+              {/* 03 · Services — interactive capability cards */}
+              <ServicesSection />
 
-              {/* Ecosystem overview */}
-              <EcosystemSection />
+              {/* 04 · FactoryFlow case study */}
+              <CaseStudySection />
 
-              {/* Final manifesto CTA */}
-              <ManifestoCTA />
+              {/* 05 · Products — Continuum OS + EnteraFlux */}
+              <ProductsSection />
+
+              {/* 06 · Development process */}
+              <ProcessSection />
+
+              {/* 07 · Contact — globe + project form */}
+              <ContactSection />
             </main>
 
             <Footer />

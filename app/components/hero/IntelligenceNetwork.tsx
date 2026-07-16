@@ -36,7 +36,7 @@ function buildLines(pos: Float32Array, count: number) {
 }
 
 /* ─── Node particles ─────────────────────────────────────── */
-export function NodeCloud({ mouseRef }: { mouseRef: React.MutableRefObject<[number, number]> }) {
+export function NodeCloud({ mouseRef, scrollRef }: { mouseRef: React.MutableRefObject<[number, number]>; scrollRef?: React.MutableRefObject<number> }) {
   const groupRef = useRef<THREE.Group>(null);
   const t = useRef(0);
 
@@ -77,8 +77,9 @@ export function NodeCloud({ mouseRef }: { mouseRef: React.MutableRefObject<[numb
     t.current += delta * 0.12;
     if (!groupRef.current) return;
     const [mx, my] = mouseRef.current;
-    groupRef.current.rotation.y = t.current * 0.04 + mx * 0.25;
-    groupRef.current.rotation.x = my * 0.12;
+    const scroll = scrollRef?.current ?? 0;
+    groupRef.current.rotation.y = t.current * 0.04 + mx * 0.25 + scroll * 0.4;
+    groupRef.current.rotation.x = my * 0.12 + scroll * 0.15;
   });
 
   return (
@@ -123,19 +124,25 @@ export function NodeCloud({ mouseRef }: { mouseRef: React.MutableRefObject<[numb
 /* ─── Camera controller ──────────────────────────────────── */
 export function CameraRig({
   mouseRef,
+  scrollRef,
 }: {
   mouseRef: React.MutableRefObject<[number, number]>;
+  scrollRef?: React.MutableRefObject<number>;
 }) {
   const { camera } = useThree();
   const pos = useRef({ x: 0, y: 0, z: 30 });
 
   useFrame((_, delta) => {
     const [mx, my] = mouseRef.current;
+    const scroll = scrollRef?.current ?? 0;
     const tx = mx * 5;
-    const ty = -my * 2.5;
+    const ty = -my * 2.5 - scroll * 4;
+    // Cinematic dolly — fly into the network as the hero scrolls away.
+    const tz = 30 - scroll * 16;
 
     pos.current.x += (tx - pos.current.x) * delta * 1.8;
     pos.current.y += (ty - pos.current.y) * delta * 1.8;
+    pos.current.z += (tz - pos.current.z) * delta * 2.4;
 
     camera.position.set(pos.current.x, pos.current.y, pos.current.z);
     camera.lookAt(0, 0, 0);

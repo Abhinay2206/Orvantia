@@ -46,9 +46,8 @@ function buildConfirmationEmail(name: string, type: string) {
       </p>
       <p style="color:rgba(241,245,249,0.55);font-size:15px;line-height:1.7;margin:0">
         In the meantime, explore our products:<br>
-        <a href="https://www.enteraflux.tech/" style="color:#818cf8">Enteraflux</a> &nbsp;·&nbsp;
-        <a href="https://continuumos.vercel.app/" style="color:#a78bfa">Continuum</a> &nbsp;·&nbsp;
-        <a href="https://clinicalagent.vercel.app/" style="color:#67e8f9">ClinicalAgents</a>
+        <a href="https://continuumos.vercel.app/" style="color:#a78bfa">Continuum OS</a> &nbsp;·&nbsp;
+        <a href="https://www.enteraflux.tech/" style="color:#818cf8">EnteraFlux</a>
       </p>
       <p style="margin-top:40px;color:rgba(241,245,249,0.25);font-size:12px">— The Orvantia AI Team</p>
     </div>

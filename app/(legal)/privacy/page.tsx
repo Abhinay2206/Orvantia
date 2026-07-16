@@ -112,7 +112,7 @@ export default function PrivacyPage() {
               If you have any questions about this Privacy Policy or our data practices, please contact our privacy team at:
             </p>
             <p style={{ fontFamily: "var(--mono)", color: "rgba(99,102,241,0.9)" }}>
-              orvantia.ai@gmail.com
+              contact@orvantia.in
             </p>
           </section>
         </div>

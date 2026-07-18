@@ -25,7 +25,7 @@ const SECURITY_HEADERS: Record<string, string> = {
 };
 
 // Simple edge-level in-memory store for tracking request counts per IP.
-// Each edge instance has its own counter — good enough for burst detection.
+// Each edge instance has its own counter – good enough for burst detection.
 // Persistent cross-instance blocking is handled by the Node.js rate-limit.ts.
 const edgeStore = new Map<string, { count: number; windowStart: number; blocked: boolean }>();
 
@@ -50,7 +50,7 @@ function extractIP(req: NextRequest): string {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Skip static assets and Next.js internals — no processing needed.
+  // Skip static assets and Next.js internals – no processing needed.
   if (BYPASS_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
@@ -202,7 +202,7 @@ export function middleware(req: NextRequest) {
   return response;
 }
 
-// Only run middleware on relevant paths — skip static files entirely.
+// Only run middleware on relevant paths – skip static files entirely.
 export const config = {
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|logo.png|icon.png|robots.txt).*)",

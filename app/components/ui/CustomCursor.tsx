@@ -88,7 +88,7 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Trailing ring — fixed 32px, scale-only transitions (no layout recalcs) */}
+      {/* Trailing ring – fixed 32px, scale-only transitions (no layout recalcs) */}
       <motion.div
         className="fixed pointer-events-none z-[9999] rounded-full"
         style={{
@@ -127,7 +127,7 @@ export default function CustomCursor() {
         </span>
       </motion.div>
 
-      {/* Core dot — fixed 4px, scale-only transitions */}
+      {/* Core dot – fixed 4px, scale-only transitions */}
       <motion.div
         className="fixed pointer-events-none z-[9999] rounded-full bg-white/90"
         style={{

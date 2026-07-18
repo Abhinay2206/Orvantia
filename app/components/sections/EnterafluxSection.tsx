@@ -9,7 +9,7 @@ const AGENTS = [
     name: "Medication Intelligence",
     status: "Active",
     color: "#6366f1",
-    task: "Semaglutide 1mg — next injection in 6 days",
+    task: "Semaglutide 1mg – next injection in 6 days",
     metric: "98%",
     metricLabel: "Adherence rate",
   },
@@ -18,7 +18,7 @@ const AGENTS = [
     name: "Symptom Monitor",
     status: "Logging",
     color: "#22d3ee",
-    task: "Nausea pattern detected — post-meal protocol suggested",
+    task: "Nausea pattern detected – post-meal protocol suggested",
     metric: "72%",
     metricLabel: "Symptom reduction",
   },
@@ -27,7 +27,7 @@ const AGENTS = [
     name: "Nutrition Coach",
     status: "Planning",
     color: "#a855f7",
-    task: "Personalised Indian meal plan — Week 4 adjusted",
+    task: "Personalised Indian meal plan – Week 4 adjusted",
     metric: "1,240",
     metricLabel: "kcal / day",
   },
@@ -36,7 +36,7 @@ const AGENTS = [
     name: "Progress Engine",
     status: "Tracking",
     color: "#f59e0b",
-    task: "4.2 kg lost in 6 weeks — on track for goal",
+    task: "4.2 kg lost in 6 weeks – on track for goal",
     metric: "4.2kg",
     metricLabel: "Avg monthly loss",
   },
@@ -223,7 +223,7 @@ export default function EnterafluxSection() {
           >
             The intelligent companion for your GLP-1 journey. Medication
             tracking, AI-powered symptom management, and personalised Indian
-            nutrition coaching — built to make every week on Ozempic or
+            nutrition coaching – built to make every week on Ozempic or
             Wegovy count.
           </motion.p>
 
@@ -269,7 +269,7 @@ export default function EnterafluxSection() {
                   <div key={i} className="terminal-dot" style={{ background: c, opacity: 0.8 }} />
                 ))}
                 <span className="ml-2 terminal-line dim">
-                  enteraflux — wellness monitor
+                  enteraflux – wellness monitor
                 </span>
               </div>
               <div className="terminal-body space-y-1.5">

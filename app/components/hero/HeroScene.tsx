@@ -181,7 +181,7 @@ export default function HeroScene() {
             </span>
           </motion.div>
 
-          {/* Headline — kinetic + mouse parallax */}
+          {/* Headline – kinetic + mouse parallax */}
           <motion.h1
             style={{
               x: spx, y: spy,

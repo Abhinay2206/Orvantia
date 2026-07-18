@@ -299,7 +299,7 @@ export default function BootSequence({ onComplete }: { onComplete: () => void })
                   transition={{ delay: 0.05, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 />
 
-                {/* Wordmark — character blur reveal */}
+                {/* Wordmark – character blur reveal */}
                 <div className="relative z-10" style={{ perspective: "900px" }}>
                   <h1
                     style={{

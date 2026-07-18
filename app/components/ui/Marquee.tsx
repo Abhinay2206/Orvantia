@@ -13,7 +13,7 @@ export default function Marquee() {
       className="relative w-full overflow-hidden py-4 border-y"
       style={{ borderColor: "rgba(255,255,255,0.06)" }}
     >
-      {/* Row 1 — left */}
+      {/* Row 1 – left */}
       <div className="flex w-max animate-marquee-left-fast mb-3">
         {ROW1.map((t, i) => (
           <span

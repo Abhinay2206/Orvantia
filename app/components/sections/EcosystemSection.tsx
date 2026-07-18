@@ -22,7 +22,7 @@ const PRODUCTS = [
     sub: "Autonomous Engineering",
     inDev: true,
     url: "https://continuumos.vercel.app/",
-    desc: "Engineering operating layer with deep repository intelligence. Architect, build, review, test, and ship — entirely autonomously.",
+    desc: "Engineering operating layer with deep repository intelligence. Architect, build, review, test, and ship – entirely autonomously.",
     color: "#a855f7",
     glow: "rgba(168,85,247,0.12)",
     stats: [{ v: "5", l: "AI agents" }, { v: "< 5m", l: "Target ship" }],
@@ -543,7 +543,7 @@ export default function EcosystemSection() {
               }}
             >
               Whether you need enterprise automation, autonomous engineering, or
-              clinical research intelligence — partner with us to transform your
+              clinical research intelligence – partner with us to transform your
               organization with autonomous AI products.
             </p>
 

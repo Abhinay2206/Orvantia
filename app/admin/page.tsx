@@ -37,7 +37,7 @@ const FILTERS = ["all", ...ALL_STATUSES] as const;
 type Filter = typeof FILTERS[number];
 
 function fmt(ts: Timestamp | null) {
-  if (!ts) return "—";
+  if (!ts) return "-";
   return ts.toDate().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
@@ -84,7 +84,7 @@ function LeadRow({ lead, onSelect, isSelected, onToggleSelect }: { lead: Lead; o
                 border: "1px solid rgba(255,255,255,0.08)", color: "rgba(241,245,249,0.4)",
               }}>{p}</span>
             ))
-          : <span style={{ color: "rgba(241,245,249,0.2)" }}>—</span>}
+          : <span style={{ color: "rgba(241,245,249,0.2)" }}>-</span>}
       </td>
       <td style={td}><StatusBadge status={lead.status} /></td>
       <td style={{ ...td, color: "rgba(241,245,249,0.35)", fontSize: 12 }}>{fmt(lead.createdAt)}</td>
@@ -376,7 +376,7 @@ export default function AdminDashboard() {
               <div style={{ marginBottom: 20, display: "flex", flexDirection: "column", gap: 10 }}>
                 {[
                   ["Email", selected.email],
-                  ["Phone", selected.phone || "—"],
+                  ["Phone", selected.phone || "-"],
                   ["Type", selected.type],
                   ["Date", fmt(selected.createdAt)],
                 ].map(([label, value]) => (

@@ -9,7 +9,7 @@ const AGENTS = [
     name: "Trial Intelligence",
     color: "#22d3ee",
     status: "Querying",
-    task: "Natural language search — 12,400 clinical trials indexed",
+    task: "Natural language search – 12,400 clinical trials indexed",
     confidence: 97,
   },
   {
@@ -17,7 +17,7 @@ const AGENTS = [
     name: "Efficacy Analysis",
     color: "#6366f1",
     status: "Comparing",
-    task: "Cross-study outcome analysis — 847 trials processed",
+    task: "Cross-study outcome analysis – 847 trials processed",
     confidence: 99,
   },
   {
@@ -25,7 +25,7 @@ const AGENTS = [
     name: "Patient Enrollment",
     color: "#a855f7",
     status: "Matching",
-    task: "AI-powered participant matching — 240 patients identified",
+    task: "AI-powered participant matching – 240 patients identified",
     confidence: 96,
   },
   {
@@ -33,7 +33,7 @@ const AGENTS = [
     name: "Safety Monitoring",
     color: "#10b981",
     status: "Auditing",
-    task: "Real-time adverse event detection — 0 missed signals",
+    task: "Real-time adverse event detection – 0 missed signals",
     confidence: 100,
   },
 ];
@@ -104,7 +104,7 @@ export default function ClinicalSection() {
           >
             AI-powered clinical trial intelligence built by researchers, for
             researchers. Query 12,400+ studies in natural language, accelerate
-            patient enrollment, and monitor safety in real-time — HIPAA
+            patient enrollment, and monitor safety in real-time – HIPAA
             compliant by design.
           </motion.p>
 
@@ -259,7 +259,7 @@ export default function ClinicalSection() {
                 {["#ff5f57", "#febc2e", "#28c840"].map((c, i) => (
                   <div key={i} className="terminal-dot" style={{ background: c, opacity: 0.8 }} />
                 ))}
-                <span className="ml-2 terminal-line dim">clinical — monitor</span>
+                <span className="ml-2 terminal-line dim">clinical – monitor</span>
               </div>
               <div className="terminal-body space-y-1.5">
                 {[

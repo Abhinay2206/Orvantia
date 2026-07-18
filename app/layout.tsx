@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Orvantia — Intelligent Software for Modern Businesses",
+  title: "Orvantia | Intelligent Software for Modern Businesses",
   description:
     "Orvantia is a premium software studio building enterprise SaaS platforms, AI-powered applications, custom software, and intelligent automation that help businesses scale faster.",
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "cloud applications",
   ],
   openGraph: {
-    title: "Orvantia — Building Intelligent Software for Modern Businesses",
+    title: "Orvantia | Building Intelligent Software for Modern Businesses",
     description:
       "Enterprise SaaS platforms, AI-powered applications, custom software, and intelligent automation.",
     type: "website",

@@ -9,13 +9,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
   { k: "Discovery", d: "We immerse in your business, users, and constraints to define what winning looks like." },
-  { k: "Planning", d: "Scope, architecture, and milestones — a clear map before a single line of code." },
+  { k: "Planning", d: "Scope, architecture, and milestones – a clear map before a single line of code." },
   { k: "Research", d: "We de-risk the hard parts: feasibility spikes, models, and technical proofs." },
   { k: "Design", d: "Interaction and systems design that make the product feel inevitable." },
   { k: "Development", d: "Typed, tested, reviewed code shipped in tight, visible increments." },
   { k: "Testing", d: "Automated and human QA across correctness, performance, and security." },
   { k: "Deployment", d: "Zero-drama releases with observability and rollback built in." },
-  { k: "Continuous Improvement", d: "We stay on — monitoring, iterating, and evolving with your business." },
+  { k: "Continuous Improvement", d: "We stay on – monitoring, iterating, and evolving with your business." },
 ];
 
 export default function ProcessSection() {

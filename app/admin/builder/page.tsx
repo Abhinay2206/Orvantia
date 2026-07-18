@@ -68,12 +68,12 @@ const SUB_STATUS: Record<string, { label: string; color: string; bg: string; bor
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function fmt(ts: Timestamp | null) {
-  if (!ts) return "—";
+  if (!ts) return "-";
   return ts.toDate().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function fmtTime(ts: Timestamp | null) {
-  if (!ts) return "—";
+  if (!ts) return "-";
   const d = ts.toDate();
   return `${fmt(ts)} · ${d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`;
 }
@@ -593,7 +593,7 @@ export default function AdminBuilderDashboard() {
                           <tr key={task.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                             <td style={{ ...td, fontWeight: 500, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{task.title}</td>
                             <td style={td}><span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 100, background: "rgba(255,255,255,0.05)", color: "rgba(241,245,249,0.45)" }}>{task.difficulty}</span></td>
-                            <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{task.category || "—"}</td>
+                            <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{task.category || "-"}</td>
                             <td style={td}><span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 9px", borderRadius: 100, fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: s.bg, border: `1px solid ${s.border}`, color: s.color }}><span style={{ width: 4, height: 4, borderRadius: "50%", background: s.color }} />{s.label}</span></td>
                             <td style={{ ...td, color: "rgba(241,245,249,0.4)", fontSize: 12 }}>{fmt(task.deadline)}</td>
                             <td style={td}>
@@ -637,10 +637,10 @@ export default function AdminBuilderDashboard() {
                           onMouseLeave={(e) => { if (selectedBuilder?.id !== b.id) e.currentTarget.style.background = "transparent"; }}>
                           <td style={{ ...td, fontWeight: 500 }}>{b.fullName}</td>
                           <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{b.email}</td>
-                          <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{b.college || "—"}</td>
+                          <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{b.college || "-"}</td>
                           <td style={td}><div style={{ display: "flex", gap: 4 }}>{(b.skills || []).slice(0, 2).map((s) => <span key={s} style={{ padding: "2px 7px", borderRadius: 100, fontSize: 9, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(241,245,249,0.35)" }}>{s}</span>)}{(b.skills?.length || 0) > 2 && <span style={{ fontSize: 10, color: "rgba(241,245,249,0.2)", alignSelf: "center" }}>+{b.skills!.length - 2}</span>}</div></td>
-                          <td style={td}>{bs ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 9px", borderRadius: 100, fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: bs.bg, border: `1px solid ${bs.border}`, color: bs.color, whiteSpace: "nowrap" }}><span style={{ width: 4, height: 4, borderRadius: "50%", background: bs.color }} />{bs.label}</span> : <span style={{ fontSize: 11, color: "rgba(241,245,249,0.2)" }}>—</span>}</td>
-                          <td style={{ ...td, fontWeight: 600, color: "#818cf8" }}>{b.totalScore ? `${b.totalScore}/50` : "—"}</td>
+                          <td style={td}>{bs ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 9px", borderRadius: 100, fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: bs.bg, border: `1px solid ${bs.border}`, color: bs.color, whiteSpace: "nowrap" }}><span style={{ width: 4, height: 4, borderRadius: "50%", background: bs.color }} />{bs.label}</span> : <span style={{ fontSize: 11, color: "rgba(241,245,249,0.2)" }}>-</span>}</td>
+                          <td style={{ ...td, fontWeight: 600, color: "#818cf8" }}>{b.totalScore ? `${b.totalScore}/50` : "-"}</td>
                           <td style={{ ...td, color: "rgba(241,245,249,0.35)", fontSize: 12 }}>{fmt(b.createdAt)}</td>
                         </tr>
                       );
@@ -661,7 +661,7 @@ export default function AdminBuilderDashboard() {
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 9, marginBottom: 18 }}>
-                  {[["Email", selectedBuilder.email], ["Phone", selectedBuilder.phone || "—"], ["College", selectedBuilder.college || "—"], ["Branch", selectedBuilder.branch || "—"], ["Year", selectedBuilder.year || "—"], ["Joined", fmt(selectedBuilder.createdAt)]].map(([l, v]) => (
+                  {[["Email", selectedBuilder.email], ["Phone", selectedBuilder.phone || "-"], ["College", selectedBuilder.college || "-"], ["Branch", selectedBuilder.branch || "-"], ["Year", selectedBuilder.year || "-"], ["Joined", fmt(selectedBuilder.createdAt)]].map(([l, v]) => (
                     <div key={l} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                       <span style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(241,245,249,0.25)" }}>{l}</span>
                       <span style={{ fontSize: 12, color: "rgba(241,245,249,0.6)", textAlign: "right", wordBreak: "break-all" }}>{v}</span>
@@ -729,10 +729,10 @@ export default function AdminBuilderDashboard() {
                       return (
                         <tr key={b.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                           <td style={{ ...td, fontWeight: 500 }}>{b.fullName}</td>
-                          <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{b.college || "—"}</td>
+                          <td style={{ ...td, color: "rgba(241,245,249,0.45)" }}>{b.college || "-"}</td>
                           <td style={td}><div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>{(b.skills || []).slice(0, 3).map((s) => <span key={s} style={{ padding: "2px 7px", borderRadius: 100, fontSize: 9, background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)", color: "#818cf8" }}>{s}</span>)}{(b.skills?.length || 0) > 3 && <span style={{ fontSize: 9, color: "rgba(241,245,249,0.25)" }}>+{b.skills!.length - 3}</span>}</div></td>
-                          <td style={{ ...td, fontWeight: 700, color: "#818cf8" }}>{b.totalScore ? `${b.totalScore}/50` : "—"}</td>
-                          <td style={td}>{bs ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 9px", borderRadius: 100, fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: bs.bg, border: `1px solid ${bs.border}`, color: bs.color, whiteSpace: "nowrap" }}><span style={{ width: 4, height: 4, borderRadius: "50%", background: bs.color }} />{bs.label}</span> : "—"}</td>
+                          <td style={{ ...td, fontWeight: 700, color: "#818cf8" }}>{b.totalScore ? `${b.totalScore}/50` : "-"}</td>
+                          <td style={td}>{bs ? <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 9px", borderRadius: 100, fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: bs.bg, border: `1px solid ${bs.border}`, color: bs.color, whiteSpace: "nowrap" }}><span style={{ width: 4, height: 4, borderRadius: "50%", background: bs.color }} />{bs.label}</span> : "-"}</td>
                           <td style={td}>{b.github && <a href={b.github} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#818cf8", textDecoration: "none" }}>GitHub ↗</a>}</td>
                           <td style={td}>
                             {b.builderStatus !== "contributor" && b.builderStatus !== "core_contributor" ? (
@@ -785,7 +785,7 @@ export default function AdminBuilderDashboard() {
                     <tbody>
                       {blockedIPs.map((entry) => {
                         const isActive = entry.blockedUntil && entry.blockedUntil.toDate() > new Date();
-                        const fmtDate = (d: { toDate(): Date } | null) => d ? d.toDate().toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "—";
+                        const fmtDate = (d: { toDate(): Date } | null) => d ? d.toDate().toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "-";
                         return (
                           <tr key={entry.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                             <td style={{ ...td, fontFamily: "monospace", fontSize: 12, color: isActive ? "#f87171" : "rgba(241,245,249,0.6)" }}>

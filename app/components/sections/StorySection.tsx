@@ -11,7 +11,7 @@ const STEPS = [
   {
     n: "01",
     title: "Human Intent",
-    body: "A goal is expressed. Natural language, a strategic objective, or a structured directive — the system understands context and purpose.",
+    body: "A goal is expressed. Natural language, a strategic objective, or a structured directive – the system understands context and purpose.",
     color: "rgba(241,245,249,0.8)",
     accent: "#6366f1",
   },
@@ -99,7 +99,7 @@ export default function StorySection() {
               color: "rgba(241,245,249,0.85)",
             }}
           >
-            From intent to impact —<br />
+            From intent to impact -<br />
             <span className="g-text">fully autonomous.</span>
           </h2>
         </motion.div>

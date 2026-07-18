@@ -10,10 +10,10 @@ gsap.registerPlugin(ScrollTrigger);
 const PILLARS = [
   { k: "Enterprise SaaS", d: "Multi-tenant platforms engineered for scale, security, and reliability." },
   { k: "AI Solutions", d: "LLM apps, agents, and intelligent automation embedded into real workflows." },
-  { k: "Custom Software", d: "Bespoke products built around your operations — not off-the-shelf." },
+  { k: "Custom Software", d: "Bespoke products built around your operations – not off-the-shelf." },
   { k: "Automation", d: "Systems that remove manual work and run your business while you sleep." },
   { k: "Cloud Applications", d: "Cloud-native architecture, observability, and CI/CD from day one." },
-  { k: "Long-term Partnerships", d: "We build, ship, and evolve with you — well beyond launch." },
+  { k: "Long-term Partnerships", d: "We build, ship, and evolve with you – well beyond launch." },
 ];
 
 export default function AboutSection() {

@@ -16,7 +16,7 @@ const SERVICES: Service[] = [
   { n: "04", k: "Web Apps", d: "Fast, accessible interfaces on Next.js and modern React.", c: "#3b82f6" },
   { n: "05", k: "Mobile Apps", d: "Native-feeling iOS & Android from a single, maintainable codebase.", c: "#818cf8" },
   { n: "06", k: "UI/UX", d: "Design systems and interaction craft that make software feel premium.", c: "#3b82f6" },
-  { n: "07", k: "Maintenance", d: "Long-term ownership — monitoring, hardening, and iteration.", c: "#818cf8" },
+  { n: "07", k: "Maintenance", d: "Long-term ownership – monitoring, hardening, and iteration.", c: "#818cf8" },
 ];
 
 function ServiceCard({ s, i }: { s: Service; i: number }) {
@@ -165,7 +165,7 @@ export default function ServicesSection() {
         </div>
         <Reveal delay={0.2}>
           <p style={{ maxWidth: "34ch", fontSize: 15, lineHeight: 1.7, color: "var(--text-2)" }}>
-            One partner across the full software lifecycle — from first prototype to
+            One partner across the full software lifecycle – from first prototype to
             enterprise-grade platform in production.
           </p>
         </Reveal>

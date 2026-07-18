@@ -18,7 +18,7 @@ function buildConfirmationEmail(name: string) {
         Application Received
       </h1>
       <p style="font-size:15px;color:rgba(241,245,249,0.45);margin:0 0 32px;letter-spacing:0.01em">
-        — Orvantia AI
+        - Orvantia AI
       </p>
 
       <p style="font-size:15px;line-height:1.8;color:rgba(241,245,249,0.7);margin:0 0 20px">
@@ -47,7 +47,7 @@ function buildConfirmationEmail(name: string) {
           <div style="display:flex;align-items:center;gap:10px">
             <div style="width:4px;height:4px;border-radius:50%;background:#818cf8;flex-shrink:0"></div>
             <span style="font-size:13px;color:#f1f5f9;font-weight:600">${name}</span>
-            <span style="font-size:12px;color:rgba(241,245,249,0.35)">— ${desc}</span>
+            <span style="font-size:12px;color:rgba(241,245,249,0.35)">- ${desc}</span>
           </div>`
       )
       .join("")}
@@ -69,17 +69,17 @@ function buildConfirmationEmail(name: string) {
 }
 
 function buildAdminNotificationEmail(data: Record<string, unknown>) {
-  const skills = Array.isArray(data.skills) ? (data.skills as string[]).join(", ") : "—";
+  const skills = Array.isArray(data.skills) ? (data.skills as string[]).join(", ") : "-";
   return `
     <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;max-width:700px;margin:0 auto;background:#04040a;color:#f1f5f9;padding:32px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">
       <h2 style="color:#818cf8;margin:0 0 4px;font-size:20px">New Builder Application</h2>
-      <p style="color:rgba(241,245,249,0.3);font-size:12px;margin:0 0 28px;letter-spacing:0.1em">Orvantia AI — Founding Builder Program</p>
+      <p style="color:rgba(241,245,249,0.3);font-size:12px;margin:0 0 28px;letter-spacing:0.1em">Orvantia AI | Founding Builder Program</p>
 
       <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
         ${[
       ["Name", data.name],
       ["Email", data.email],
-      ["Phone", data.phone || "—"],
+      ["Phone", data.phone || "-"],
       ["College", data.college],
       ["Degree/Branch", data.branch],
       ["Year", data.year],
@@ -88,9 +88,9 @@ function buildAdminNotificationEmail(data: Record<string, unknown>) {
       ["Built AI Agent", data.builtAgent === "yes" ? "Yes" : "No"],
       ["Hours/Week", data.availabilityHours],
       ["Start Date", data.startDate],
-      ["LinkedIn", data.linkedin || "—"],
-      ["GitHub", data.github || "—"],
-      ["Portfolio", data.portfolio || "—"],
+      ["LinkedIn", data.linkedin || "-"],
+      ["GitHub", data.github || "-"],
+      ["Portfolio", data.portfolio || "-"],
     ]
       .map(
         ([label, value]) => `
@@ -190,14 +190,14 @@ export async function POST(req: NextRequest) {
         transporter.sendMail({
           from,
           to: email.trim().toLowerCase(),
-          subject: "Application Received — Orvantia AI",
+          subject: "Application Received | Orvantia AI",
           html: buildConfirmationEmail(name.trim()),
         }),
         process.env.ADMIN_EMAIL &&
         transporter.sendMail({
           from,
           to: process.env.ADMIN_EMAIL,
-          subject: `New Builder Application: ${name.trim()} — ${role}`,
+          subject: `New Builder Application: ${name.trim()} | ${role}`,
           html: buildAdminNotificationEmail(body),
         }),
       ]);

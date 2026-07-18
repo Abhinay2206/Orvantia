@@ -50,7 +50,7 @@ export default function BuilderLogin() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#04040a", display: "flex", fontFamily: "var(--font-space), system-ui, sans-serif" }}>
-      {/* Left panel — branding */}
+      {/* Left panel – branding */}
       <div style={{ flex: 1, display: "none", background: "linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.05) 100%)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: "60px 48px", flexDirection: "column", justifyContent: "space-between", position: "relative", overflow: "hidden" }} className="login-left">
         <div style={{ position: "absolute", top: "20%", left: "-20%", width: "70%", height: "70%", borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: "10%", right: "-10%", width: "50%", height: "50%", borderRadius: "50%", background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%)", pointerEvents: "none" }} />
@@ -82,7 +82,7 @@ export default function BuilderLogin() {
         <p style={{ fontSize: 11, color: "rgba(241,245,249,0.18)", letterSpacing: "0.1em", position: "relative" }}>© 2025 Orvantia AI</p>
       </div>
 
-      {/* Right panel — form */}
+      {/* Right panel – form */}
       <div style={{ flex: 1, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 24px", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 60% 20%, rgba(99,102,241,0.06), transparent 60%)", pointerEvents: "none" }} />
 

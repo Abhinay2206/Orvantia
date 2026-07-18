@@ -63,28 +63,28 @@ export default function Home() {
             <ScrollProgress />
 
             <main>
-              {/* 01 · Hero — full viewport Three.js + bloom */}
+              {/* 01 · Hero – full viewport Three.js + bloom */}
               <HeroScene />
 
               {/* Ticker */}
               <Marquee />
 
-              {/* 02 · About — premium software studio */}
+              {/* 02 · About – premium software studio */}
               <AboutSection />
 
-              {/* 03 · Services — interactive capability cards */}
+              {/* 03 · Services – interactive capability cards */}
               <ServicesSection />
 
               {/* 04 · FactoryFlow case study */}
               <CaseStudySection />
 
-              {/* 05 · Products — Continuum OS + EnteraFlux */}
+              {/* 05 · Products – Continuum OS + EnteraFlux */}
               <ProductsSection />
 
               {/* 06 · Development process */}
               <ProcessSection />
 
-              {/* 07 · Contact — globe + project form */}
+              {/* 07 · Contact – globe + project form */}
               <ContactSection />
             </main>
 

@@ -6,20 +6,20 @@ import { motion, useInView } from "framer-motion";
 const PIPELINE = [
   { id: "ARC", name: "Architect", color: "#a855f7", status: "Designing", task: "Decomposing feature into 12 services" },
   { id: "DEV", name: "Developer", color: "#6366f1", status: "Writing", task: "Implementing API layer (3 of 7 files)" },
-  { id: "REV", name: "Reviewer", color: "#22d3ee", status: "Scanning", task: "Security audit — 0 critical issues" },
-  { id: "TST", name: "Tester", color: "#10b981", status: "Running", task: "Generated 847 tests — 98.2% passing" },
-  { id: "DEP", name: "Deployer", color: "#f59e0b", status: "Staging", task: "Blue-green deploy — 60% traffic shifted" },
+  { id: "REV", name: "Reviewer", color: "#22d3ee", status: "Scanning", task: "Security audit – 0 critical issues" },
+  { id: "TST", name: "Tester", color: "#10b981", status: "Running", task: "Generated 847 tests – 98.2% passing" },
+  { id: "DEP", name: "Deployer", color: "#f59e0b", status: "Staging", task: "Blue-green deploy – 60% traffic shifted" },
 ];
 
 const TERMINAL_LINES = [
   { text: "$ continuum status --build", type: "active" },
   { text: "  Status: IN DEVELOPMENT", type: "info" },
   { text: "  Landing page: LIVE ✓", type: "success" },
-  { text: "  [ARC] Repository graph engine — building", type: "info" },
-  { text: "  [DEV] Multi-agent code generation — building", type: "info" },
-  { text: "  [REV] Automated PR review — building", type: "info" },
-  { text: "  [TST] Test generation pipeline — building", type: "info" },
-  { text: "  [DEP] Autonomous deploy agent — building", type: "info" },
+  { text: "  [ARC] Repository graph engine – building", type: "info" },
+  { text: "  [DEV] Multi-agent code generation – building", type: "info" },
+  { text: "  [REV] Automated PR review – building", type: "info" },
+  { text: "  [TST] Test generation pipeline – building", type: "info" },
+  { text: "  [DEP] Autonomous deploy agent – building", type: "info" },
   { text: "  Early access: OPEN", type: "success" },
   { text: "  Target ship time: < 5 min / feature", type: "" },
   { text: "  Target coverage: 98%+ ✓", type: "" },
@@ -104,7 +104,7 @@ export default function ContinuumSection() {
             style={{ color: "rgba(241,245,249,0.4)", fontFamily: "var(--font)" }}
           >
             An engineering operating layer with deep repository intelligence.
-            Continuum maps your entire codebase — then deploys five specialized
+            Continuum maps your entire codebase – then deploys five specialized
             agents to architect, build, review, test, and ship. Zero context
             switching. Full system awareness.
           </motion.p>
@@ -211,7 +211,7 @@ export default function ContinuumSection() {
                   <div key={i} className="terminal-dot" style={{ background: c, opacity: 0.8 }} />
                 ))}
                 <span className="ml-2 terminal-line dim" style={{ fontSize: "11px" }}>
-                  continuum — autonomous build
+                  continuum – autonomous build
                 </span>
               </div>
 

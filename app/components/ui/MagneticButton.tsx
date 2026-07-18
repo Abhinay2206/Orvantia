@@ -3,7 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
-/* Magnetic hover — the element eases toward the cursor within its bounds. */
+/* Magnetic hover – the element eases toward the cursor within its bounds. */
 export default function MagneticButton({
   children,
   onClick,

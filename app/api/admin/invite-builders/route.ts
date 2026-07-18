@@ -55,7 +55,7 @@ function invitationHtml(applicantName: string, invitationDate: string) {
 
           <p style="font-size:15px;line-height:1.75;color:rgba(241,245,249,0.6);margin:0 0 6px">Thank you for your interest in Orvantia AI.</p>
 
-          <p style="font-size:15px;line-height:1.75;color:rgba(241,245,249,0.6);margin:0 0 28px">After reviewing your application, we'd like to invite you to our <span style="color:#a78bfa;font-weight:500">Builder Program</span> — a practical evaluation through real-world execution, not traditional interviews.</p>
+          <p style="font-size:15px;line-height:1.75;color:rgba(241,245,249,0.6);margin:0 0 28px">After reviewing your application, we'd like to invite you to our <span style="color:#a78bfa;font-weight:500">Builder Program</span> – a practical evaluation through real-world execution, not traditional interviews.</p>
 
           <!-- CTA -->
           <table cellpadding="0" cellspacing="0" style="margin-bottom:36px">
@@ -78,7 +78,7 @@ function invitationHtml(applicantName: string, invitationDate: string) {
             ${[
               ["Create your account", "Use the same email address from your application"],
               ["Choose a challenge", "Browse available tasks and pick one that fits your skills"],
-              ["Build your solution", "Work independently — no time pressure, just real execution"],
+              ["Build your solution", "Work independently – no time pressure, just real execution"],
               ["Submit your work", "Share your GitHub repo, deployment link, and a short writeup"],
               ["Technical discussion", "Walk our team through your thinking and architecture decisions"],
             ].map(([title, desc], i) => `

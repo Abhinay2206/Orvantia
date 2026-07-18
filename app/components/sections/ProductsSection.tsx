@@ -179,7 +179,7 @@ function ContinuumPanel() {
             Continuum OS
           </h3>
           <p style={{ marginTop: 20, fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text-2)", maxWidth: "46ch" }}>
-            Our engineering operating system — a composable runtime for autonomous
+            Our engineering operating system – a composable runtime for autonomous
             pipelines, plugins, and distributed orchestration. Currently under active
             development, engineered for the next decade of software.
           </p>
@@ -293,7 +293,7 @@ function EnterafluxPanel() {
           </h3>
           <p style={{ marginTop: 20, fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text-2)", maxWidth: "46ch" }}>
             An ambitious research initiative exploring the frontier of adaptive,
-            agent-driven intelligence. Still deep in R&amp;D — we&apos;re pressure-testing
+            agent-driven intelligence. Still deep in R&amp;D – we&apos;re pressure-testing
             the science before it ever reaches production.
           </p>
 
@@ -400,7 +400,7 @@ export default function ProductsSection() {
         />
         <Reveal delay={0.15}>
           <p style={{ marginTop: 24, maxWidth: "52ch", fontSize: "clamp(15px, 1.4vw, 19px)", lineHeight: 1.7, color: "var(--text-2)" }}>
-            Beyond client work, Orvantia invests in products that push the field forward —
+            Beyond client work, Orvantia invests in products that push the field forward -
             from an engineering operating system in active development to frontier AI research.
           </p>
         </Reveal>

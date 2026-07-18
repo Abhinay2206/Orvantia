@@ -1,7 +1,7 @@
 /**
  * In-memory sliding-window rate limiter.
  *
- * Lives at module scope inside each Node.js API route worker — shared across
+ * Lives at module scope inside each Node.js API route worker – shared across
  * requests handled by the same process, which is the right granularity for
  * burst protection.  In serverless environments (Vercel) each cold-start gets
  * a fresh store; warm instances share state, which still blocks real abuse.
@@ -133,7 +133,7 @@ async function logBlocked(ip: string, route: string, violations: number, blocked
       { merge: true },
     );
   } catch {
-    // Silently ignore — logging must never break the request path.
+    // Silently ignore – logging must never break the request path.
   }
 }
 

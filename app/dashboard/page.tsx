@@ -37,7 +37,7 @@ const BUILDER_STATUS: Record<string, { color: string; bg: string; label: string 
 };
 
 function fmt(ts: Timestamp | null) {
-  if (!ts) return "—";
+  if (!ts) return "-";
   return ts.toDate().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
@@ -219,7 +219,7 @@ export default function Dashboard() {
               { label: "Accepted", value: assignments.length, color: "#818cf8", icon: "🎯" },
               { label: "Submitted", value: submissions.length, color: "#22d3ee", icon: "📤" },
               { label: "Reviewed", value: reviews.length, color: "#22c55e", icon: "✅" },
-              { label: "Avg Score", value: avgScore !== null ? `${avgScore}` : "—", sub: avgScore !== null ? "/ 50" : "", color: "#fbbf24", icon: "⭐" },
+              { label: "Avg Score", value: avgScore !== null ? `${avgScore}` : "-", sub: avgScore !== null ? "/ 50" : "", color: "#fbbf24", icon: "⭐" },
             ].map((s, i) => (
               <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                 style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: "20px 22px", position: "relative", overflow: "hidden" }}>

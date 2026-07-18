@@ -113,7 +113,7 @@ export default function BuilderSignup() {
 
           <div style={{ marginBottom: 32 }}>
             <h1 style={{ fontSize: 26, fontWeight: 700, color: "rgba(241,245,249,0.95)", letterSpacing: "-0.02em", marginBottom: 6 }}>Create account</h1>
-            <p style={{ fontSize: 14, color: "rgba(241,245,249,0.35)" }}>Join the Orvantia Builder Program — free forever</p>
+            <p style={{ fontSize: 14, color: "rgba(241,245,249,0.35)" }}>Join the Orvantia Builder Program – free forever</p>
           </div>
 
           <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 14 }}>

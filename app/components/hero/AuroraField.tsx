@@ -74,10 +74,10 @@ const fragment = /* glsl */ `
     vec2 m = uMouse * 0.12;
     float t = uTime * 0.025;
 
-    // Deep space base — nearly black
+    // Deep space base – nearly black
     vec3 base = vec3(0.008, 0.008, 0.025);
 
-    // Domain-warped nebula clouds — more concentrated
+    // Domain-warped nebula clouds – more concentrated
     float n1 = fbm(p * 1.4 + vec2(t, -t * 0.7) + m * 0.8);
     float n2 = fbm(p * 2.0 - vec2(t * 0.5) + n1 * 1.5 - m * 0.6);
     float n3 = fbm(p * 3.0 + vec2(-t * 0.3, t * 0.4) + n2 * 0.8);
@@ -103,18 +103,18 @@ const fragment = /* glsl */ `
                  smoothstep(0.0, 0.15, rayDist);
     col += vec3(0.25, 0.28, 0.65) * rays * 0.2;
 
-    // Central glow — emanating from where the AI core sits
+    // Central glow – emanating from where the AI core sits
     float centerGlow = exp(-rayDist * rayDist * 3.5);
     col += vec3(0.22, 0.24, 0.6) * centerGlow * 0.3;
 
-    // Star field — multiple layers at different densities
+    // Star field – multiple layers at different densities
     float starLayer1 = stars(uv + m * 0.02, 80.0);
     float starLayer2 = stars(uv * 1.3 + m * 0.01 + 0.5, 120.0);
     float starLayer3 = stars(uv * 0.7 - m * 0.015 + 0.3, 50.0);
     float allStars = starLayer1 + starLayer2 * 0.6 + starLayer3 * 0.4;
     col += vec3(0.9, 0.92, 1.0) * allStars * 0.8;
 
-    // Heavy vignette — dark at edges
+    // Heavy vignette – dark at edges
     float vig = smoothstep(1.3, 0.1, length(p));
     col *= mix(0.25, 1.0, vig);
 

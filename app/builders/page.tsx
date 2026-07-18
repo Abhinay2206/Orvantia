@@ -254,7 +254,7 @@ export default function BuildersLanding() {
 
           <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
             style={{ fontSize: 14, lineHeight: 1.75, color: "rgba(241,245,249,0.32)", maxWidth: 520, margin: "0 auto 40px" }}>
-            At Orvantia AI, we evaluate builders on what they create — not just what is written on their resume.
+            At Orvantia AI, we evaluate builders on what they create – not just what is written on their resume.
           </motion.p>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
@@ -309,7 +309,7 @@ export default function BuildersLanding() {
         </motion.div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
-          <BenefitCard icon="🏗️" title="Production Portfolio" desc="Ship real features on live products. Link your commits and PRs — not just side projects." delay={0} />
+          <BenefitCard icon="🏗️" title="Production Portfolio" desc="Ship real features on live products. Link your commits and PRs – not just side projects." delay={0} />
           <BenefitCard icon="📝" title="Professional Reference" desc="Top contributors receive a formal reference letter from the Orvantia founding team." delay={0.07} />
           <BenefitCard icon="🎯" title="Scored Feedback" desc="Receive detailed scores across 5 dimensions with written feedback from domain experts." delay={0.14} />
           <BenefitCard icon="🤝" title="1-on-1 Discussion" desc="Every reviewed submission gets a live technical discussion with the Orvantia team." delay={0.21} />
@@ -386,7 +386,7 @@ export default function BuildersLanding() {
             { q: "How long does a challenge take?", a: "Challenges are scoped for 1–2 weeks of focused work. You pick your own timeline, but the team reviews submissions on a rolling basis." },
             { q: "What happens after I complete a challenge?", a: "You receive a score, written feedback, and a 1-on-1 discussion with the team. Standout builders are shortlisted for contributor roles on live products. You also receive a completion certificate you can reference on your resume or LinkedIn." },
             { q: "Can I work on multiple challenges?", a: "Yes. You can accept one challenge at a time. After it is reviewed you can pick the next. There is no cap on how many you complete." },
-            { q: "Do I need prior work experience?", a: "No. Many of our best contributors joined straight out of college. We review code quality, approach, and communication — all things you can demonstrate without a job title." },
+            { q: "Do I need prior work experience?", a: "No. Many of our best contributors joined straight out of college. We review code quality, approach, and communication – all things you can demonstrate without a job title." },
           ].map((item, i) => <FaqItem key={i} q={item.q} a={item.a} delay={i * 0.05} />)}
         </div>
       </section>

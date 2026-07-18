@@ -89,7 +89,7 @@ const ROLES = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmt(ts: Timestamp | null) {
-  if (!ts) return "—";
+  if (!ts) return "-";
   return ts.toDate().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
@@ -183,7 +183,7 @@ export default function ApplicationsDashboard() {
     return unsub;
   }, [router]);
 
-  // Real-time listener — re-subscribes whenever refreshKey changes
+  // Real-time listener – re-subscribes whenever refreshKey changes
   useEffect(() => {
     if (!authChecked) return;
     const q = query(collection(db, "applications"), orderBy("createdAt", "desc"));
@@ -195,7 +195,7 @@ export default function ApplicationsDashboard() {
     return unsub;
   }, [authChecked, refreshKey]);
 
-  // Builder profiles listener — drives the Journey stats
+  // Builder profiles listener – drives the Journey stats
   useEffect(() => {
     if (!authChecked) return;
     const unsub = onSnapshot(collection(db, "builder_profiles"), (snap) => {
@@ -411,7 +411,7 @@ export default function ApplicationsDashboard() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.setTextColor(129, 140, 248);
-      doc.text("Orvantia AI — Founding Builder Applications", 14, 16);
+      doc.text("Orvantia AI | Founding Builder Applications", 14, 16);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(120, 120, 140);
@@ -426,11 +426,11 @@ export default function ApplicationsDashboard() {
         body: filtered.map((a) => [
           a.name,
           a.email,
-          a.college || "—",
-          a.role || "—",
+          a.college || "-",
+          a.role || "-",
           (a.skills || []).slice(0, 5).join(", ") + ((a.skills?.length ?? 0) > 5 ? `… +${a.skills.length - 5}` : ""),
           STATUS_LABELS[a.status] ?? a.status,
-          a.createdAt ? fmt(a.createdAt) : "—",
+          a.createdAt ? fmt(a.createdAt) : "-",
         ]),
         styles: {
           fontSize: 8,
@@ -1004,7 +1004,7 @@ function AppRow({ app, selected, checked, onSelect, onCheck }: {
       </td>
       <td style={{ ...td, color: "rgba(241,245,249,0.45)", cursor: "pointer" }} onClick={() => onSelect(app)}>{app.email}</td>
       <td style={{ ...td, color: "rgba(241,245,249,0.55)", maxWidth: 180, cursor: "pointer" }} onClick={() => onSelect(app)}>
-        <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{app.college || "—"}</div>
+        <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{app.college || "-"}</div>
       </td>
       <td style={{ ...td, cursor: "pointer" }} onClick={() => onSelect(app)}>
         <span style={{
@@ -1012,7 +1012,7 @@ function AppRow({ app, selected, checked, onSelect, onCheck }: {
           background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)",
           color: "rgba(241,245,249,0.45)", letterSpacing: "0.05em", whiteSpace: "nowrap",
         }}>
-          {app.role || "—"}
+          {app.role || "-"}
         </span>
       </td>
       <td style={{ ...td, cursor: "pointer" }} onClick={() => onSelect(app)}><StatusBadge status={app.status || "pending"} /></td>
@@ -1074,7 +1074,7 @@ function DetailPanel({
       }}>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 2px", color: "rgba(241,245,249,0.95)" }}>{app.name}</h3>
-          <p style={{ fontSize: 12, color: "rgba(241,245,249,0.35)", margin: 0 }}>{app.college || "—"}</p>
+          <p style={{ fontSize: 12, color: "rgba(241,245,249,0.35)", margin: 0 }}>{app.college || "-"}</p>
         </div>
         <button
           onClick={onClose}
@@ -1171,13 +1171,13 @@ function DetailPanel({
         <Section title="Personal Information">
           {[
             ["Email", app.email],
-            ["Phone", app.phone || "—"],
-            ["Degree", app.branch || "—"],
-            ["Year", app.year || "—"],
-            ["Applied For", app.role || "—"],
+            ["Phone", app.phone || "-"],
+            ["Degree", app.branch || "-"],
+            ["Year", app.year || "-"],
+            ["Applied For", app.role || "-"],
             ["Applied On", fmt(app.createdAt)],
-            ["Availability", app.availabilityHours || "—"],
-            ["Start Date", app.startDate || "—"],
+            ["Availability", app.availabilityHours || "-"],
+            ["Start Date", app.startDate || "-"],
           ].map(([label, value]) => (
             <InfoRow key={label} label={label} value={value} />
           ))}

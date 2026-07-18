@@ -9,15 +9,15 @@ export const runtime = "nodejs";
 function buildAdminEmail(data: Record<string, unknown>) {
   return `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#04040a;color:#f1f5f9;padding:32px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">
-      <h2 style="color:#818cf8;margin:0 0 24px">New Lead — Orvantia AI</h2>
+      <h2 style="color:#818cf8;margin:0 0 24px">New Lead | Orvantia AI</h2>
       <table style="width:100%;border-collapse:collapse">
         ${[
           ["Name", data.name],
           ["Email", data.email],
           ["Company", data.company],
-          ["Phone", data.phone || "—"],
+          ["Phone", data.phone || "-"],
           ["Inquiry Type", data.type],
-          ["Products", Array.isArray(data.products) ? (data.products as string[]).join(", ") || "—" : "—"],
+          ["Products", Array.isArray(data.products) ? (data.products as string[]).join(", ") || "-" : "-"],
         ]
           .map(
             ([label, value]) => `
@@ -49,7 +49,7 @@ function buildConfirmationEmail(name: string, type: string) {
         <a href="https://continuumos.vercel.app/" style="color:#a78bfa">Continuum OS</a> &nbsp;·&nbsp;
         <a href="https://www.enteraflux.tech/" style="color:#818cf8">EnteraFlux</a>
       </p>
-      <p style="margin-top:40px;color:rgba(241,245,249,0.25);font-size:12px">— The Orvantia AI Team</p>
+      <p style="margin-top:40px;color:rgba(241,245,249,0.25);font-size:12px">- The Orvantia AI Team</p>
     </div>
   `;
 }
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
         transporter.sendMail({
           from,
           to: email,
-          subject: "We received your message — Orvantia AI",
+          subject: "We received your message | Orvantia AI",
           html: buildConfirmationEmail(name, type),
         }),
       ]);

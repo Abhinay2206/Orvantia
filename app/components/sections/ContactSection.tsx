@@ -222,9 +222,9 @@ export default function ContactSection() {
     setError("");
     setStatus("loading");
     const composed =
-      `${form.message}\n\n— Budget: ${budget || "Not specified"}` +
-      `\n— Timeline: ${timeline || "Not specified"}` +
-      `\n— Services: ${services.join(", ") || "Not specified"}`;
+      `${form.message}\n\n- Budget: ${budget || "Not specified"}` +
+      `\n- Timeline: ${timeline || "Not specified"}` +
+      `\n- Services: ${services.join(", ") || "Not specified"}`;
     try {
       const res = await fetch("/api/submit-lead", {
         method: "POST",
@@ -232,7 +232,7 @@ export default function ContactSection() {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
-          company: form.company || "—",
+          company: form.company || "-",
           phone: "",
           type: "Start Your Project",
           products: services,
@@ -330,7 +330,7 @@ export default function ContactSection() {
                 Message received.
               </h3>
               <p style={{ fontSize: 15, color: "var(--text-2)", lineHeight: 1.65 }}>
-                Thanks — we&apos;ll be in touch within 1–2 business days.
+                Thanks – we&apos;ll be in touch within 1–2 business days.
               </p>
             </div>
           ) : (

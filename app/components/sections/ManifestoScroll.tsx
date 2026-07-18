@@ -15,21 +15,21 @@ function usePhrase(sp: MotionValue<number>, start: number, end: number) {
 const PHRASES = [
   {
     text: "We build AI",
-    tag: "01 — VISION",
+    tag: "01 – VISION",
     size: "clamp(56px, 10.5vw, 144px)",
     style: { color: "rgba(241,245,249,0.24)" },
     bar: "rgba(255,255,255,0.07)",
   },
   {
     text: "that transforms industries.",
-    tag: "02 — IMPACT",
+    tag: "02 – IMPACT",
     size: "clamp(56px, 10.5vw, 144px)",
     style: { color: "rgba(241,245,249,0.92)" },
     bar: "rgba(255,255,255,0.14)",
   },
   {
     text: "Autonomous products.",
-    tag: "03 — PRODUCTS",
+    tag: "03 – PRODUCTS",
     size: "clamp(44px, 8vw, 112px)",
     gradient: true,
     bar: "rgba(99,102,241,0.5)",
@@ -37,7 +37,7 @@ const PHRASES = [
   },
   {
     text: "For enterprise scale.",
-    tag: "04 — SCALE",
+    tag: "04 – SCALE",
     size: "clamp(26px, 4.5vw, 62px)",
     style: { color: "rgba(99,102,241,0.75)", fontFamily: "var(--mono)" },
     bar: "rgba(99,102,241,0.32)",

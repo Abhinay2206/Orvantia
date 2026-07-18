@@ -79,7 +79,7 @@ const templates: Record<NotifyType, (name: string, p: Payload) => { subject: str
   }),
 
   task_accepted: (name, p) => ({
-    subject: `Challenge Accepted — ${p.taskTitle}`,
+    subject: `Challenge Accepted | ${p.taskTitle}`,
     html: base(`
       <h1 style="font-size:22px;font-weight:700;margin:0 0 20px;color:#f1f5f9">Challenge Accepted!</h1>
       ${hi(name)}
@@ -92,7 +92,7 @@ const templates: Record<NotifyType, (name: string, p: Payload) => { subject: str
   }),
 
   submission_received: (name, p) => ({
-    subject: `Submission Received — ${p.taskTitle}`,
+    subject: `Submission Received | ${p.taskTitle}`,
     html: base(`
       <h1 style="font-size:22px;font-weight:700;margin:0 0 20px;color:#f1f5f9">Submission Received!</h1>
       ${hi(name)}
@@ -105,7 +105,7 @@ const templates: Record<NotifyType, (name: string, p: Payload) => { subject: str
   }),
 
   meeting_scheduled: (name, p) => ({
-    subject: `Discussion Meeting Scheduled — ${p.taskTitle}`,
+    subject: `Discussion Meeting Scheduled | ${p.taskTitle}`,
     html: base(`
       <h1 style="font-size:22px;font-weight:700;margin:0 0 20px;color:#f1f5f9">Meeting Scheduled 📅</h1>
       ${hi(name)}
@@ -122,7 +122,7 @@ const templates: Record<NotifyType, (name: string, p: Payload) => { subject: str
   }),
 
   review_completed: (name, p) => ({
-    subject: `Your Review is Ready — Score: ${p.totalScore}/50`,
+    subject: `Your Review is Ready | Score: ${p.totalScore}/50`,
     html: base(`
       <h1 style="font-size:22px;font-weight:700;margin:0 0 20px;color:#f1f5f9">Review Complete!</h1>
       ${hi(name)}
@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
 
     // Admin copy for key events
     if (ADMIN_EMAIL && (type === "submission_received" || type === "shortlisted" || type === "contributor_invited")) {
-      const adminSubject = `[Builder] ${type === "submission_received" ? "New Submission" : type === "shortlisted" ? "Builder Shortlisted" : "Contributor Invited"} — ${payload.taskTitle || builderName}`;
+      const adminSubject = `[Builder] ${type === "submission_received" ? "New Submission" : type === "shortlisted" ? "Builder Shortlisted" : "Contributor Invited"} – ${payload.taskTitle || builderName}`;
       await transporter.sendMail({
         from: FROM,
         to: ADMIN_EMAIL,
@@ -213,7 +213,7 @@ export async function POST(req: NextRequest) {
         html: adminHtml(adminSubject, [
           ["Builder", builderName],
           ["Email", builderEmail],
-          ["Task", payload.taskTitle || "—"],
+          ["Task", payload.taskTitle || "-"],
         ]),
       });
     }
@@ -225,7 +225,7 @@ export async function POST(req: NextRequest) {
       timestamp: new Date(),
     });
   } catch (err) {
-    // Email failure is non-blocking — log but don't crash
+    // Email failure is non-blocking – log but don't crash
     console.error("[builder/notify] email error:", err);
   }
 

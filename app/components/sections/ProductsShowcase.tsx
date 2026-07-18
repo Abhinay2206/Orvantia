@@ -12,7 +12,7 @@ const PRODUCTS = [
     name: "Continuum",
     inDev: true,
     url: "https://continuumos.vercel.app/",
-    desc: "An Orvantia AI engineering platform that builds a living knowledge graph of your entire codebase — then deploys specialized agents to architect, build, review, test, and ship autonomously.",
+    desc: "An Orvantia AI engineering platform that builds a living knowledge graph of your entire codebase – then deploys specialized agents to architect, build, review, test, and ship autonomously.",
     color: "#a855f7",
     glow: "rgba(168,85,247,0.09)",
     stats: [
@@ -28,7 +28,7 @@ const PRODUCTS = [
     name: "Enteraflux",
     inDev: true,
     url: "https://www.enteraflux.tech/",
-    desc: "Orvantia AI's intelligent companion for GLP-1 users in India. Medication tracking, AI symptom management, and personalised nutrition coaching — built for Ozempic, Wegovy, and Mounjaro.",
+    desc: "Orvantia AI's intelligent companion for GLP-1 users in India. Medication tracking, AI symptom management, and personalised nutrition coaching – built for Ozempic, Wegovy, and Mounjaro.",
     color: "#6366f1",
     glow: "rgba(99,102,241,0.09)",
     stats: [
@@ -42,7 +42,7 @@ const PRODUCTS = [
     category: "CLINICAL RESEARCH AI",
     name: "ClinicalAgent",
     url: "https://clinicalagent.vercel.app/",
-    desc: "Orvantia AI's clinical trial intelligence solution. Natural language querying across 12,400+ studies — accelerating patient enrollment, efficacy analysis, and safety monitoring.",
+    desc: "Orvantia AI's clinical trial intelligence solution. Natural language querying across 12,400+ studies – accelerating patient enrollment, efficacy analysis, and safety monitoring.",
     color: "#22d3ee",
     glow: "rgba(34,211,238,0.07)",
     stats: [

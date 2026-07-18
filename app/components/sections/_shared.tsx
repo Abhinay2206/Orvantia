@@ -6,7 +6,7 @@ import { useRef, type ReactNode, type CSSProperties } from "react";
 /* ─── Shared easing (Expo-like Snappy) ───────────────────── */
 export const EASE = [0.19, 1, 0.22, 1] as const;
 
-/* ─── Reveal — fade + rise on scroll into view ───────────── */
+/* ─── Reveal – fade + rise on scroll into view ───────────── */
 export function Reveal({
   children,
   delay = 0,
@@ -53,7 +53,7 @@ export const staggerChild: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
 };
 
-/* ─── Section eyebrow — number · rule · label ────────────── */
+/* ─── Section eyebrow – number · rule · label ────────────── */
 export function Eyebrow({
   num,
   label,
@@ -82,7 +82,7 @@ export function Eyebrow({
   );
 }
 
-/* ─── Split headline — word-by-word mask rise ────────────── */
+/* ─── Split headline – word-by-word mask rise ────────────── */
 export function SplitHeadline({
   text,
   className,
@@ -133,10 +133,10 @@ export function SplitHeadline({
   );
 }
 
-/* ─── Section wrapper — consistent padding + ambient glow ── */
+/* ─── Section wrapper – consistent padding + ambient glow ── */
 import { forwardRef } from "react";
 
-/* ─── Section wrapper — consistent padding + ambient glow ── */
+/* ─── Section wrapper – consistent padding + ambient glow ── */
 export const Section = forwardRef<
   HTMLElement,
   {

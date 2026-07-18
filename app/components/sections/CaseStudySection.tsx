@@ -371,8 +371,8 @@ export default function CaseStudySection() {
         }}
       >
         {[
-          { t: "The Challenge", c: "#a855f7", b: "Teams were coordinating tasks and approvals across scattered spreadsheets, chat threads, and email — with no shared view of who owned what, what was overdue, or how work was actually progressing across departments." },
-          { t: "The Solution", c: "#22d3ee", b: "A secure, intuitive dashboard that centralizes task assignment, workflow tracking, and team collaboration — with role-based access, activity timelines, and real-time analytics so every department can see exactly where work stands." },
+          { t: "The Challenge", c: "#a855f7", b: "Teams were coordinating tasks and approvals across scattered spreadsheets, chat threads, and email – with no shared view of who owned what, what was overdue, or how work was actually progressing across departments." },
+          { t: "The Solution", c: "#22d3ee", b: "A secure, intuitive dashboard that centralizes task assignment, workflow tracking, and team collaboration – with role-based access, activity timelines, and real-time analytics so every department can see exactly where work stands." },
         ].map((x, i) => (
           <Reveal key={x.t} delay={i * 0.08}>
             <div className="glass-card" style={{ padding: "clamp(28px, 3vw, 40px)", borderRadius: "var(--radius-lg)", height: "100%", background: "rgba(10,10,20,0.6)", backdropFilter: "blur(12px)" }}>

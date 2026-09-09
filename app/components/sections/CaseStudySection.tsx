@@ -1,411 +1,484 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Section, Eyebrow, SplitHeadline, Reveal, EASE } from "./_shared";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import { Section, Eyebrow, Reveal, EASE } from "./_shared";
 import AnimatedCounter from "../ui/AnimatedCounter";
 
-gsap.registerPlugin(ScrollTrigger);
-
-/* ─── Animated dashboard mockup (browser-framed) ─────────── */
-const BARS = [42, 68, 55, 80, 62, 91, 74, 88, 60, 96, 70, 84];
-
-function DashboardMock() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-15%" });
-
-  return (
-    <div
-      ref={ref}
-      className="frosted dashboard-mock-container"
-      style={{
-        borderRadius: 16,
-        overflow: "hidden",
-        boxShadow: "0 40px 120px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.05)",
-        transformOrigin: "center center",
-        willChange: "transform, opacity",
-        opacity: 0,
-        transform: "translateY(40px)",
-      }}
-    >
-      {/* Browser chrome */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          padding: "12px 16px",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          background: "rgba(255,255,255,0.02)",
-        }}
-      >
-        <span style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(248,113,113,0.6)" }} />
-        <span style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(251,191,36,0.6)" }} />
-        <span style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(34,197,94,0.6)" }} />
-        <div
-          style={{
-            marginLeft: 12,
-            flex: 1,
-            maxWidth: 320,
-            height: 22,
-            borderRadius: 6,
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.05)",
-            display: "flex",
-            alignItems: "center",
-            padding: "0 12px",
-            fontFamily: "var(--mono)",
-            fontSize: 10,
-            color: "var(--text-3)",
-            letterSpacing: "0.05em",
-          }}
-        >
-          app.factoryflow.io/dashboard
-        </div>
-      </div>
-
-      {/* Dashboard body */}
-      <div style={{ padding: "clamp(16px, 2vw, 26px)" }}>
-        {/* KPI row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
-          {[
-            { l: "Tasks Completed", v: 482, c: "#6366f1" },
-            { l: "On-Time Rate", v: 96, s: "%", c: "#22d3ee" },
-            { l: "Overdue Tasks", v: 4, s: "%", c: "#a855f7" },
-          ].map((k) => (
-            <div
-              key={k.l}
-              style={{
-                padding: "14px 16px",
-                borderRadius: 12,
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.05)",
-              }}
-            >
-              <div style={{ fontFamily: "var(--mono)", fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 8 }}>
-                {k.l}
-              </div>
-              <div style={{ fontFamily: "var(--font)", fontSize: "clamp(18px, 2.2vw, 26px)", fontWeight: 700, color: k.c, lineHeight: 1 }}>
-                {inView ? <AnimatedCounter to={k.v} suffix={k.s ?? ""} duration={1500} /> : 0}
-                {!inView && (k.s ?? "")}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bar chart */}
-        <div
-          style={{
-            padding: "18px 18px 10px",
-            borderRadius: 12,
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.05)",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-            <span style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-2)" }}>
-              Task Completion Trend
-            </span>
-            <span style={{ fontFamily: "var(--mono)", fontSize: 9, color: "rgba(34,197,94,0.8)" }}>▲ 18.2%</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: "clamp(4px, 1vw, 10px)", height: 120 }}>
-            {BARS.map((h, i) => (
-              <motion.div
-                key={i}
-                initial={{ height: 0 }}
-                animate={inView ? { height: `${h}%` } : {}}
-                transition={{ duration: 0.9, ease: EASE, delay: 0.2 + i * 0.05 }}
-                style={{
-                  flex: 1,
-                  borderRadius: "4px 4px 0 0",
-                  background:
-                    i === 9
-                      ? "linear-gradient(to top, rgba(34,211,238,0.9), rgba(99,102,241,0.6))"
-                      : "linear-gradient(to top, rgba(99,102,241,0.55), rgba(99,102,241,0.12))",
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Phone mockup ───────────────────────────────────────── */
-function PhoneMock() {
-  const ref = useRef<HTMLDivElement>(null);
-
-  return (
-    <div
-      ref={ref}
-      className="frosted phone-mock-container"
-      style={{
-        width: 148,
-        borderRadius: 26,
-        padding: 8,
-        boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
-        background: "rgba(10,10,20,0.9)",
-        willChange: "transform, opacity",
-        opacity: 0,
-        transform: "translateY(60px)",
-      }}
-    >
-      <div style={{ borderRadius: 20, overflow: "hidden", background: "rgba(255,255,255,0.02)", padding: 14 }}>
-        <div style={{ height: 4, width: 40, borderRadius: 4, background: "rgba(255,255,255,0.12)", margin: "0 auto 16px" }} />
-        <div style={{ fontFamily: "var(--mono)", fontSize: 7, letterSpacing: "0.2em", color: "var(--text-3)", marginBottom: 6 }}>TEAM A · LIVE</div>
-        <div style={{ fontFamily: "var(--font)", fontSize: 22, fontWeight: 700, color: "#22d3ee", marginBottom: 14 }}>82%</div>
-        {[70, 88, 54, 92].map((w, i) => (
-          <div key={i} style={{ height: 6, borderRadius: 4, background: "rgba(255,255,255,0.05)", marginBottom: 8, overflow: "hidden" }}>
-            <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: `${w}%` }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: EASE, delay: 0.6 + i * 0.1 }}
-              style={{ height: "100%", background: "linear-gradient(90deg, #6366f1, #a855f7)" }}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-const FEATURES = [
-  "Task Management",
-  "Workflow Management",
-  "Team Collaboration",
-  "Project & Department Organization",
-  "Role-Based Access Control",
-  "Progress Tracking",
-  "Activity Timeline",
-  "Comments & Discussions",
-  "Real-time Notifications",
-  "Analytics & Reports",
-  "Dashboard Insights",
-  "Secure Authentication",
-  "Responsive Enterprise Dashboard",
+/* ─── Real product screenshots ───────────────────────────── */
+const VIEWS = [
+  {
+    key: "dashboard",
+    tab: "Dashboard",
+    src: "/case-study/factoryflow/dashboard.png",
+    path: "app.factoryflow.io/dashboard",
+    headline: "Every department, one glance",
+    desc: "Live task distribution, completion rates, and today's priorities surfaced the moment a manager logs in.",
+  },
+  {
+    key: "tasks",
+    tab: "Task Board",
+    src: "/case-study/factoryflow/tasks.png",
+    path: "app.factoryflow.io/tasks",
+    headline: "Work that moves, visibly",
+    desc: "Kanban across Pending, In Progress, Completed and Overdue - with filters, priorities, and bulk Excel import.",
+  },
+  {
+    key: "queries",
+    tab: "Query Center",
+    src: "/case-study/factoryflow/queries.png",
+    path: "app.factoryflow.io/queries",
+    headline: "Questions stop getting lost",
+    desc: "Threaded queries attached to the task itself, with resolution tracking and average reply time in view.",
+  },
+  {
+    key: "productivity",
+    tab: "Productivity",
+    src: "/case-study/factoryflow/productivity.png",
+    path: "app.factoryflow.io/productivity",
+    headline: "Performance you can defend",
+    desc: "Scored leaderboards across completion, on-time, response and consistency - exportable to Excel, CSV, or PDF.",
+  },
 ];
 
-export default function CaseStudySection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const mockContainerRef = useRef<HTMLDivElement>(null);
-  const contentOverlayRef = useRef<HTMLDivElement>(null);
-  const featuresRef = useRef<HTMLDivElement>(null);
+const METRICS = [
+  { to: 231, decimals: 0, suffix: "", label: "Tasks Managed" },
+  { to: 989, decimals: 0, suffix: "", label: "Activity Logs" },
+  { to: 2.1, decimals: 1, suffix: "K", label: "Emails Delivered" },
+  { to: 38, decimals: 0, suffix: "", label: "Concurrent Users" },
+  { to: 0, decimals: 0, suffix: "", label: "Minutes Downtime" },
+];
 
+const BEFORE = [
+  "Tasks scattered across spreadsheets, chat and email",
+  "No shared view of who owned what",
+  "Overdue work discovered too late",
+  "Follow-ups chased manually, one message at a time",
+  "Performance argued from memory, not data",
+];
+
+const AFTER = [
+  "One system of record for every task and department",
+  "Ownership, priority and due date on every card",
+  "Overdue surfaced automatically the moment it slips",
+  "2.1K automated notifications in the first month alone",
+  "Scored, exportable productivity reports per member",
+];
+
+const CAPABILITIES = [
+  "Task Management",
+  "Workflow Automation",
+  "Role-Based Access",
+  "Query Threads",
+  "Activity Timeline",
+  "Real-time Notifications",
+  "Excel Import / Export",
+  "Analytics & Reports",
+  "Productivity Scoring",
+  "Secure Auth",
+];
+
+/* ─── Interactive screenshot viewer ──────────────────────── */
+function ProductViewer() {
+  const [active, setActive] = useState(0);
+  const [locked, setLocked] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: false, margin: "-20%" });
+
+  // Auto-advance until the visitor takes control.
   useEffect(() => {
-    if (!sectionRef.current || !mockContainerRef.current || !contentOverlayRef.current) return;
+    if (locked || !inView) return;
+    const id = setInterval(() => setActive((i) => (i + 1) % VIEWS.length), 4200);
+    return () => clearInterval(id);
+  }, [locked, inView]);
 
-    const mm = gsap.matchMedia();
+  const view = VIEWS[active];
 
-    mm.add("(min-width: 768px)", () => {
-      const ctx = gsap.context(() => {
-        // 1. Professional Entrance Reveal (Clean Fade & Slide)
-        gsap.to(".dashboard-mock-container", {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: mockContainerRef.current,
-            start: "top 80%",
-          }
-        });
+  return (
+    <div ref={ref}>
+      {/* Tabs */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+        {VIEWS.map((v, i) => {
+          const on = i === active;
+          return (
+            <button
+              key={v.key}
+              onClick={() => {
+                setActive(i);
+                setLocked(true);
+              }}
+              style={{
+                position: "relative",
+                padding: "9px 18px",
+                borderRadius: 100,
+                border: `1px solid ${on ? "rgba(34,211,238,0.45)" : "rgba(255,255,255,0.08)"}`,
+                background: on ? "rgba(34,211,238,0.1)" : "rgba(255,255,255,0.02)",
+                color: on ? "#22d3ee" : "var(--text-2)",
+                fontFamily: "var(--mono)",
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                transition: "color 0.3s, background 0.3s, border-color 0.3s",
+              }}
+            >
+              {v.tab}
+              {on && !locked && (
+                <motion.span
+                  key={active}
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 4.2, ease: "linear" }}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    bottom: 0,
+                    height: 1,
+                    background: "rgba(34,211,238,0.8)",
+                    borderRadius: 1,
+                  }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
 
-        gsap.to(".phone-mock-container", {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          delay: 0.15,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: mockContainerRef.current,
-            start: "top 80%",
-          }
-        });
+      {/* Browser-framed screenshot */}
+      <div
+        className="frosted"
+        style={{
+          borderRadius: 16,
+          overflow: "hidden",
+          boxShadow: "0 40px 120px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.05)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "12px 16px",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(255,255,255,0.02)",
+          }}
+        >
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(248,113,113,0.6)" }} />
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(251,191,36,0.6)" }} />
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(34,197,94,0.6)" }} />
+          <div
+            style={{
+              marginLeft: 12,
+              flex: 1,
+              maxWidth: 340,
+              height: 24,
+              borderRadius: 6,
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              display: "flex",
+              alignItems: "center",
+              padding: "0 12px",
+              fontFamily: "var(--mono)",
+              fontSize: 10,
+              color: "var(--text-3)",
+              letterSpacing: "0.05em",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {view.path}
+          </div>
+        </div>
 
-        // 2. Subtle Parallax Pinned Transition with pinSpacing: false
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: mockContainerRef.current,
-            start: "center center",
-            end: "+=800px", // Scroll duration
-            pin: true,
-            pinSpacing: false,
-            scrub: true,
-          }
-        });
+        {/* All frames stacked so every screenshot preloads and swaps instantly */}
+        <div style={{ position: "relative", aspectRatio: "2047 / 1032", background: "rgba(255,255,255,0.02)" }}>
+          {VIEWS.map((v, i) => (
+            <motion.img
+              key={v.key}
+              src={v.src}
+              alt={`FactoryFlow ${v.tab}`}
+              initial={{ opacity: i === 0 ? 1 : 0 }}
+              animate={{ opacity: i === active ? 1 : 0 }}
+              transition={{ duration: 0.5, ease: EASE }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "top center",
+                pointerEvents: "none",
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
-        tl.to(".dashboard-mock-container", {
-          opacity: 0.15,
-          y: -80,
-          ease: "none",
-        }, 0);
+      {/* Caption for the active view */}
+      <div style={{ marginTop: 20, minHeight: 78 }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={view.key}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, ease: EASE }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--font)",
+                fontSize: "clamp(19px, 2vw, 26px)",
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                color: "var(--text)",
+              }}
+            >
+              {view.headline}
+            </div>
+            <p style={{ marginTop: 8, fontSize: "clamp(14px, 1.3vw, 17px)", color: "var(--text-2)", maxWidth: "72ch", lineHeight: 1.6 }}>
+              {view.desc}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
 
-        tl.to(".phone-mock-container", {
-          opacity: 0,
-          y: 40,
-          ease: "none",
-        }, 0);
+/* ─── Before → After story ───────────────────────────────── */
+function BeforeAfter() {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
+        gap: "clamp(16px, 2vw, 28px)",
+      }}
+    >
+      {[
+        { label: "Before", color: "rgba(248,113,113,0.85)", items: BEFORE, mark: "—" },
+        { label: "After", color: "#22d3ee", items: AFTER, mark: "→" },
+      ].map((col, ci) => (
+        <Reveal key={col.label} delay={ci * 0.08}>
+          <div
+            className="glass-card"
+            style={{
+              padding: "clamp(26px, 3vw, 38px)",
+              borderRadius: "var(--radius-lg)",
+              height: "100%",
+              background: "rgba(10,10,20,0.6)",
+              backdropFilter: "blur(12px)",
+              borderTop: `1px solid ${col.color}`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: 10,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: col.color,
+                marginBottom: 22,
+              }}
+            >
+              {col.label} FactoryFlow
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {col.items.map((item) => (
+                <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                  <span
+                    style={{
+                      fontFamily: "var(--mono)",
+                      fontSize: 13,
+                      color: col.color,
+                      lineHeight: 1.5,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {col.mark}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "clamp(14px, 1.3vw, 16px)",
+                      lineHeight: 1.55,
+                      color: ci === 0 ? "var(--text-2)" : "var(--text)",
+                    }}
+                  >
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      ))}
+    </div>
+  );
+}
 
-        // Fade in the challenge/solution content gracefully
-        gsap.fromTo(
-          contentOverlayRef.current,
-          { opacity: 0, y: 80 },
-          {
-            opacity: 1,
-            y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: contentOverlayRef.current,
-              start: "top 80%",
-              end: "top 40%",
-              scrub: true,
-            }
-          }
-        );
-
-        // Stagger features
-        const featureItems = gsap.utils.toArray(".feature-item");
-        gsap.fromTo(
-          featureItems,
-          { opacity: 0, x: -20 },
-          {
-            opacity: 1,
-            x: 0,
-            stagger: 0.05,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: featuresRef.current,
-              start: "top 80%",
-            }
-          }
-        );
-      });
-      return () => ctx.revert();
-    });
-
-    return () => mm.revert();
-  }, []);
-
+export default function CaseStudySection() {
   return (
     <Section
       id="case-study"
-      ref={sectionRef}
       style={{ position: "relative", zIndex: 10 }}
       glow="radial-gradient(ellipse 70% 60% at 50% 0%, rgba(34,211,238,0.08), transparent 60%)"
     >
       {/* Header */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 28 }}>
-        <div style={{ maxWidth: 820 }}>
-          <Reveal>
-            <Eyebrow num="04" label="Featured Case Study" color="rgba(34,211,238,0.8)" />
-          </Reveal>
-          <Reveal delay={0.1}>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 26, flexWrap: "wrap" }}>
-              <h2
-                style={{
-                  fontFamily: "var(--font)",
-                  fontSize: "clamp(38px, 6vw, 84px)",
-                  fontWeight: 700,
-                  letterSpacing: "-0.04em",
-                  lineHeight: 0.95,
-                }}
-                className="g-text-cyan"
-              >
-                FactoryFlow
-              </h2>
-              <span className="status-pill" style={{ marginBottom: 8 }}>
-                <span className="status-dot" />
-                Enterprise Client Project
-              </span>
-            </div>
-          </Reveal>
-          <Reveal delay={0.13}>
-            <p
+      <div style={{ maxWidth: 900 }}>
+        <Reveal>
+          <Eyebrow num="04" label="Featured Case Study" color="rgba(34,211,238,0.8)" />
+        </Reveal>
+        <Reveal delay={0.1}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 26, flexWrap: "wrap" }}>
+            <h2
               style={{
-                marginTop: 12,
                 fontFamily: "var(--font)",
-                fontSize: "clamp(15px, 1.5vw, 19px)",
-                fontWeight: 600,
-                letterSpacing: "-0.01em",
-                color: "var(--text)",
+                fontSize: "clamp(38px, 6vw, 84px)",
+                fontWeight: 700,
+                letterSpacing: "-0.04em",
+                lineHeight: 0.95,
+              }}
+              className="g-text-cyan"
+            >
+              FactoryFlow
+            </h2>
+            <span className="status-pill" style={{ marginBottom: 8 }}>
+              <span className="status-dot" />
+              Live in Production
+            </span>
+          </div>
+        </Reveal>
+        <Reveal delay={0.16}>
+          <p
+            style={{
+              marginTop: 18,
+              fontSize: "clamp(17px, 1.8vw, 23px)",
+              color: "var(--text)",
+              lineHeight: 1.5,
+              letterSpacing: "-0.01em",
+              maxWidth: "34ch",
+              fontWeight: 600,
+            }}
+          >
+            A manufacturing floor ran on spreadsheets. Now it runs on this.
+          </p>
+        </Reveal>
+        <Reveal delay={0.22}>
+          <p style={{ marginTop: 14, fontSize: "clamp(15px, 1.4vw, 18px)", color: "var(--text-2)", maxWidth: "62ch", lineHeight: 1.65 }}>
+            An enterprise task and workflow platform we designed, built, and shipped for a
+            manufacturing client - now handling their real day-to-day operations across
+            multiple departments.
+          </p>
+        </Reveal>
+      </div>
+
+      {/* Interactive product tour */}
+      <div style={{ marginTop: "clamp(40px, 5vw, 66px)" }}>
+        <Reveal>
+          <ProductViewer />
+        </Reveal>
+      </div>
+
+      {/* Proof bar — real first-month production numbers */}
+      <div style={{ marginTop: "clamp(40px, 5vw, 64px)" }}>
+        <Reveal>
+          <div
+            className="glass-card"
+            style={{
+              padding: "clamp(28px, 3.4vw, 46px)",
+              borderRadius: "var(--radius-lg)",
+              background: "linear-gradient(135deg, rgba(34,211,238,0.06), rgba(10,10,20,0.6) 55%)",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: 10,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: "var(--text-3)",
+                marginBottom: 28,
               }}
             >
-              Enterprise Task &amp; Workflow Management Platform
-            </p>
-          </Reveal>
-          <Reveal delay={0.18}>
-            <p style={{ marginTop: 14, fontSize: "clamp(15px, 1.5vw, 20px)", color: "var(--text-2)", maxWidth: "68ch", lineHeight: 1.6 }}>
-              FactoryFlow is a modern enterprise SaaS platform developed by Orvantia to
-              streamline task management and operational workflows within manufacturing
-              organizations. The platform centralizes task assignment, workflow tracking,
-              team collaboration, progress monitoring, analytics, and role-based access
-              through a secure, intuitive, and scalable dashboard, enabling organizations
-              to improve productivity and operational efficiency.
-            </p>
-          </Reveal>
-        </div>
-      </div>
-
-      {/* Device showcase (Pinned on Desktop) */}
-      <div ref={mockContainerRef} style={{ position: "relative", marginTop: "clamp(44px, 6vw, 80px)", zIndex: 1 }}>
-        <DashboardMock />
-        <div style={{ position: "absolute", right: "clamp(-8px, 2vw, 40px)", bottom: "-48px" }} className="hidden md:block">
-          <PhoneMock />
-        </div>
-      </div>
-
-      {/* Challenge / Solution (Scrolls over pinned mockup) */}
-      <div
-        ref={contentOverlayRef}
-        style={{
-          position: "relative",
-          zIndex: 2,
-          marginTop: "clamp(72px, 9vw, 120px)", // On desktop, this will overlap because of the pin
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
-          gap: "clamp(16px, 2vw, 28px)",
-        }}
-      >
-        {[
-          { t: "The Challenge", c: "#a855f7", b: "Teams were coordinating tasks and approvals across scattered spreadsheets, chat threads, and email – with no shared view of who owned what, what was overdue, or how work was actually progressing across departments." },
-          { t: "The Solution", c: "#22d3ee", b: "A secure, intuitive dashboard that centralizes task assignment, workflow tracking, and team collaboration – with role-based access, activity timelines, and real-time analytics so every department can see exactly where work stands." },
-        ].map((x, i) => (
-          <Reveal key={x.t} delay={i * 0.08}>
-            <div className="glass-card" style={{ padding: "clamp(28px, 3vw, 40px)", borderRadius: "var(--radius-lg)", height: "100%", background: "rgba(10,10,20,0.6)", backdropFilter: "blur(12px)" }}>
-              <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: x.c, marginBottom: 16 }}>
-                {x.t}
-              </div>
-              <p style={{ fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text)" }}>{x.b}</p>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-
-      {/* Key Features */}
-      <div ref={featuresRef} style={{ marginTop: "clamp(28px, 4vw, 48px)", position: "relative", zIndex: 2 }}>
-        <Reveal>
-          <div className="glass-card" style={{ padding: "clamp(28px, 3vw, 44px)", borderRadius: "var(--radius-lg)", background: "rgba(10,10,20,0.6)", backdropFilter: "blur(12px)" }}>
-            <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 24 }}>
-              Key Features
+              First month in production
             </div>
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
-                gap: "clamp(14px, 1.8vw, 22px)",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
+                gap: "clamp(20px, 2.4vw, 32px)",
               }}
             >
-              {FEATURES.map((f) => (
-                <div key={f} className="feature-item" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#6366f1", boxShadow: "0 0 10px #6366f1", flexShrink: 0 }} />
-                  <span style={{ fontSize: 15, color: "var(--text)" }}>{f}</span>
+              {METRICS.map((m) => (
+                <div key={m.label}>
+                  <div
+                    style={{
+                      fontFamily: "var(--font)",
+                      fontSize: "clamp(34px, 4.4vw, 56px)",
+                      fontWeight: 700,
+                      letterSpacing: "-0.04em",
+                      lineHeight: 1,
+                      color: "#22d3ee",
+                    }}
+                  >
+                    <AnimatedCounter to={m.to} decimals={m.decimals} suffix={m.suffix} duration={1600} />
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 10,
+                      fontFamily: "var(--mono)",
+                      fontSize: 10,
+                      letterSpacing: "0.16em",
+                      textTransform: "uppercase",
+                      color: "var(--text-3)",
+                    }}
+                  >
+                    {m.label}
+                  </div>
                 </div>
               ))}
             </div>
+          </div>
+        </Reveal>
+      </div>
+
+      {/* Before → After */}
+      <div style={{ marginTop: "clamp(28px, 3.4vw, 44px)" }}>
+        <BeforeAfter />
+      </div>
+
+      {/* Capabilities */}
+      <div style={{ marginTop: "clamp(28px, 3.4vw, 44px)" }}>
+        <Reveal>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+            <span
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: 10,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: "var(--text-3)",
+                marginRight: 6,
+              }}
+            >
+              Shipped
+            </span>
+            {CAPABILITIES.map((c) => (
+              <span
+                key={c}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 100,
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  background: "rgba(255,255,255,0.02)",
+                  fontSize: 13,
+                  color: "var(--text-2)",
+                }}
+              >
+                {c}
+              </span>
+            ))}
           </div>
         </Reveal>
       </div>

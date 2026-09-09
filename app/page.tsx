@@ -53,7 +53,11 @@ export default function Home() {
     <>
       <BootSequence onComplete={onBooted} />
 
-      {booted && (
+      {/* Stable wrapper: without it React inserts this subtree using the exiting
+          BootSequence node as its insertBefore reference, which framer-motion
+          removes mid-insert -> NotFoundError that kills the whole React root. */}
+      <div>
+        {booted && (
         <>
           <div className="grain" />
           <CustomCursor />
@@ -91,7 +95,8 @@ export default function Home() {
             <Footer />
           </SmoothScroll>
         </>
-      )}
+        )}
+      </div>
     </>
   );
 }

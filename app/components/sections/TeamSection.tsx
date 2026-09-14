@@ -8,6 +8,7 @@ const TEAM = [
   { name: "P Deekshith", role: "Team Member", initials: "PD", color: "#a855f7" },
   { name: "Aisiri MR", role: "Team Member", initials: "AM", color: "#22d3ee" },
   { name: "Mekkonda Aarush", role: "Team Member", initials: "MA", color: "#3b82f6" },
+  { name: "Sunkari Manwitha", role: "Team Member", initials: "SM", color: "#ff0000" },
   { name: "J Vigneshwar Reddy", role: "Team Member", initials: "JV", color: "#818cf8" },
 ];
 

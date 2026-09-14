@@ -8,121 +8,129 @@ import { Section, Eyebrow, Reveal, EASE } from "./_shared";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ─── Interactive globe (pure CSS/SVG, lightweight) ──────── */
-function Globe() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    // Cinematic scale up on scroll
-    gsap.fromTo(
-      containerRef.current,
-      { scale: 0.5, opacity: 0, y: 100 },
-      {
-        scale: 1,
-        opacity: 1,
-        y: 0,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 85%",
-          end: "top 40%",
-          scrub: 1,
-        },
-      }
-    );
-  }, []);
-
-  const arcs = [
-    { d: "M 60 150 Q 150 40 240 150", delay: 0 },
-    { d: "M 40 120 Q 150 220 260 120", delay: 0.6 },
-    { d: "M 80 60 Q 150 150 220 240", delay: 1.2 },
-  ];
-  return (
-    <div ref={containerRef} style={{ position: "relative", width: "100%", maxWidth: 380, aspectRatio: "1", margin: "0 auto", willChange: "transform, opacity" }}>
-      {/* Glow */}
-      <div
-        style={{
-          position: "absolute",
-          inset: "8%",
-          borderRadius: "50%",
-          background: "radial-gradient(circle at 35% 30%, rgba(99,102,241,0.25), rgba(34,211,238,0.08) 45%, transparent 70%)",
-          filter: "blur(4px)",
-        }}
-      />
-      <svg viewBox="0 0 300 300" style={{ position: "relative", width: "100%", height: "100%" }}>
-        <defs>
-          <radialGradient id="sphere" cx="38%" cy="32%">
-            <stop offset="0%" stopColor="rgba(99,102,241,0.28)" />
-            <stop offset="55%" stopColor="rgba(30,20,70,0.35)" />
-            <stop offset="100%" stopColor="rgba(4,4,10,0.5)" />
-          </radialGradient>
-        </defs>
-        <circle cx="150" cy="150" r="120" fill="url(#sphere)" stroke="rgba(129,140,248,0.35)" strokeWidth="1" />
-
-        {/* Longitude lines */}
-        {[0.28, 0.55, 0.8, 1].map((s, i) => (
-          <ellipse
-            key={`lon${i}`}
-            cx="150"
-            cy="150"
-            rx={120 * s}
-            ry="120"
-            fill="none"
-            stroke="rgba(99,102,241,0.16)"
-            strokeWidth="0.8"
-          />
-        ))}
-        {/* Latitude lines */}
-        {[-70, -35, 0, 35, 70].map((y, i) => {
-          const rx = Math.sqrt(Math.max(0, 120 * 120 - y * y));
-          return (
-            <ellipse
-              key={`lat${i}`}
-              cx="150"
-              cy={150 + y}
-              rx={rx}
-              ry={rx * 0.24}
-              fill="none"
-              stroke="rgba(34,211,238,0.12)"
-              strokeWidth="0.8"
-            />
-          );
-        })}
-
-        {/* Connection arcs */}
-        {arcs.map((a, i) => (
-          <g key={i}>
-            <motion.path
-              d={a.d}
-              fill="none"
-              stroke="rgba(34,211,238,0.6)"
-              strokeWidth="1.2"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: [0, 1, 0.4] }}
-              transition={{ duration: 2.4, delay: a.delay, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
-            />
-          </g>
-        ))}
-
-        {/* Location pins */}
-        {[
-          [90, 110], [200, 95], [150, 190], [110, 175], [225, 165],
-        ].map(([x, y], i) => (
-          <motion.circle
-            key={i}
-            cx={x}
-            cy={y}
-            r="3"
-            fill="#22d3ee"
-            initial={{ opacity: 0.3 }}
-            animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.6, 1] }}
-            transition={{ duration: 2, delay: i * 0.4, repeat: Infinity, ease: "easeInOut" }}
-            style={{ filter: "drop-shadow(0 0 6px #22d3ee)" }}
-          />
-        ))}
+/* ─── Contact details + socials ──────────────────────────── */
+const SOCIALS = [
+  {
+    label: "Instagram",
+    handle: "@orvantia.in",
+    href: "https://www.instagram.com/orvantia.in",
+    icon: (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="currentColor" strokeWidth="1.6" />
+        <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.6" />
+        <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" />
       </svg>
+    ),
+  },
+  {
+    label: "LinkedIn",
+    handle: "Orvantia AI",
+    href: "https://www.linkedin.com/company/orvantiaai",
+    icon: (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M7 10v7M7 7.2v.02M11 17v-4a2 2 0 0 1 4 0v4M11 17v-7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+];
+
+function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+      <span style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 10, display: "grid", placeItems: "center", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-strong)", color: "var(--text-2)" }}>
+        {icon}
+      </span>
+      <div>
+        <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 3 }}>{label}</div>
+        <div style={{ fontSize: 14.5, color: "var(--text)", lineHeight: 1.4 }}>{value}</div>
+      </div>
     </div>
+  );
+}
+
+function SocialLink({ label, handle, href, icon }: (typeof SOCIALS)[number]) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-cursor-hover
+      aria-label={`${label} — ${handle}`}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 11, padding: "11px 16px",
+        borderRadius: 12, textDecoration: "none",
+        background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-strong)",
+        color: "var(--text-2)", transition: "border-color 0.2s, color 0.2s, background 0.2s",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(99,102,241,0.5)"; e.currentTarget.style.color = "var(--text)"; e.currentTarget.style.background = "rgba(99,102,241,0.08)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border-strong)"; e.currentTarget.style.color = "var(--text-2)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
+    >
+      {icon}
+      <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
+        <span style={{ fontFamily: "var(--font)", fontSize: 13.5, fontWeight: 500 }}>{label}</span>
+        <span style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.02em", color: "var(--text-3)" }}>{handle}</span>
+      </span>
+    </a>
+  );
+}
+
+function ContactPanel() {
+  return (
+    <Reveal>
+      <div className="frosted" style={{ position: "relative", overflow: "hidden", borderRadius: "var(--radius-xl)", padding: "clamp(28px, 3.5vw, 48px)", height: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #6366f1, #a855f7 45%, #22d3ee)" }} />
+        <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 14 }}>
+          Talk to us directly
+        </div>
+        <a
+          href="mailto:abhinaybakkera@orvantia.in"
+          data-cursor-hover
+          className="email-link"
+          style={{ display: "inline-flex", alignItems: "center", gap: 10, fontFamily: "var(--font)", fontSize: "clamp(20px, 2.6vw, 32px)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--text)", textDecoration: "none", transition: "color 0.2s", width: "fit-content" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#818cf8")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text)")}
+        >
+          abhinaybakkera@orvantia.in
+          <span className="email-arrow" style={{ fontSize: "0.7em" }}>↗</span>
+        </a>
+        <p style={{ marginTop: 14, fontSize: 15, lineHeight: 1.7, color: "var(--text-2)", maxWidth: "40ch" }}>
+          Tell us what you&apos;re building. We reply within 1–2 business days with a clear,
+          no-pressure path forward.
+        </p>
+
+        <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 16 }}>
+          <InfoRow
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="currentColor" strokeWidth="1.6" /><circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" /></svg>}
+            label="Based in"
+            value="Hyderabad, Telangana · India"
+          />
+          <InfoRow
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" /><path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>}
+            label="Response time"
+            value="Within 1–2 business days"
+          />
+        </div>
+
+        <div style={{ height: 1, background: "var(--border)", margin: "28px 0" }} />
+
+        <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 14 }}>
+          Follow us
+        </div>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          {SOCIALS.map((s) => (
+            <SocialLink key={s.label} {...s} />
+          ))}
+        </div>
+
+        <div style={{ marginTop: "auto", paddingTop: 28 }}>
+          <span className="status-pill" style={{ display: "inline-flex" }}>
+            <span className="status-dot" />
+            Available for new projects
+          </span>
+        </div>
+      </div>
+    </Reveal>
   );
 }
 
@@ -282,28 +290,12 @@ export default function ContactSection() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
-          gap: "clamp(32px, 5vw, 72px)",
-          alignItems: "center",
+          gap: "clamp(24px, 3vw, 40px)",
+          alignItems: "stretch",
         }}
       >
-        {/* Globe + reassurance */}
-        <div>
-          <Globe />
-          <Reveal delay={0.2}>
-            <div style={{ marginTop: 32, textAlign: "center", maxWidth: 380, marginLeft: "auto", marginRight: "auto" }}>
-              <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--text-2)" }}>
-                Tell us what you&apos;re building. We reply within 1–2 business days with a
-                clear, no-pressure path forward.
-              </p>
-              <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
-                <span className="status-pill" style={{ display: "inline-flex" }}>
-                  <span className="status-dot" />
-                  Available for new projects
-                </span>
-              </div>
-            </div>
-          </Reveal>
-        </div>
+        {/* Contact details + socials */}
+        <ContactPanel />
 
         {/* Form */}
         <div className="frosted" style={{ borderRadius: "var(--radius-xl)", padding: "clamp(28px, 3.5vw, 48px)" }}>

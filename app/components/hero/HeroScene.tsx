@@ -18,13 +18,8 @@ const LINES: Array<Array<{ t: string; style: "solid" | "grad" | "outline" }>> = 
   [{ t: "Modern", style: "outline" }, { t: "Businesses", style: "grad" }],
 ];
 
-/* ─── Trust items ────────────────────────────────────────── */
-const TRUST_ITEMS = [
-  { name: "FactoryFlow", tag: "Enterprise", icon: "⬡", color: "rgba(99,102,241,0.5)" },
-  { name: "Continuum OS", tag: "Open Source", icon: "◈", color: "rgba(34,211,238,0.5)" },
-  { name: "EnteraFlux", tag: "Research", icon: "◆", color: "rgba(168,85,247,0.5)" },
-  { name: "Future Innovations", tag: "Coming Soon", icon: "✦", color: "rgba(129,140,248,0.5)" },
-];
+/* ─── What we build for businesses ───────────────────────── */
+const CAPABILITIES = ["Automated Systems", "SaaS Platforms", "Custom Software"];
 
 /* ─── Main Hero ──────────────────────────────────────────── */
 export default function HeroScene() {
@@ -211,8 +206,8 @@ export default function HeroScene() {
               transition={{ delay: 1.0, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               style={{ fontSize: "clamp(14px, 1.25vw, 18px)", lineHeight: 1.65, color: "var(--text-2)", maxWidth: "42ch" }}
             >
-              We design and engineer enterprise SaaS, AI-powered applications, and custom
-              software that help modern businesses scale faster.
+              We help growing businesses run leaner and move faster — introducing automated
+              systems, SaaS platforms, and custom software, built and shipped end to end.
             </motion.p>
 
             <motion.div
@@ -255,35 +250,51 @@ export default function HeroScene() {
       >
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "center",
-          gap: "clamp(12px, 2vw, 28px)", flexWrap: "wrap",
+          gap: "clamp(12px, 2vw, 26px)", flexWrap: "wrap",
           padding: "0 clamp(24px, 5vw, 80px)",
         }}>
+          {/* First client — real proof */}
+          <motion.div
+            className="hero-trust-card"
+            initial={{ opacity: 0, y: 10 }}
+            animate={sceneReady ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 1.6, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            style={{ "--trust-color": "rgba(34,197,94,0.5)" } as React.CSSProperties}
+          >
+            <span className="status-dot" style={{ background: "#4ade80" }} />
+            <div>
+              <div style={{ fontFamily: "var(--font)", fontSize: "clamp(10px, 0.9vw, 12.5px)", fontWeight: 500, color: "rgba(241,245,249,0.72)", whiteSpace: "nowrap", lineHeight: 1.2 }}>
+                Prayagh Consumer Care Pvt. Ltd.
+              </div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 7, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(74,222,128,0.7)", marginTop: 2 }}>
+                First client · Live in production
+              </div>
+            </div>
+          </motion.div>
+
+          <span className="hidden sm:block" style={{ width: 1, height: 26, background: "rgba(255,255,255,0.1)" }} />
+
           <span
             className="hidden sm:block"
-            style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(241,245,249,0.15)", whiteSpace: "nowrap", marginRight: 8 }}
+            style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(241,245,249,0.2)", whiteSpace: "nowrap" }}
           >
-            Building For
+            We build
           </span>
 
-          {TRUST_ITEMS.map((item, i) => (
-            <motion.div
-              key={item.name}
-              className="hero-trust-card"
+          {CAPABILITIES.map((c, i) => (
+            <motion.span
+              key={c}
               initial={{ opacity: 0, y: 10 }}
               animate={sceneReady ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 1.6 + i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              style={{ "--trust-color": item.color } as React.CSSProperties}
+              transition={{ delay: 1.72 + i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontFamily: "var(--mono)", fontSize: "clamp(9px, 0.8vw, 11px)", letterSpacing: "0.08em",
+                color: "rgba(241,245,249,0.5)", padding: "7px 14px", borderRadius: 100,
+                border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)", whiteSpace: "nowrap",
+              }}
             >
-              <span style={{ fontSize: 13, lineHeight: 1, opacity: 0.5 }}>{item.icon}</span>
-              <div>
-                <div style={{ fontFamily: "var(--font)", fontSize: "clamp(10px, 0.85vw, 12px)", fontWeight: 500, color: "rgba(241,245,249,0.6)", whiteSpace: "nowrap", lineHeight: 1.2 }}>
-                  {item.name}
-                </div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: 7, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(241,245,249,0.2)", marginTop: 1 }}>
-                  {item.tag}
-                </div>
-              </div>
-            </motion.div>
+              {c}
+            </motion.span>
           ))}
         </div>
       </motion.div>

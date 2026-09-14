@@ -8,8 +8,9 @@ const LINKS = [
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Case Study", href: "#case-study" },
-  { label: "Products", href: "#products" },
+  { label: "Products", href: "/products" },
   { label: "Process", href: "#process" },
+  { label: "Team", href: "#team" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -26,6 +27,16 @@ export default function Nav({ show }: { show: boolean }) {
 
   const go = (href: string) => {
     setOpen(false);
+    // Route links (e.g. /products) navigate; hash links scroll on the home page
+    // or jump to the home page's section from any other route.
+    if (href.startsWith("/")) {
+      window.location.href = href;
+      return;
+    }
+    if (window.location.pathname !== "/") {
+      window.location.href = "/" + href;
+      return;
+    }
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -53,7 +64,7 @@ export default function Nav({ show }: { show: boolean }) {
           <div className="relative flex items-center justify-between px-6 md:px-10 h-16">
             {/* Logo */}
             <a
-              href="#"
+              href="/"
               className="flex items-center gap-2.5 group"
               data-cursor-hover
             >

@@ -392,7 +392,7 @@ export default function ProductsSection() {
     >
       <div style={{ maxWidth: 820, marginBottom: "clamp(48px, 6vw, 80px)" }}>
         <Reveal>
-          <Eyebrow num="05" label="Products" />
+          <Eyebrow num="01" label="Our Products" />
         </Reveal>
         <SplitHeadline
           text="Long-term innovations, *built for the future."

@@ -12,8 +12,9 @@ import SmoothScroll from "./components/providers/SmoothScroll";
 import AboutSection from "./components/sections/AboutSection";
 import ServicesSection from "./components/sections/ServicesSection";
 import CaseStudySection from "./components/sections/CaseStudySection";
-import ProductsSection from "./components/sections/ProductsSection";
+import NextProjectSection from "./components/sections/NextProjectSection";
 import ProcessSection from "./components/sections/ProcessSection";
+import TeamSection from "./components/sections/TeamSection";
 import ContactSection from "./components/sections/ContactSection";
 
 const HeroScene = dynamic(() => import("./components/hero/HeroScene"), {
@@ -82,13 +83,16 @@ export default function Home() {
               {/* 04 · FactoryFlow case study */}
               <CaseStudySection />
 
-              {/* 05 · Products – Continuum OS + EnteraFlux */}
-              <ProductsSection />
+              {/* 05 · What's next – CCTV attendance (in demo) */}
+              <NextProjectSection />
 
               {/* 06 · Development process */}
               <ProcessSection />
 
-              {/* 07 · Contact – globe + project form */}
+              {/* 07 · Team */}
+              <TeamSection />
+
+              {/* 08 · Contact – details, socials + project form */}
               <ContactSection />
             </main>
 

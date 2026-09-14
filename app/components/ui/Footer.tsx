@@ -7,6 +7,7 @@ const NAV = [
   {
     heading: "Products",
     links: [
+      { label: "All Products", sub: "Continuum OS · EnteraFlux", href: "/products" },
       { label: "Continuum OS", sub: "Open-Source Engineering OS", href: "https://continuumos.vercel.app/" },
       { label: "EnteraFlux", sub: "Research Stage", href: "https://www.enteraflux.tech/" },
     ],
@@ -14,11 +15,11 @@ const NAV = [
   {
     heading: "Studio",
     links: [
-      { label: "About", href: "#about" },
-      { label: "Services", href: "#services" },
-      { label: "Case Study", href: "#case-study" },
-      { label: "Process", href: "#process" },
-      { label: "Contact", href: "#contact" },
+      { label: "About", href: "/#about" },
+      { label: "Services", href: "/#services" },
+      { label: "Case Study", href: "/#case-study" },
+      { label: "Process", href: "/#process" },
+      { label: "Contact", href: "/#contact" },
     ],
   },
 ];
@@ -27,6 +28,30 @@ const LEGAL = [
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
   { label: "Cookies", href: "/cookies" },
+];
+
+const SOCIALS = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/orvantia.in",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="currentColor" strokeWidth="1.7" />
+        <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.7" />
+        <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/orvantiaai",
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M7 10v7M7 7.2v.02M11 17v-4a2 2 0 0 1 4 0v4M11 17v-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    ),
+  },
 ];
 
 export default function Footer() {
@@ -120,8 +145,8 @@ export default function Footer() {
                 <li key={link.label}>
                   <a
                     href={"href" in link ? link.href : "#"}
-                    target={"href" in link && link.href !== "#" ? "_blank" : undefined}
-                    rel={"href" in link && link.href !== "#" ? "noopener noreferrer" : undefined}
+                    target={"href" in link && link.href.startsWith("http") ? "_blank" : undefined}
+                    rel={"href" in link && link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                     data-cursor-hover
                     style={{
                       fontFamily: "var(--font)",
@@ -225,7 +250,35 @@ export default function Footer() {
           © {new Date().getFullYear()} Orvantia AI, Inc. All rights reserved.
         </p>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+          {/* Socials */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {SOCIALS.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                data-cursor-hover
+                style={{
+                  display: "grid",
+                  placeItems: "center",
+                  width: 30,
+                  height: 30,
+                  borderRadius: 8,
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "rgba(241,245,249,0.4)",
+                  transition: "color 0.2s, border-color 0.2s, background 0.2s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(241,245,249,0.9)"; e.currentTarget.style.borderColor = "rgba(99,102,241,0.5)"; e.currentTarget.style.background = "rgba(99,102,241,0.08)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(241,245,249,0.4)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.background = "transparent"; }}
+              >
+                {s.icon}
+              </a>
+            ))}
+          </div>
+          <span style={{ width: 1, height: 14, background: "rgba(255,255,255,0.1)" }} />
           {LEGAL.map((l, i) => (
             <a
               key={l.label}

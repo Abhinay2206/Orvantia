@@ -67,7 +67,7 @@ function ServiceCard({ s, i }: { s: Service; i: number }) {
       />
 
       <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--text-3)" }}>{s.n}</span>
+        <span style={{ fontFamily: "var(--mono)", fontSize: 14, fontWeight: 500, color: s.c, opacity: 0.8 }}>{s.n}</span>
         <span
           style={{
             width: 9,
@@ -80,18 +80,21 @@ function ServiceCard({ s, i }: { s: Service; i: number }) {
       </div>
 
       <div style={{ position: "relative" }}>
-        <h3
-          style={{
-            fontFamily: "var(--font)",
-            fontSize: "clamp(19px, 1.9vw, 24px)",
-            fontWeight: 600,
-            letterSpacing: "-0.02em",
-            color: "var(--text)",
-            marginBottom: 10,
-          }}
-        >
-          {s.k}
-        </h3>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+          <h3
+            style={{
+              fontFamily: "var(--font)",
+              fontSize: "clamp(19px, 1.9vw, 24px)",
+              fontWeight: 600,
+              letterSpacing: "-0.02em",
+              color: "var(--text)",
+            }}
+          >
+            {s.k}
+          </h3>
+          <span className="svc-arrow" style={{ fontFamily: "var(--mono)", fontSize: 16, color: s.c, flexShrink: 0 }}>→</span>
+        </div>
+        <div className="svc-underline" style={{ height: 2, width: 40, background: s.c, borderRadius: 2, margin: "10px 0 12px", boxShadow: `0 0 10px ${s.c}` }} />
         <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--text-2)" }}>{s.d}</p>
       </div>
     </div>

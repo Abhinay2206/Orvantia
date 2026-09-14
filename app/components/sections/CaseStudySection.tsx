@@ -50,18 +50,18 @@ const METRICS = [
 ];
 
 const BEFORE = [
-  "Tasks scattered across spreadsheets, chat and email",
+  "Every task written by hand in a diary, one line per job",
+  "Follow-ups chased over WhatsApp, message by message",
   "No shared view of who owned what",
-  "Overdue work discovered too late",
-  "Follow-ups chased manually, one message at a time",
+  "Overdue work discovered too late, if at all",
   "Performance argued from memory, not data",
 ];
 
 const AFTER = [
-  "One system of record for every task and department",
+  "One system of record - no diary, nothing lost",
+  "Follow-ups automated - 2.1K notifications in month one",
   "Ownership, priority and due date on every card",
   "Overdue surfaced automatically the moment it slips",
-  "2.1K automated notifications in the first month alone",
   "Scored, exportable productivity reports per member",
 ];
 
@@ -245,73 +245,54 @@ function ProductViewer() {
   );
 }
 
-/* ─── Before → After story ───────────────────────────────── */
-function BeforeAfter() {
+/* ─── Before → After transformation (paired rows) ────────── */
+function Transformation() {
+  const pairs = BEFORE.map((b, i) => ({ before: b, after: AFTER[i] }));
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
-        gap: "clamp(16px, 2vw, 28px)",
-      }}
-    >
-      {[
-        { label: "Before", color: "rgba(248,113,113,0.85)", items: BEFORE, mark: "—" },
-        { label: "After", color: "#22d3ee", items: AFTER, mark: "→" },
-      ].map((col, ci) => (
-        <Reveal key={col.label} delay={ci * 0.08}>
-          <div
-            className="glass-card"
-            style={{
-              padding: "clamp(26px, 3vw, 38px)",
-              borderRadius: "var(--radius-lg)",
-              height: "100%",
-              background: "rgba(10,10,20,0.6)",
-              backdropFilter: "blur(12px)",
-              borderTop: `1px solid ${col.color}`,
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "var(--mono)",
-                fontSize: 10,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: col.color,
-                marginBottom: 22,
-              }}
-            >
-              {col.label} FactoryFlow
+    <div>
+      {/* Column labels (desktop) */}
+      <div className="xform-row" style={{ marginBottom: 12 }}>
+        <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(248,113,113,0.85)", paddingLeft: 16, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(248,113,113,0.8)" }} />
+          Before · Diary &amp; WhatsApp
+        </div>
+        <div />
+        <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#22d3ee", paddingLeft: 16, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22d3ee", boxShadow: "0 0 8px #22d3ee" }} />
+          After · FactoryFlow
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {pairs.map((p, i) => (
+          <Reveal key={i} delay={i * 0.05}>
+            <div className="xform-row">
+              {/* Before */}
+              <div
+                className="xform-cell is-before"
+                style={{ borderRadius: 12, border: "1px solid rgba(255,255,255,0.055)", borderLeft: "2px solid rgba(248,113,113,0.55)", background: "rgba(248,113,113,0.03)", padding: "14px 16px", display: "flex", gap: 11, alignItems: "flex-start" }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(248,113,113,0.65)", marginTop: 7, flexShrink: 0 }} />
+                <span style={{ fontSize: "clamp(13px, 1.2vw, 15px)", lineHeight: 1.5, color: "var(--text-2)" }}>{p.before}</span>
+              </div>
+
+              {/* Arrow */}
+              <div style={{ display: "grid", placeItems: "center" }}>
+                <span className="xform-arrow" style={{ fontFamily: "var(--mono)", fontSize: 17, color: "rgba(34,211,238,0.75)", lineHeight: 1 }}>→</span>
+              </div>
+
+              {/* After */}
+              <div
+                className="xform-cell is-after"
+                style={{ borderRadius: 12, border: "1px solid rgba(34,211,238,0.2)", borderLeft: "2px solid #22d3ee", background: "rgba(34,211,238,0.05)", padding: "14px 16px", display: "flex", gap: 11, alignItems: "flex-start" }}
+              >
+                <span style={{ color: "#22d3ee", fontSize: 12, marginTop: 2, flexShrink: 0 }}>✓</span>
+                <span style={{ fontSize: "clamp(13px, 1.2vw, 15px)", lineHeight: 1.5, color: "var(--text)" }}>{p.after}</span>
+              </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              {col.items.map((item) => (
-                <div key={item} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                  <span
-                    style={{
-                      fontFamily: "var(--mono)",
-                      fontSize: 13,
-                      color: col.color,
-                      lineHeight: 1.5,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {col.mark}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: "clamp(14px, 1.3vw, 16px)",
-                      lineHeight: 1.55,
-                      color: ci === 0 ? "var(--text-2)" : "var(--text)",
-                    }}
-                  >
-                    {item}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-      ))}
+          </Reveal>
+        ))}
+      </div>
     </div>
   );
 }
@@ -360,15 +341,19 @@ export default function CaseStudySection() {
               fontWeight: 600,
             }}
           >
-            A manufacturing floor ran on spreadsheets. Now it runs on this.
+            A manufacturing floor ran on a diary and WhatsApp. Now it runs on this.
           </p>
         </Reveal>
         <Reveal delay={0.22}>
           <p style={{ marginTop: 14, fontSize: "clamp(15px, 1.4vw, 18px)", color: "var(--text-2)", maxWidth: "62ch", lineHeight: 1.65 }}>
-            An enterprise task and workflow platform we designed, built, and shipped for a
-            manufacturing client - now handling their real day-to-day operations across
-            multiple departments.
+            An enterprise task and workflow platform we designed, built, and shipped for
+            <strong style={{ color: "var(--text)", fontWeight: 600 }}> Prayagh Consumer Care Pvt. Ltd.</strong> - now
+            handling their real day-to-day operations across multiple departments.
           </p>
+          <div style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-3)" }}>
+            <span style={{ width: 22, height: 1, background: "rgba(34,211,238,0.5)" }} />
+            Client · Prayagh Consumer Care Pvt. Ltd.
+          </div>
         </Reveal>
       </div>
 
@@ -411,22 +396,23 @@ export default function CaseStudySection() {
               }}
             >
               {METRICS.map((m) => (
-                <div key={m.label}>
+                <div key={m.label} className="stat-cell" style={{ padding: "14px 16px" }}>
                   <div
+                    className="g-text-cyan"
                     style={{
                       fontFamily: "var(--font)",
                       fontSize: "clamp(34px, 4.4vw, 56px)",
                       fontWeight: 700,
                       letterSpacing: "-0.04em",
                       lineHeight: 1,
-                      color: "#22d3ee",
                     }}
                   >
                     <AnimatedCounter to={m.to} decimals={m.decimals} suffix={m.suffix} duration={1600} />
                   </div>
+                  <div style={{ marginTop: 12, height: 2, width: 32, borderRadius: 2, background: "linear-gradient(90deg, #22d3ee, transparent)" }} />
                   <div
                     style={{
-                      marginTop: 10,
+                      marginTop: 12,
                       fontFamily: "var(--mono)",
                       fontSize: 10,
                       letterSpacing: "0.16em",
@@ -443,9 +429,17 @@ export default function CaseStudySection() {
         </Reveal>
       </div>
 
-      {/* Before → After */}
-      <div style={{ marginTop: "clamp(28px, 3.4vw, 44px)" }}>
-        <BeforeAfter />
+      {/* Before → After transformation */}
+      <div style={{ marginTop: "clamp(36px, 4.5vw, 56px)" }}>
+        <Reveal>
+          <h3 style={{ fontFamily: "var(--font)", fontSize: "clamp(20px, 2.4vw, 30px)", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text)", marginBottom: 6 }}>
+            From lost notes to a system of record.
+          </h3>
+          <p style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: 24 }}>
+            Every problem the floor had - and what replaced it.
+          </p>
+        </Reveal>
+        <Transformation />
       </div>
 
       {/* Capabilities */}
@@ -467,7 +461,12 @@ export default function CaseStudySection() {
             {CAPABILITIES.map((c) => (
               <span
                 key={c}
+                data-cursor-hover
+                className="cap-chip"
                 style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
                   padding: "8px 16px",
                   borderRadius: 100,
                   border: "1px solid rgba(255,255,255,0.07)",
@@ -476,10 +475,20 @@ export default function CaseStudySection() {
                   color: "var(--text-2)",
                 }}
               >
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(34,211,238,0.7)", flexShrink: 0 }} />
                 {c}
               </span>
             ))}
           </div>
+        </Reveal>
+      </div>
+
+      {/* View full case study */}
+      <div style={{ marginTop: "clamp(32px, 4vw, 52px)" }}>
+        <Reveal>
+          <a href="/case-study" className="btn-primary" data-cursor-hover style={{ background: "linear-gradient(135deg, rgba(34,211,238,0.9), rgba(59,130,246,0.9))" }}>
+            View the full case study →
+          </a>
         </Reveal>
       </div>
     </Section>

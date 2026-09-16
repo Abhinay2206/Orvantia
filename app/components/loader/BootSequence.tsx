@@ -42,17 +42,26 @@ function ConcentricRings() {
 }
 
 /* ─── Welcome reveal (Orvantia name) ─────────────────────── */
-export default function BootSequence({ onComplete }: { onComplete: () => void }) {
+export default function BootSequence({ onComplete, skip }: { onComplete: () => void; skip?: boolean }) {
   const [exiting, setExiting] = useState(false);
 
+  // Arriving with a target section (e.g. from another page's "#contact" link) –
+  // fast-forward past the intro instead of playing the full reveal.
   useEffect(() => {
+    if (!skip || exiting) return;
+    setExiting(true);
+    onComplete();
+  }, [skip, exiting, onComplete]);
+
+  useEffect(() => {
+    if (skip) return;
     const exitTimer = setTimeout(() => setExiting(true), 1900);
     const completeTimer = setTimeout(() => onComplete(), 2750);
     return () => {
       clearTimeout(exitTimer);
       clearTimeout(completeTimer);
     };
-  }, [onComplete]);
+  }, [onComplete, skip]);
 
   return (
     <AnimatePresence>

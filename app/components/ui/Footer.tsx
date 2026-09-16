@@ -7,8 +7,7 @@ const NAV = [
   {
     heading: "Products",
     links: [
-      { label: "All Products", sub: "Continuum OS · EnteraFlux", href: "/products" },
-      { label: "Continuum OS", sub: "Open-Source Engineering OS", href: "https://continuumos.vercel.app/" },
+      { label: "All Products", sub: "EnteraFlux", href: "/products" },
       { label: "EnteraFlux", sub: "Research Stage", href: "https://www.enteraflux.tech/" },
     ],
   },
@@ -247,7 +246,7 @@ export default function Footer() {
             letterSpacing: "0.06em",
           }}
         >
-          © {new Date().getFullYear()} Orvantia AI, Inc. All rights reserved.
+          © {new Date().getFullYear()} Orvantia, Inc. All rights reserved.
         </p>
 
         <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>

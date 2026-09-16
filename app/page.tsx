@@ -39,10 +39,51 @@ const HeroScene = dynamic(() => import("./components/hero/HeroScene"), {
 export default function Home() {
   const [booted, setBooted] = useState(false);
   const [navVisible, setNavVisible] = useState(false);
+  const [skipBoot, setSkipBoot] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = booted ? "" : "hidden";
     return () => { document.body.style.overflow = ""; };
+  }, [booted]);
+
+  // Arriving from another page with a target section (e.g. "/#contact") –
+  // skip the intro and land directly on that section instead of the top.
+  useEffect(() => {
+    if (window.location.hash) setSkipBoot(true);
+  }, []);
+
+  useEffect(() => {
+    if (!booted) return;
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    let attempts = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    let fallbackTimer: ReturnType<typeof setTimeout>;
+    const tryScroll = () => {
+      const el = document.querySelector(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        // Guarantee the landing even if the smooth animation is throttled
+        // (background tab, reduced motion, etc.) - snap into place if it
+        // hasn't visibly progressed shortly after.
+        fallbackTimer = setTimeout(() => {
+          const stillNear = window.scrollY < 40;
+          const target = el.getBoundingClientRect().top + window.scrollY;
+          if (stillNear && target > 200) {
+            window.scrollTo({ top: target, behavior: "auto" });
+          }
+        }, 700);
+        return;
+      }
+      attempts++;
+      if (attempts < 20) timer = setTimeout(tryScroll, 100);
+    };
+    timer = setTimeout(tryScroll, 150);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(fallbackTimer);
+    };
   }, [booted]);
 
   const onBooted = () => {
@@ -52,7 +93,7 @@ export default function Home() {
 
   return (
     <>
-      <BootSequence onComplete={onBooted} />
+      <BootSequence onComplete={onBooted} skip={skipBoot} />
 
       {/* Stable wrapper: without it React inserts this subtree using the exiting
           BootSequence node as its insertBefore reference, which framer-motion

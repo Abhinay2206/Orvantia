@@ -1,11 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
 import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
   { k: "Discovery", d: "We immerse in your business, users, and constraints to define what winning looks like." },
@@ -61,20 +58,16 @@ export default function ProcessSection() {
         }
       );
 
-      // Highlight steps as they enter the center of the viewport
-      const steps = gsap.utils.toArray(".process-step");
-      steps.forEach((step: any, i) => {
-        ScrollTrigger.create({
-          trigger: step,
-          start: "top 60%",
-          end: "bottom 40%",
-          onEnter: () => gsap.to(step, { opacity: 1, filter: "blur(0px)", duration: 0.4 }),
-          onLeave: () => gsap.to(step, { opacity: 0.3, filter: "blur(2px)", duration: 0.4 }),
-          onEnterBack: () => gsap.to(step, { opacity: 1, filter: "blur(0px)", duration: 0.4 }),
-          onLeaveBack: () => gsap.to(step, { opacity: 0.3, filter: "blur(2px)", duration: 0.4 }),
-        });
-        // Initial state
-        gsap.set(step, { opacity: 0.3, filter: "blur(2px)" });
+      // Highlight steps as they enter the center of the viewport - batched
+      // into one optimized listener instead of N individual triggers.
+      gsap.set(".process-step", { opacity: 0.3, filter: "blur(2px)" });
+      ScrollTrigger.batch(".process-step", {
+        start: "top 60%",
+        end: "bottom 40%",
+        onEnter: (batch) => gsap.to(batch, { opacity: 1, filter: "blur(0px)", duration: 0.4, ease: ORV_EASE, stagger: 0.05, overwrite: true }),
+        onLeave: (batch) => gsap.to(batch, { opacity: 0.3, filter: "blur(2px)", duration: 0.4, ease: ORV_EASE, stagger: 0.05, overwrite: true }),
+        onEnterBack: (batch) => gsap.to(batch, { opacity: 1, filter: "blur(0px)", duration: 0.4, ease: ORV_EASE, stagger: 0.05, overwrite: true }),
+        onLeaveBack: (batch) => gsap.to(batch, { opacity: 0.3, filter: "blur(2px)", duration: 0.4, ease: ORV_EASE, stagger: 0.05, overwrite: true }),
       });
     });
 

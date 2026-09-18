@@ -1,18 +1,46 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
 import { Section, Reveal } from "./_shared";
 
 /* ─── CCTV attendance scan visual ────────────────────────── */
 function ScanVisual() {
+  const rootRef = useRef<HTMLDivElement>(null);
   const boxes = [
-    { x: "13%", y: "32%", w: "19%", h: "44%" },
-    { x: "42%", y: "22%", w: "21%", h: "54%" },
-    { x: "70%", y: "36%", w: "18%", h: "40%" },
+    { x: 13, y: 32, w: 19, h: 44 },
+    { x: 42, y: 22, w: 21, h: 54 },
+    { x: 70, y: 36, w: 18, h: 40 },
   ];
   const corner = (pos: React.CSSProperties): React.CSSProperties => ({ position: "absolute", width: 16, height: 16, ...pos });
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const rects = gsap.utils.toArray<SVGRectElement>(".detect-box", root);
+    const labels = gsap.utils.toArray<HTMLElement>(".detect-label", root);
+    if (!rects.length) return;
+
+    gsap.set(rects, { drawSVG: "0%" });
+    gsap.set(labels, { autoAlpha: 0 });
+
+    const st = ScrollTrigger.create({
+      trigger: root,
+      start: "top 80%",
+      once: true,
+      onEnter: () => {
+        rects.forEach((rect, i) => {
+          gsap.to(rect, { drawSVG: "100%", duration: 0.7, ease: ORV_EASE, delay: 0.3 + i * 0.22 });
+          gsap.to(labels[i], { autoAlpha: 1, duration: 0.3, delay: 0.3 + i * 0.22 + 0.7 });
+        });
+      },
+    });
+    return () => st.kill();
+  }, []);
+
   return (
-    <div style={{ position: "relative", width: "100%", aspectRatio: "4 / 3", borderRadius: 16, overflow: "hidden", background: "radial-gradient(ellipse at 50% 15%, rgba(99,102,241,0.16), rgba(4,4,10,0.72))", border: "1px solid rgba(99,102,241,0.22)" }}>
+    <div ref={rootRef} style={{ position: "relative", width: "100%", aspectRatio: "4 / 3", borderRadius: 16, overflow: "hidden", background: "radial-gradient(ellipse at 50% 15%, rgba(99,102,241,0.16), rgba(4,4,10,0.72))", border: "1px solid rgba(99,102,241,0.22)" }}>
       <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(129,140,248,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(129,140,248,0.06) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
 
       <div style={corner({ top: 12, left: 12, borderTop: "2px solid rgba(34,211,238,0.7)", borderLeft: "2px solid rgba(34,211,238,0.7)" })} />
@@ -20,19 +48,30 @@ function ScanVisual() {
       <div style={corner({ bottom: 12, left: 12, borderBottom: "2px solid rgba(34,211,238,0.7)", borderLeft: "2px solid rgba(34,211,238,0.7)" })} />
       <div style={corner({ bottom: 12, right: 12, borderBottom: "2px solid rgba(34,211,238,0.7)", borderRight: "2px solid rgba(34,211,238,0.7)" })} />
 
+      {/* Detection boxes - the border literally draws itself around each person */}
+      <svg viewBox="0 0 100 75" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} aria-hidden>
+        {boxes.map((b, i) => (
+          <rect
+            key={i}
+            className="detect-box"
+            x={b.x} y={b.y * 0.75} width={b.w} height={b.h * 0.75}
+            rx={1.2}
+            fill="none"
+            stroke="rgba(74,222,128,0.85)"
+            strokeWidth={0.6}
+            style={{ filter: "drop-shadow(0 0 3px rgba(74,222,128,0.4))" }}
+          />
+        ))}
+      </svg>
+
       {boxes.map((b, i) => (
-        <motion.div
+        <span
           key={i}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 + i * 0.2, duration: 0.4 }}
-          style={{ position: "absolute", left: b.x, top: b.y, width: b.w, height: b.h, border: "1.5px solid rgba(74,222,128,0.85)", borderRadius: 6, boxShadow: "0 0 16px rgba(74,222,128,0.22)" }}
+          className="detect-label"
+          style={{ position: "absolute", left: `${b.x}%`, top: `${b.y - 3.5}%`, fontFamily: "var(--mono)", fontSize: 7.5, letterSpacing: "0.08em", color: "rgba(74,222,128,0.95)", background: "rgba(4,4,10,0.75)", padding: "1px 5px", borderRadius: 3, whiteSpace: "nowrap" }}
         >
-          <span style={{ position: "absolute", top: -15, left: 0, fontFamily: "var(--mono)", fontSize: 7.5, letterSpacing: "0.08em", color: "rgba(74,222,128,0.95)", background: "rgba(4,4,10,0.75)", padding: "1px 5px", borderRadius: 3, whiteSpace: "nowrap" }}>
-            PRESENT ✓
-          </span>
-        </motion.div>
+          PRESENT ✓
+        </span>
       ))}
 
       <motion.div

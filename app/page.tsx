@@ -11,6 +11,7 @@ import ScrollProgress from "./components/ui/ScrollProgress";
 import SmoothScroll from "./components/providers/SmoothScroll";
 import AboutSection from "./components/sections/AboutSection";
 import ServicesSection from "./components/sections/ServicesSection";
+import ShowcaseSection from "./components/sections/ShowcaseSection";
 import CaseStudySection from "./components/sections/CaseStudySection";
 import NextProjectSection from "./components/sections/NextProjectSection";
 import ProcessSection from "./components/sections/ProcessSection";
@@ -120,6 +121,9 @@ export default function Home() {
 
               {/* 03 · Services – interactive capability cards */}
               <ServicesSection />
+
+              {/* 03.5 · Showcase – 3D / premium portfolio proof */}
+              <ShowcaseSection />
 
               {/* 04 · FactoryFlow case study */}
               <CaseStudySection />

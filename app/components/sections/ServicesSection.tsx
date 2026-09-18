@@ -1,11 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap } from "@/lib/motion";
 import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
-
-gsap.registerPlugin(ScrollTrigger);
 
 type Service = { n: string; k: string; d: string; c: string };
 
@@ -17,17 +14,30 @@ const SERVICES: Service[] = [
   { n: "05", k: "Mobile Apps", d: "Native-feeling iOS & Android from a single, maintainable codebase.", c: "#818cf8" },
   { n: "06", k: "UI/UX", d: "Design systems and interaction craft that make software feel premium.", c: "#3b82f6" },
   { n: "07", k: "Maintenance", d: "Long-term ownership – monitoring, hardening, and iteration.", c: "#818cf8" },
+  { n: "08", k: "3D & Premium Portfolios", d: "Cinematic, WebGL-driven portfolios and landing pages that feel alive.", c: "#fbbf24" },
 ];
 
 function ServiceCard({ s, i }: { s: Service; i: number }) {
   const ref = useRef<HTMLDivElement>(null);
+  const quickX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+  const quickY = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    gsap.set(el, { "--mx": "0px", "--my": "0px" });
+    // Buttery cursor-chase for the spotlight instead of snapping straight to
+    // the pointer on every mousemove event.
+    quickX.current = gsap.quickTo(el, "--mx", { duration: 0.5, ease: "power3" });
+    quickY.current = gsap.quickTo(el, "--my", { duration: 0.5, ease: "power3" });
+  }, []);
 
   const onMove = (e: React.MouseEvent) => {
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    el.style.setProperty("--my", `${e.clientY - r.top}px`);
+    quickX.current?.(e.clientX - r.left);
+    quickY.current?.(e.clientY - r.top);
   };
 
   return (

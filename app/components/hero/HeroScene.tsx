@@ -6,7 +6,7 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { NodeCloud, CameraRig } from "./IntelligenceNetwork";
 import DeepSpaceField from "./AuroraField";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import gsap from "gsap";
+import { gsap, ORV_EASE } from "@/lib/motion";
 import MagneticButton from "../ui/MagneticButton";
 import { useModal } from "@/app/components/providers/ModalProvider";
 import * as THREE from "three";
@@ -62,7 +62,7 @@ export default function HeroScene() {
       gsap.set(lines, { yPercent: 120, opacity: 0, skewY: 4 });
       gsap.to(lines, {
         yPercent: 0, opacity: 1, skewY: 0,
-        duration: 1.2, ease: "expo.out", stagger: 0.1, delay: 0.3,
+        duration: 1.2, ease: ORV_EASE, stagger: 0.1, delay: 0.3,
       });
     });
     return () => ctx.revert();

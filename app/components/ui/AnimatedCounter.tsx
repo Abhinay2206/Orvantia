@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useInView } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
 
 interface AnimatedCounterProps {
   to: number;
@@ -11,6 +11,11 @@ interface AnimatedCounterProps {
   decimals?: number;
 }
 
+/**
+ * Counts up to `to` once the element scrolls into view. Same public
+ * interface as before, now driven by GSAP (one motion engine, one house
+ * ease) instead of a hand-rolled requestAnimationFrame + cubic formula.
+ */
 export default function AnimatedCounter({
   to,
   duration = 1800,
@@ -18,39 +23,34 @@ export default function AnimatedCounter({
   prefix = "",
   decimals = 0,
 }: AnimatedCounterProps) {
-  const [value, setValue] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px" });
 
   useEffect(() => {
-    if (!inView) return;
+    const el = ref.current;
+    if (!el) return;
 
-    const start = performance.now();
-    let frameId: number;
-
-    const step = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      setValue(parseFloat((to * ease).toFixed(decimals)));
-      
-      if (progress < 1) {
-        frameId = requestAnimationFrame(step);
-      } else {
-        setValue(to); // Ensure exact final value
-      }
+    const render = (v: number) => {
+      el.textContent = `${prefix}${v.toFixed(decimals)}${suffix}`;
     };
+    render(0);
 
-    frameId = requestAnimationFrame(step);
+    const proxy = { val: 0 };
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top bottom",
+      once: true,
+      onEnter: () => {
+        gsap.to(proxy, {
+          val: to,
+          duration: duration / 1000,
+          ease: ORV_EASE,
+          onUpdate: () => render(proxy.val),
+        });
+      },
+    });
 
-    return () => {
-      if (frameId) cancelAnimationFrame(frameId);
-    };
-  }, [inView, to, duration, decimals]);
+    return () => st.kill();
+  }, [to, duration, suffix, prefix, decimals]);
 
-  return (
-    <span ref={ref}>
-      {prefix}{decimals > 0 ? value.toFixed(decimals) : Math.floor(value)}{suffix}
-    </span>
-  );
+  return <span ref={ref} />;
 }

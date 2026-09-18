@@ -1,12 +1,13 @@
 "use client";
 
 import { motion, useInView, type Variants } from "framer-motion";
-import { useRef, type ReactNode, type CSSProperties } from "react";
+import { useRef, useEffect, Fragment, type ReactNode, type CSSProperties } from "react";
+import { gsap, ScrollTrigger, SplitText, EASE, ORV_EASE } from "@/lib/motion";
 
-/* ─── Shared easing (Expo-like Snappy) ───────────────────── */
-export const EASE = [0.19, 1, 0.22, 1] as const;
+/* Shared easing - one house curve, GSAP + Framer Motion alike. */
+export { EASE };
 
-/* ─── Reveal – fade + rise on scroll into view ───────────── */
+/* Reveal - fade + rise on scroll into view. */
 export function Reveal({
   children,
   delay = 0,
@@ -42,7 +43,7 @@ export function Reveal({
   );
 }
 
-/* ─── Stagger container + item ───────────────────────────── */
+/* Stagger container + item. */
 export const staggerParent: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
@@ -53,7 +54,7 @@ export const staggerChild: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
 };
 
-/* ─── Section eyebrow – number · rule · label ────────────── */
+/* Section eyebrow - number / rule / label. */
 export function Eyebrow({
   num,
   label,
@@ -82,23 +83,67 @@ export function Eyebrow({
   );
 }
 
-/* ─── Split headline – word-by-word mask rise ────────────── */
+/**
+ * Split headline - cinematic char-by-char cascade.
+ *
+ * Gradient words ("*word") stay whole-unit so their background-clip text
+ * gradient never breaks across per-char spans; every other word splits
+ * into real SplitText characters and cascades in on scroll.
+ */
 export function SplitHeadline({
   text,
   className,
   style,
   gradientClass = "g-text",
-  wordDelay = 0.05,
 }: {
   text: string;
   className?: string;
   style?: CSSProperties;
   gradientClass?: string;
+  /** @deprecated no longer used - the reveal timing is now GSAP-driven. */
   wordDelay?: number;
 }) {
   const ref = useRef<HTMLHeadingElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-12% 0px" });
   const words = text.split(" ");
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const outerWordSpans = Array.from(el.children) as HTMLElement[];
+    const splits: SplitText[] = [];
+    const targets: Element[] = [];
+
+    outerWordSpans.forEach((outer) => {
+      const gradEl = outer.querySelector<HTMLElement>("[data-split-grad]");
+      if (gradEl) {
+        targets.push(gradEl);
+        return;
+      }
+      const plainEl = outer.querySelector<HTMLElement>("[data-split-word]");
+      if (plainEl) {
+        const split = new SplitText(plainEl, { type: "chars" });
+        splits.push(split);
+        targets.push(...split.chars);
+      }
+    });
+
+    gsap.set(targets, { yPercent: 120 });
+
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 88%",
+      once: true,
+      onEnter: () => {
+        gsap.to(targets, { yPercent: 0, duration: 1.05, ease: ORV_EASE, stagger: 0.022 });
+      },
+    });
+
+    return () => {
+      st.kill();
+      splits.forEach((s) => s.revert());
+    };
+  }, [text]);
 
   return (
     <h2
@@ -112,31 +157,32 @@ export function SplitHeadline({
         ...style,
       }}
     >
-      {words.map((w, i) => (
-        <span
-          key={i}
-          style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top", paddingBottom: "0.08em" }}
-        >
-          <motion.span
-            className={w.startsWith("*") ? gradientClass : undefined}
-            style={{ display: "inline-block" }}
-            initial={{ y: "120%" }}
-            animate={inView ? { y: "0%" } : {}}
-            transition={{ duration: 1.1, ease: EASE, delay: i * wordDelay }}
-          >
-            {w.replace("*", "")}
-            {i < words.length - 1 ? " " : ""}
-          </motion.span>
-        </span>
-      ))}
+      {words.map((w, i) => {
+        const isGrad = w.startsWith("*");
+        const clean = w.replace("*", "");
+        return (
+          <Fragment key={i}>
+            <span style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top", paddingBottom: "0.08em" }}>
+              <span
+                data-split-word={isGrad ? undefined : true}
+                data-split-grad={isGrad ? true : undefined}
+                className={isGrad ? gradientClass : undefined}
+                style={{ display: "inline-block" }}
+              >
+                {clean}
+              </span>
+            </span>
+            {i < words.length - 1 ? " " : ""}
+          </Fragment>
+        );
+      })}
     </h2>
   );
 }
 
-/* ─── Section wrapper – consistent padding + ambient glow ── */
+/* Section wrapper - consistent padding + ambient glow. */
 import { forwardRef } from "react";
 
-/* ─── Section wrapper – consistent padding + ambient glow ── */
 export const Section = forwardRef<
   HTMLElement,
   {

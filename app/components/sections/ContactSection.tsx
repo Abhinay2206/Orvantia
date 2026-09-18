@@ -2,11 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
 import { Section, Eyebrow, Reveal, EASE } from "./_shared";
-
-gsap.registerPlugin(ScrollTrigger);
 
 /* ─── Contact details + socials ──────────────────────────── */
 const SOCIALS = [
@@ -76,9 +73,26 @@ function SocialLink({ label, handle, href, icon }: (typeof SOCIALS)[number]) {
 }
 
 function ContactPanel() {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    const paths = gsap.utils.toArray<SVGPathElement | SVGCircleElement>(".draw-icon", el);
+    if (!paths.length) return;
+    gsap.set(paths, { drawSVG: "0%" });
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 80%",
+      once: true,
+      onEnter: () => gsap.to(paths, { drawSVG: "100%", duration: 0.9, ease: ORV_EASE, stagger: 0.08, delay: 0.15 }),
+    });
+    return () => st.kill();
+  }, []);
+
   return (
     <Reveal>
-      <div className="frosted" style={{ position: "relative", overflow: "hidden", borderRadius: "var(--radius-xl)", padding: "clamp(28px, 3.5vw, 48px)", height: "100%", display: "flex", flexDirection: "column" }}>
+      <div ref={panelRef} className="frosted" style={{ position: "relative", overflow: "hidden", borderRadius: "var(--radius-xl)", padding: "clamp(28px, 3.5vw, 48px)", height: "100%", display: "flex", flexDirection: "column" }}>
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #6366f1, #a855f7 45%, #22d3ee)" }} />
         <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 14 }}>
           Talk to us directly
@@ -101,12 +115,12 @@ function ContactPanel() {
 
         <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 16 }}>
           <InfoRow
-            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="currentColor" strokeWidth="1.6" /><circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" /></svg>}
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path className="draw-icon" d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="currentColor" strokeWidth="1.6" /><circle className="draw-icon" cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" /></svg>}
             label="Based in"
             value="Hyderabad, Telangana · India"
           />
           <InfoRow
-            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" /><path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>}
+            icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><circle className="draw-icon" cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" /><path className="draw-icon" d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>}
             label="Response time"
             value="Within 1–2 business days"
           />

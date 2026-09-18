@@ -6,8 +6,7 @@ import Footer from "../components/ui/Footer";
 import CustomCursor from "../components/ui/CustomCursor";
 import SmoothScroll from "../components/providers/SmoothScroll";
 import AnimatedCounter from "../components/ui/AnimatedCounter";
-
-const EASE = [0.16, 1, 0.3, 1] as const;
+import { EASE } from "@/lib/motion";
 
 const PROBLEM = [
   ["A diary at the desk", "Every task for every department was written by hand, one line per job. If a page was missed, the work was missed."],

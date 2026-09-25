@@ -7,13 +7,14 @@ import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* The everyday problems growing businesses bring to us - and what we do about them. */
 const PILLARS = [
-  { k: "Enterprise SaaS", d: "Multi-tenant platforms engineered for scale, security, and reliability." },
-  { k: "AI Solutions", d: "LLM apps, agents, and intelligent automation embedded into real workflows." },
-  { k: "Custom Software", d: "Bespoke products built around your operations – not off-the-shelf." },
-  { k: "Automation", d: "Systems that remove manual work and run your business while you sleep." },
-  { k: "Cloud Applications", d: "Cloud-native architecture, observability, and CI/CD from day one." },
-  { k: "Long-term Partnerships", d: "We build, ship, and evolve with you – well beyond launch." },
+  { k: "Work lives in diaries and WhatsApp", d: "We move it into one system your whole team can see, update, and act on." },
+  { k: "Follow-ups depend on someone remembering", d: "Reminders, escalations, and updates go out automatically - nothing slips." },
+  { k: "Reports take hours to put together", d: "Live dashboards show sales, tasks, and performance the moment you log in." },
+  { k: "Off-the-shelf tools don't fit", d: "We build around how your business already runs, not the other way round." },
+  { k: "Big-agency software feels out of reach", d: "Right-sized for growing businesses - practical scope, no enterprise bloat." },
+  { k: "Nobody to call after launch", d: "We train your team and stay on for fixes, updates, and improvements." },
 ];
 
 export default function AboutSection() {
@@ -97,12 +98,18 @@ export default function AboutSection() {
         {/* Header - Pinned Column */}
         <div ref={leftColRef} style={{ maxWidth: 620, paddingBottom: "40px" }} className="will-change-transform">
           <Reveal>
-            <Eyebrow num="02" label="Who We Are" />
+            <Eyebrow num="01" label="What We Fix" />
           </Reveal>
           <SplitHeadline
-            text="A premium software studio building *intelligent products for modern business."
+            text="Software that makes everyday business *simpler."
             style={{ marginTop: 26, fontSize: "clamp(30px, 4.6vw, 62px)" }}
           />
+          <Reveal delay={0.15}>
+            <p style={{ marginTop: 22, maxWidth: "44ch", fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text-2)" }}>
+              We work with growing businesses that still run on paper, spreadsheets,
+              and chat - and replace the manual work with systems that just run.
+            </p>
+          </Reveal>
         </div>
 
         {/* Pillars grid - Scrolling Column */}

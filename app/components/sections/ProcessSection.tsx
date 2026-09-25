@@ -5,14 +5,11 @@ import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
 import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
 
 const STEPS = [
-  { k: "Discovery", d: "We immerse in your business, users, and constraints to define what winning looks like." },
-  { k: "Planning", d: "Scope, architecture, and milestones – a clear map before a single line of code." },
-  { k: "Research", d: "We de-risk the hard parts: feasibility spikes, models, and technical proofs." },
-  { k: "Design", d: "Interaction and systems design that make the product feel inevitable." },
-  { k: "Development", d: "Typed, tested, reviewed code shipped in tight, visible increments." },
-  { k: "Testing", d: "Automated and human QA across correctness, performance, and security." },
-  { k: "Deployment", d: "Zero-drama releases with observability and rollback built in." },
-  { k: "Continuous Improvement", d: "We stay on – monitoring, iterating, and evolving with your business." },
+  { k: "Understand", d: "We learn how your business runs today - who does what, and where time gets lost." },
+  { k: "Plan & Quote", d: "A clear scope, timeline, and price before any code is written. No surprises." },
+  { k: "Design", d: "Simple screens your team understands on day one - on phone or desktop." },
+  { k: "Build & Test", d: "We build in small visible steps and test with your real data before launch." },
+  { k: "Launch & Support", d: "We set it up, train your team, and stay on for fixes and improvements." },
 ];
 
 export default function ProcessSection() {
@@ -91,7 +88,7 @@ export default function ProcessSection() {
             <Eyebrow num="06" label="How We Work" color="rgba(34,211,238,0.8)" />
           </Reveal>
           <SplitHeadline
-            text="A process engineered for *momentum."
+            text="A simple process, *no surprises."
             style={{ marginTop: 24, fontSize: "clamp(30px, 4.6vw, 62px)" }}
           />
         </div>

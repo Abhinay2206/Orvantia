@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, Suspense, useEffect, useState } from "react";
+import { useRef, Suspense, useEffect, useState, Fragment } from "react";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { NodeCloud, CameraRig } from "./IntelligenceNetwork";
@@ -10,6 +10,7 @@ import { gsap, ORV_EASE } from "@/lib/motion";
 import MagneticButton from "../ui/MagneticButton";
 import { useModal } from "@/app/components/providers/ModalProvider";
 import * as THREE from "three";
+import RollText from "../ui/RollText";
 
 /* ─── Headline config ────────────────────────────────────── */
 const LINES: Array<Array<{ t: string; style: "solid" | "grad" | "outline" }>> = [
@@ -79,7 +80,13 @@ export default function HeroScene() {
   const wordStyle = (s: "solid" | "grad" | "outline"): React.CSSProperties => {
     if (s === "grad")
       return {
-        background: "linear-gradient(100deg, #818cf8 0%, #a855f7 52%, #22d3ee 100%)",
+        fontFamily: "var(--serif)",
+        fontStyle: "italic",
+        fontWeight: 400,
+        fontSize: "1.1em",
+        letterSpacing: "-0.015em",
+        paddingRight: "0.05em",
+        background: "linear-gradient(100deg, #e0e7ff 0%, #a5b4fc 38%, #c084fc 68%, #67e8f9 100%)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
@@ -189,10 +196,12 @@ export default function HeroScene() {
               <span key={li} style={{ display: "block", overflow: "hidden", paddingBottom: "0.06em" }}>
                 <span ref={(el) => { lineRefs.current[li] = el; }} style={{ display: "inline-block" }}>
                   {line.map((seg, si) => (
-                    <span key={si} style={{ ...wordStyle(seg.style), marginRight: "0.28em" }}>
-                      {seg.t}
-                    </span>
+                    <Fragment key={si}>
+                      <span style={wordStyle(seg.style)}>{seg.t}</span>
+                      {si < line.length - 1 ? " " : ""}
+                    </Fragment>
                   ))}
+                  {li < LINES.length - 1 ? " " : ""}
                 </span>
               </span>
             ))}
@@ -222,7 +231,7 @@ export default function HeroScene() {
                 onClick={() => openModal("schedule")}
               >
                 <span style={{ position: "relative", zIndex: 1, fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "white" }}>
-                  Start Your Project
+                  <RollText>Start Your Project</RollText>
                 </span>
               </MagneticButton>
 
@@ -232,7 +241,7 @@ export default function HeroScene() {
                 onClick={() => document.querySelector("#case-study")?.scrollIntoView({ behavior: "smooth" })}
               >
                 <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-2)" }}>
-                  View Our Work
+                  <RollText>View Our Work</RollText>
                 </span>
                 <span className="hero-cta-arrow" aria-hidden>→</span>
               </button>

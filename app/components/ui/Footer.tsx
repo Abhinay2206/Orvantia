@@ -1,13 +1,17 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { gsap, ORV_EASE } from "@/lib/motion";
+import { useModal } from "@/app/components/providers/ModalProvider";
+import MagneticButton from "./MagneticButton";
+import RollText from "./RollText";
 
 const NAV = [
   {
     heading: "Products",
     links: [
-      { label: "All Products", sub: "EnteraFlux", href: "/products" },
+      { label: "All Products", sub: "NutritionOS · EnteraFlux", href: "/products" },
+      { label: "NutritionOS", sub: "Free Fitness Tracker", href: "https://nutritionos.orvantia.in/" },
       { label: "EnteraFlux", sub: "Research Stage", href: "https://www.enteraflux.tech/" },
     ],
   },
@@ -15,9 +19,10 @@ const NAV = [
     heading: "Studio",
     links: [
       { label: "About", href: "/#about" },
-      { label: "Services", href: "/#services" },
       { label: "Case Study", href: "/#case-study" },
+      { label: "Services", href: "/#services" },
       { label: "Process", href: "/#process" },
+      { label: "Team", href: "/#team" },
       { label: "Contact", href: "/#contact" },
     ],
   },
@@ -53,9 +58,68 @@ const SOCIALS = [
   },
 ];
 
+const WORDMARK = "ORVANTIA".split("");
+// Closing line - "*word" is set in the serif accent.
+const CLOSING = "Let's make your business *run *itself.".split(" ");
+
+/* Live studio time in Hyderabad. */
+function useStudioTime() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
+    const tick = () => setTime(fmt.format(new Date()).toUpperCase());
+    tick();
+    const id = setInterval(tick, 15_000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
 export default function Footer() {
+  const { openModal } = useModal();
+  const time = useStudioTime();
   const wordmarkRef = useRef<HTMLDivElement>(null);
-  const wordmarkInView = useInView(wordmarkRef, { once: true, margin: "-15%" });
+  const closingRef = useRef<HTMLHeadingElement>(null);
+
+  /* Wordmark letters rise out of the floor as the footer scrolls in. */
+  useEffect(() => {
+    const el = wordmarkRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".wm-letter",
+        { yPercent: 105 },
+        {
+          yPercent: 0,
+          ease: ORV_EASE,
+          stagger: 0.05,
+          scrollTrigger: { trigger: el, start: "top bottom", end: "bottom bottom", scrub: 0.8 },
+        }
+      );
+    }, el);
+    return () => ctx.revert();
+  }, []);
+
+  /* Closing line lights up word by word as it scrolls in - echoes the manifesto. */
+  useEffect(() => {
+    const el = closingRef.current;
+    if (!el) return;
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.fromTo(
+        el.querySelectorAll(".cl-w"),
+        { opacity: 0.12 },
+        { opacity: 1, ease: "none", stagger: 0.1, scrollTrigger: { trigger: el, start: "top 85%", end: "bottom 55%", scrub: 0.6 } }
+      );
+    });
+    return () => mm.revert();
+  }, []);
+
+  const toTop = () => {
+    const lenis = (window as unknown as { lenis?: { scrollTo: (t: number) => void } }).lenis;
+    if (lenis) lenis.scrollTo(0);
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <footer
@@ -73,6 +137,51 @@ export default function Footer() {
             "radial-gradient(ellipse 90% 80% at 50% 100%, rgba(20,5,70,0.28), transparent 65%)",
         }}
       />
+
+      {/* ─── Closing CTA ───────────────────────────────── */}
+      <div
+        className="relative z-10"
+        style={{
+          padding: "clamp(72px, 10vw, 140px) clamp(24px, 5vw, 72px) clamp(56px, 7vw, 96px)",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: "clamp(32px, 5vw, 64px)",
+          borderBottom: "1px solid rgba(255,255,255,0.055)",
+        }}
+      >
+        <div style={{ maxWidth: 900 }}>
+          <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 22 }}>
+            Still running on paper &amp; WhatsApp?
+          </div>
+          <h2
+            ref={closingRef}
+            style={{
+              fontFamily: "var(--font)",
+              fontSize: "clamp(40px, 7.4vw, 118px)",
+              fontWeight: 600,
+              letterSpacing: "-0.045em",
+              lineHeight: 0.98,
+              color: "var(--text)",
+            }}
+          >
+            {CLOSING.map((w, i) => (
+              <span key={i}>
+                <span className={w.startsWith("*") ? "cl-w accent-serif" : "cl-w"}>{w.replace("*", "")}</span>
+                {i < CLOSING.length - 1 ? " " : ""}
+              </span>
+            ))}
+          </h2>
+        </div>
+
+        <MagneticButton className="footer-cta" strength={0.35} onClick={() => openModal("schedule")}>
+          <span>Start a project</span>
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden>
+            <path d="M3 13L13 3M13 3H5M13 3v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </MagneticButton>
+      </div>
 
       {/* ─── Top grid ──────────────────────────────────── */}
       <div
@@ -113,8 +222,8 @@ export default function Footer() {
               marginBottom: 24,
             }}
           >
-            A premium software studio building enterprise SaaS platforms, AI-powered
-            applications, and custom software for modern businesses.
+            A software studio helping growing businesses replace manual work
+            with automation, SaaS, and custom software.
           </p>
 
           {/* Status */}
@@ -160,7 +269,7 @@ export default function Footer() {
                     onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(241,245,249,0.75)")}
                     onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(241,245,249,0.3)")}
                   >
-                    {link.label}
+                    <RollText>{link.label}</RollText>
                     {"sub" in link && link.sub && (
                       <span
                         style={{
@@ -192,36 +301,30 @@ export default function Footer() {
         }}
       />
 
-      {/* ─── Huge outline wordmark ──────────────────────── */}
+      {/* ─── Full-bleed wordmark ─────────────────────────── */}
       <div
         ref={wordmarkRef}
         className="relative z-10 overflow-hidden"
-        style={{ padding: "clamp(16px, 3vw, 32px) clamp(24px, 5vw, 72px) 0" }}
+        aria-hidden
+        style={{ padding: "clamp(24px, 4vw, 48px) clamp(12px, 2vw, 32px) 0", userSelect: "none" }}
       >
-        <motion.h2
-          initial={{ clipPath: "inset(0 100% 0 0)" }}
-          animate={wordmarkInView ? { clipPath: "inset(0 0% 0 0)" } : {}}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+        <div
           style={{
+            display: "flex",
+            justifyContent: "space-between",
             fontFamily: "var(--font)",
-            fontSize: "clamp(72px, 15vw, 220px)",
+            fontSize: "clamp(64px, 21.4vw, 400px)",
             fontWeight: 700,
-            letterSpacing: "-0.04em",
-            lineHeight: 0.88,
-            color: "transparent",
-            WebkitTextStroke: "1px rgba(255,255,255,0.055)",
-            userSelect: "none",
-            transition: "WebkitTextStroke 0.3s",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.webkitTextStroke = "1px rgba(99,102,241,0.25)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.webkitTextStroke = "1px rgba(255,255,255,0.055)";
+            letterSpacing: "-0.05em",
+            lineHeight: 0.8,
           }}
         >
-          ORVANTIA
-        </motion.h2>
+          {WORDMARK.map((l, i) => (
+            <span key={i} style={{ display: "inline-block", overflow: "hidden", paddingBottom: "0.02em" }}>
+              <span className="wm-letter">{l}</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* ─── Bottom bar ────────────────────────────────── */}
@@ -248,6 +351,11 @@ export default function Footer() {
         >
           © {new Date().getFullYear()} Orvantia, Inc. All rights reserved.
         </p>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.12em", color: "rgba(241,245,249,0.35)" }}>
+          <span className="status-dot" style={{ background: "#4ade80" }} />
+          HYDERABAD · {time || "--:--"} IST
+        </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
           {/* Socials */}
@@ -297,6 +405,10 @@ export default function Footer() {
               {l.label}
             </a>
           ))}
+          <span style={{ width: 1, height: 14, background: "rgba(255,255,255,0.1)" }} />
+          <button type="button" onClick={toTop} data-cursor-hover className="footer-top">
+            Back to top ↑
+          </button>
         </div>
       </div>
     </footer>

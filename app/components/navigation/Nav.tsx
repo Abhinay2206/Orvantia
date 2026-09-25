@@ -3,11 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModal } from "@/app/components/providers/ModalProvider";
+import RollText from "../ui/RollText";
 
 const LINKS = [
   { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
   { label: "Case Study", href: "#case-study" },
+  { label: "Services", href: "#services" },
   { label: "Products", href: "/products" },
   { label: "Process", href: "#process" },
   { label: "Team", href: "#team" },
@@ -82,7 +83,7 @@ export default function Nav({ show }: { show: boolean }) {
             </a>
 
             {/* Desktop links */}
-            <div className="hidden md:flex items-center gap-7">
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
               {LINKS.map((l) => (
                 <button
                   key={l.href}
@@ -94,40 +95,42 @@ export default function Nav({ show }: { show: boolean }) {
                     color: "rgba(241,245,249,0.35)",
                   }}
                   onMouseEnter={(e) => {
-                    (e.target as HTMLElement).style.color = "rgba(241,245,249,0.85)";
+                    e.currentTarget.style.color = "rgba(241,245,249,0.85)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.target as HTMLElement).style.color = "rgba(241,245,249,0.35)";
+                    e.currentTarget.style.color = "rgba(241,245,249,0.35)";
                   }}
                 >
-                  {l.label}
+                  <RollText>{l.label}</RollText>
                 </button>
               ))}
             </div>
 
             {/* Actions */}
-            <div className="hidden md:flex items-center gap-3">
-              <button
-                className="btn-secondary"
-                style={{ padding: "9px 20px" }}
-                data-cursor-hover
-                onClick={() => go("#contact")}
-              >
-                Let&apos;s Talk
-              </button>
+            <div className="hidden lg:flex items-center gap-3">
+              <span className="hidden xl:block">
+                <button
+                  className="btn-secondary"
+                  style={{ padding: "9px 20px" }}
+                  data-cursor-hover
+                  onClick={() => go("#contact")}
+                >
+                  Let&apos;s Talk
+                </button>
+              </span>
               <button
                 className="btn-primary"
                 style={{ padding: "9px 20px" }}
                 data-cursor-hover
                 onClick={() => openModal("schedule")}
               >
-                Start Your Project
+                <RollText>Start Your Project</RollText>
               </button>
             </div>
 
             {/* Hamburger */}
             <button
-              className="md:hidden flex flex-col gap-1.5 p-2"
+              className="lg:hidden flex flex-col gap-1.5 p-2"
               onClick={() => setOpen(!open)}
               data-cursor-hover
             >
@@ -152,7 +155,7 @@ export default function Nav({ show }: { show: boolean }) {
           <AnimatePresence>
             {open && (
               <motion.div
-                className="md:hidden px-6 py-5 space-y-1"
+                className="lg:hidden px-6 py-5 space-y-1"
                 style={{
                   background: "rgba(4,4,10,0.95)",
                   backdropFilter: "blur(30px)",

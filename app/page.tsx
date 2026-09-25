@@ -9,10 +9,12 @@ import Marquee from "./components/ui/Marquee";
 import Footer from "./components/ui/Footer";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import SmoothScroll from "./components/providers/SmoothScroll";
+import ManifestoSection from "./components/sections/ManifestoSection";
 import AboutSection from "./components/sections/AboutSection";
 import ServicesSection from "./components/sections/ServicesSection";
 import ShowcaseSection from "./components/sections/ShowcaseSection";
 import CaseStudySection from "./components/sections/CaseStudySection";
+import NutritionOSSection from "./components/sections/NutritionOSSection";
 import NextProjectSection from "./components/sections/NextProjectSection";
 import ProcessSection from "./components/sections/ProcessSection";
 import TeamSection from "./components/sections/TeamSection";
@@ -110,25 +112,31 @@ export default function Home() {
             <ScrollProgress />
 
             <main>
-              {/* 01 · Hero – full viewport Three.js + bloom */}
+              {/* Hero – full viewport Three.js + bloom */}
               <HeroScene />
 
               {/* Ticker */}
               <Marquee />
 
-              {/* 02 · About – premium software studio */}
+              {/* Manifesto – scroll-lit statement */}
+              <ManifestoSection />
+
+              {/* 01 · About – the everyday problems we fix */}
               <AboutSection />
 
-              {/* 03 · Services – interactive capability cards */}
-              <ServicesSection />
-
-              {/* 03.5 · Showcase – 3D / premium portfolio proof */}
-              <ShowcaseSection />
-
-              {/* 04 · FactoryFlow case study */}
+              {/* 02 · FactoryFlow case study – proof, right after the problem */}
               <CaseStudySection />
 
-              {/* 05 · What's next – CCTV attendance (in demo) */}
+              {/* 03 · Services – what we build */}
+              <ServicesSection />
+
+              {/* 04 · NutritionOS – built for ourselves */}
+              <NutritionOSSection />
+
+              {/* 05 · Showcase – 3D / premium portfolio proof */}
+              <ShowcaseSection />
+
+              {/* What's next – CCTV attendance (in demo) */}
               <NextProjectSection />
 
               {/* 06 · Development process */}

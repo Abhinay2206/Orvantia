@@ -94,7 +94,7 @@ export function SplitHeadline({
   text,
   className,
   style,
-  gradientClass = "g-text",
+  gradientClass = "accent-serif",
 }: {
   text: string;
   className?: string;

@@ -71,6 +71,131 @@ function ResearchGraphic() {
   );
 }
 
+const NUTRITIONOS_URL = "https://nutritionos.orvantia.in/";
+const NOS_ACCENT = "#5fc2ab"; // the app's own teal
+
+function NutritionOSPanel() {
+  const features = ["Indian & Telangana food database", "Calorie & macro tracking", "Workout logger with progression", "Installable PWA"];
+  const screens = [
+    { src: "/nutritionos/food-search.png", alt: "NutritionOS food search showing Indian dishes" },
+    { src: "/nutritionos/home.png", alt: "NutritionOS home screen with calorie ring and macros" },
+    { src: "/nutritionos/workout-log.png", alt: "NutritionOS workout logger with progression suggestion" },
+  ];
+  return (
+    <div
+      id="nutritionos"
+      className="glass-card"
+      style={{ borderRadius: "var(--radius-xl)", padding: "clamp(32px, 4vw, 64px)", maxWidth: 1000, margin: "0 auto" }}
+    >
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.2fr) minmax(0, 1fr)", gap: "clamp(32px, 5vw, 72px)", alignItems: "center" }} className="product-grid">
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22, flexWrap: "wrap" }}>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                fontFamily: "var(--mono)",
+                fontSize: 10,
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                padding: "5px 12px",
+                borderRadius: 100,
+                background: "rgba(95,194,171,0.1)",
+                border: "1px solid rgba(95,194,171,0.3)",
+                color: NOS_ACCENT,
+              }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: NOS_ACCENT, boxShadow: `0 0 8px ${NOS_ACCENT}` }} />
+              Live &amp; Free
+            </span>
+            <span style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.16em", color: "var(--text-3)" }}>
+              FITNESS · NUTRITION
+            </span>
+          </div>
+
+          <h3 style={{ fontFamily: "var(--font)", fontSize: "clamp(34px, 4.6vw, 60px)", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1, color: NOS_ACCENT }}>
+            NutritionOS
+          </h3>
+          <p style={{ marginTop: 20, fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text-2)", maxWidth: "46ch" }}>
+            Our team goes to the gym, and every nutrition app we tried was
+            paywalled, cluttered, or didn&apos;t know the food we actually eat. So we
+            built our own - fast, clean, free, and made for Indian meals.
+          </p>
+
+          <div style={{ marginTop: 34 }}>
+            <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.24em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 18 }}>
+              What&apos;s Inside
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {features.map((f, i) => (
+                <Reveal key={f} delay={i * 0.06} as="span">
+                  <span
+                    style={{
+                      display: "inline-block",
+                      padding: "9px 16px",
+                      borderRadius: 100,
+                      fontFamily: "var(--mono)",
+                      fontSize: 11,
+                      letterSpacing: "0.04em",
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(95,194,171,0.2)",
+                      color: "var(--text-2)",
+                    }}
+                  >
+                    {f}
+                  </span>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginTop: 34 }}>
+            <a
+              href={NUTRITIONOS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor-hover
+              className="btn-primary"
+              style={{ background: `linear-gradient(135deg, ${NOS_ACCENT}, #3fa58e)`, color: "#04120e" }}
+            >
+              Open NutritionOS ↗
+            </a>
+          </div>
+        </div>
+
+        {/* Real app screenshots */}
+        <Reveal delay={0.15}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.18fr 1fr", gap: "clamp(8px, 1.2vw, 14px)", alignItems: "center", maxWidth: 420, margin: "0 auto" }}>
+            {screens.map((sc, i) => (
+              <div
+                key={sc.src}
+                style={{
+                  aspectRatio: "780 / 1688",
+                  borderRadius: "clamp(14px, 1.8vw, 22px)",
+                  padding: "clamp(3px, 0.4vw, 5px)",
+                  background: "linear-gradient(160deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04))",
+                  boxShadow: i === 1
+                    ? "0 40px 100px rgba(0,0,0,0.6), 0 0 50px rgba(95,194,171,0.16), 0 0 0 1px rgba(255,255,255,0.08)"
+                    : "0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
+                  transform: `rotate(${(i - 1) * 4}deg)`,
+                }}
+              >
+                <img
+                  src={sc.src}
+                  alt={sc.alt}
+                  loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "clamp(11px, 1.5vw, 18px)" }}
+                />
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </div>
+  );
+}
+
 function EnterafluxPanel() {
   const research = ["Adaptive intake modeling", "Multi-agent reasoning core", "Real-world validation studies", "Private beta cohort"];
   return (
@@ -190,20 +315,26 @@ export default function ProductsSection() {
           <Eyebrow num="01" label="Our Products" />
         </Reveal>
         <SplitHeadline
-          text="A long-term investment, *built for the future."
+          text="Products we build *for ourselves."
           style={{ marginTop: 24, fontSize: "clamp(30px, 4.6vw, 62px)" }}
         />
         <Reveal delay={0.15}>
           <p style={{ marginTop: 24, maxWidth: "52ch", fontSize: "clamp(15px, 1.4vw, 19px)", lineHeight: 1.7, color: "var(--text-2)" }}>
-            Beyond client work, Orvantia invests in frontier research that pushes the
-            field forward.
+            Beyond client work, we build our own products - to solve problems we
+            face ourselves, and to push into what&apos;s next. One is live and free
+            today; one is deep in research.
           </p>
         </Reveal>
       </div>
 
-      <Reveal delay={0.1}>
-        <EnterafluxPanel />
-      </Reveal>
+      <div style={{ display: "grid", gap: "clamp(28px, 4vw, 48px)" }}>
+        <Reveal delay={0.1}>
+          <NutritionOSPanel />
+        </Reveal>
+        <Reveal delay={0.1}>
+          <EnterafluxPanel />
+        </Reveal>
+      </div>
     </Section>
   );
 }

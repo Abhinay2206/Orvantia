@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
 import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
+import RollText from "../ui/RollText";
 
 const SITE_URL = "https://abhinay.vercel.app/";
 
@@ -120,6 +121,27 @@ function PreviewFrame() {
 }
 
 export default function ShowcaseSection() {
+  const previewRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    const el = previewRef.current;
+    if (!el) return;
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.fromTo(
+        el,
+        { clipPath: "inset(14% 12% 14% 12% round 28px)", scale: 1.06 },
+        {
+          clipPath: "inset(0% 0% 0% 0% round 16px)",
+          scale: 1,
+          ease: "none",
+          scrollTrigger: { trigger: el, start: "top 95%", end: "center 55%", scrub: 0.8 },
+        }
+      );
+    });
+    return () => mm.revert();
+  }, []);
+
   return (
     <Section
       id="showcase"
@@ -137,7 +159,7 @@ export default function ShowcaseSection() {
         {/* Copy */}
         <div style={{ maxWidth: 520 }}>
           <Reveal>
-            <Eyebrow num="08" label="Showcase" color="rgba(212,255,80,0.85)" />
+            <Eyebrow num="05" label="Showcase" color="rgba(212,255,80,0.85)" />
           </Reveal>
           <div style={{ marginTop: 24 }}>
             <SplitHeadline
@@ -147,7 +169,7 @@ export default function ShowcaseSection() {
           </div>
           <Reveal delay={0.15}>
             <p style={{ marginTop: 20, fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text-2)", maxWidth: "50ch" }}>
-              Beyond enterprise systems, we design and build premium, WebGL-driven
+              Beyond business software, we design and build premium, WebGL-driven
               portfolios and landing pages - the kind that feel less like a website
               and more like a scene. This one is built by our founder, live in
               production.
@@ -184,16 +206,24 @@ export default function ShowcaseSection() {
                 className="btn-primary"
                 style={{ background: "linear-gradient(135deg, rgba(212,255,80,0.95), rgba(163,230,53,0.9))", color: "#0a0a0a" }}
               >
-                Visit abhinay.vercel.app ↗
+                <RollText>Visit abhinay.vercel.app ↗</RollText>
               </a>
             </div>
           </Reveal>
         </div>
 
-        {/* Preview */}
-        <Reveal delay={0.1}>
+        {/* Preview - opens up from a smaller window as it scrolls in */}
+        <a
+          ref={previewRef}
+          href={SITE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Visit abhinay.vercel.app"
+          data-cursor-text="VISIT ↗"
+          style={{ display: "block", textDecoration: "none", color: "inherit" }}
+        >
           <PreviewFrame />
-        </Reveal>
+        </a>
       </div>
     </Section>
   );

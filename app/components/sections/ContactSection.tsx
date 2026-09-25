@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
-import { Section, Eyebrow, Reveal, EASE } from "./_shared";
+import { Section, Eyebrow, Reveal, SplitHeadline, EASE } from "./_shared";
 
 /* ─── Contact details + socials ──────────────────────────── */
 const SOCIALS = [
@@ -281,23 +281,10 @@ export default function ContactSection() {
             <Eyebrow num="08" label="Contact" />
           </div>
         </Reveal>
-        <motion.h2
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-12%" }}
-          transition={{ duration: 0.9, ease: EASE }}
-          className="g-text"
-          style={{
-            marginTop: 26,
-            fontFamily: "var(--font)",
-            fontSize: "clamp(34px, 6vw, 82px)",
-            fontWeight: 700,
-            letterSpacing: "-0.04em",
-            lineHeight: 1,
-          }}
-        >
-          Let&apos;s Build Something Extraordinary
-        </motion.h2>
+        <SplitHeadline
+          text="Let's build something *extraordinary."
+          style={{ marginTop: 26, fontSize: "clamp(34px, 6vw, 82px)", letterSpacing: "-0.04em", lineHeight: 1 }}
+        />
       </div>
 
       <div

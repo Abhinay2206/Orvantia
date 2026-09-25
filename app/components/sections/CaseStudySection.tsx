@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
+import { gsap } from "@/lib/motion";
 import { Section, Eyebrow, Reveal, EASE } from "./_shared";
 import AnimatedCounter from "../ui/AnimatedCounter";
 
@@ -83,7 +84,27 @@ function ProductViewer() {
   const [active, setActive] = useState(0);
   const [locked, setLocked] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: false, margin: "-20%" });
+
+  // Cinematic entrance: the product window tilts up and settles flat as it
+  // scrolls into view.
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.fromTo(
+        frame,
+        { rotateX: 16, scale: 0.9, y: 60, transformOrigin: "center top" },
+        {
+          rotateX: 0, scale: 1, y: 0, ease: "none",
+          scrollTrigger: { trigger: frame, start: "top bottom", end: "top 35%", scrub: 0.8 },
+        }
+      );
+    });
+    return () => mm.revert();
+  }, []);
 
   // Auto-advance until the visitor takes control.
   useEffect(() => {
@@ -145,9 +166,17 @@ function ProductViewer() {
       </div>
 
       {/* Browser-framed screenshot */}
+      <a
+        href="/case-study"
+        aria-label="Read the full FactoryFlow case study"
+        data-cursor-text="READ CASE"
+        style={{ display: "block", perspective: 1400, textDecoration: "none", color: "inherit" }}
+      >
       <div
+        ref={frameRef}
         className="frosted"
         style={{
+          willChange: "transform",
           borderRadius: 16,
           overflow: "hidden",
           boxShadow: "0 40px 120px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.05)",
@@ -213,6 +242,7 @@ function ProductViewer() {
           ))}
         </div>
       </div>
+      </a>
 
       {/* Caption for the active view */}
       <div style={{ marginTop: 20, minHeight: 78 }}>
@@ -307,7 +337,7 @@ export default function CaseStudySection() {
       {/* Header */}
       <div style={{ maxWidth: 900 }}>
         <Reveal>
-          <Eyebrow num="04" label="Featured Case Study" color="rgba(34,211,238,0.8)" />
+          <Eyebrow num="02" label="Featured Case Study" color="rgba(34,211,238,0.8)" />
         </Reveal>
         <Reveal delay={0.1}>
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 26, flexWrap: "wrap" }}>

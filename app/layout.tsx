@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import ModalProvider from "./components/providers/ModalProvider";
 
@@ -17,29 +17,38 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+// Editorial serif - used in italic for the accent word in headlines.
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Orvantia | Intelligent Software for Modern Businesses",
+  title: "Orvantia | Software & Automation for Growing Businesses",
   description:
-    "Orvantia is a premium software studio building enterprise SaaS platforms, AI-powered applications, custom software, and intelligent automation that help businesses scale faster.",
+    "Orvantia helps small and growing businesses replace diaries, spreadsheets, and WhatsApp follow-ups with automation, SaaS, and custom software their teams actually use.",
   keywords: [
-    "software studio",
-    "enterprise SaaS",
-    "AI applications",
-    "custom software",
-    "intelligent automation",
-    "cloud applications",
+    "business automation",
+    "custom software for small business",
+    "SaaS development",
+    "workflow automation",
+    "software studio India",
+    "web and mobile apps",
   ],
   openGraph: {
-    title: "Orvantia | Building Intelligent Software for Modern Businesses",
+    title: "Orvantia | Software & Automation for Growing Businesses",
     description:
-      "Enterprise SaaS platforms, AI-powered applications, custom software, and intelligent automation.",
+      "We replace manual work with automation, SaaS, and custom software - built for growing businesses.",
     type: "website",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}>
       <body>
         <ModalProvider>{children}</ModalProvider>
       </body>

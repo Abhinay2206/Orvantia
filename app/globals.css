@@ -40,10 +40,14 @@
 }
 
 /* ─── Reset ─────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* In the base layer so Tailwind spacing utilities (px-6, py-5, ...) can
+   still override it - unlayered, it silently zeroed every one of them. */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 html {
@@ -1064,4 +1068,102 @@ button:hover .roll > span { transform: translateY(-50%); }
 
 @media (prefers-reduced-motion: reduce) {
   .team-avatar::before { animation: none; }
+}
+
+/* ─── Mobile menu sheet ──────────────────────────────────── */
+.mobile-menu {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 24px calc(24px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  overflow-y: auto;
+}
+.mobile-menu-link {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  font-family: var(--font);
+  font-size: clamp(26px, 8vw, 38px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.mobile-menu-idx {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  transform: translateY(-0.9em);
+}
+
+/* ─── Hero: stacked CTAs on phones ───────────────────────── */
+@media (max-width: 640px) {
+  .hero-ctas {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 6px !important;
+  }
+  .hero-ctas .hero-cta-primary { width: 100%; }
+  .hero-ctas .hero-cta-secondary { justify-content: center; }
+}
+
+/* ─── Mobile polish ──────────────────────────────────────── */
+.footer-links a { padding: 10px 0; }
+
+@media (max-width: 640px) {
+  /* Case study: tabs become one swipeable row that bleeds to the edges */
+  .cs-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    margin-left: -24px;
+    margin-right: -24px;
+    padding: 0 24px 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cs-tabs::-webkit-scrollbar { display: none; }
+  .cs-tabs > button { flex-shrink: 0; min-height: 40px; }
+
+  .cap-chip { font-size: 12px !important; padding: 6px 12px !important; }
+
+  /* Team: two compact columns instead of six stacked cards */
+  .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
+  .team-card { padding: 16px 14px 18px; }
+  .team-card > div:nth-child(2) { margin-top: 16px !important; }
+  .team-card > div:nth-child(2) > div:first-child { font-size: 14.5px !important; }
+
+  /* Footer: comfortable tap targets for legal + back-to-top */
+  footer a[href^="/privacy"], footer a[href^="/terms"], footer a[href^="/cookies"], .footer-top {
+    padding: 12px 0;
+  }
+}
+.team-card-wrap, .team-card { height: 100%; }
+@media (max-width: 640px) {
+  .footer-cta {
+    width: 100%;
+    height: auto;
+    padding: 20px 24px;
+    border-radius: 100px;
+    flex-direction: row;
+  }
+}
+@media (max-width: 640px) {
+  .svc-inner { padding: 18px 2px; }
+  .svc-title { font-size: 22px; }
+  .svc-desc { font-size: 14px; }
+}
+/* iOS zooms into any focused field under 16px - keep forms at 16px on phones. */
+@media (max-width: 640px) {
+  input, textarea, select { font-size: 16px !important; }
 }

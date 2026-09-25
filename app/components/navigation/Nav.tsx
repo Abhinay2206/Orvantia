@@ -26,6 +26,18 @@ export default function Nav({ show }: { show: boolean }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  // Freeze the page behind the open mobile menu.
+  useEffect(() => {
+    const lenis = (window as unknown as { lenis?: { stop: () => void; start: () => void } }).lenis;
+    if (open) {
+      document.body.style.overflow = "hidden";
+      lenis?.stop();
+    } else {
+      document.body.style.overflow = "";
+      lenis?.start();
+    }
+  }, [open]);
+
   const go = (href: string) => {
     setOpen(false);
     // Route links (e.g. /products) navigate; hash links scroll on the home page
@@ -130,7 +142,10 @@ export default function Nav({ show }: { show: boolean }) {
 
             {/* Hamburger */}
             <button
-              className="lg:hidden flex flex-col gap-1.5 p-2"
+              className="lg:hidden flex flex-col items-end justify-center gap-1.5"
+              style={{ width: 44, height: 44, marginRight: -10, padding: 10 }}
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
               onClick={() => setOpen(!open)}
               data-cursor-hover
             >
@@ -151,39 +166,60 @@ export default function Nav({ show }: { show: boolean }) {
             </button>
           </div>
 
-          {/* Mobile menu */}
+          {/* Mobile menu - full-screen sheet with large tap targets */}
           <AnimatePresence>
             {open && (
               <motion.div
-                className="lg:hidden px-6 py-5 space-y-1"
-                style={{
-                  background: "rgba(4,4,10,0.95)",
-                  backdropFilter: "blur(30px)",
-                  borderBottom: "1px solid rgba(255,255,255,0.05)",
-                }}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
+                className="lg:hidden mobile-menu"
+                initial={{ clipPath: "inset(0 0 100% 0)" }}
+                animate={{ clipPath: "inset(0 0 0% 0)" }}
+                exit={{ clipPath: "inset(0 0 100% 0)" }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                {LINKS.map((l, i) => (
-                  <motion.button
-                    key={l.href}
-                    onClick={() => go(l.href)}
-                    className="block w-full text-left py-3 text-xs tracking-[0.15em] uppercase transition-colors"
-                    style={{ fontFamily: "var(--mono)", color: "rgba(241,245,249,0.4)" }}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                    whileHover={{ color: "rgba(241,245,249,0.85)", x: 4 }}
-                  >
-                    {l.label}
-                  </motion.button>
-                ))}
-                <div className="pt-3 flex gap-3">
-                  <button className="btn-secondary flex-1" style={{ padding: "10px 0" }} onClick={() => go("#contact")}>Let&apos;s Talk</button>
-                  <button className="btn-primary flex-1" style={{ padding: "10px 0" }} onClick={() => { setOpen(false); openModal("schedule"); }}>Start Project</button>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {LINKS.map((l, i) => (
+                    <div key={l.href} style={{ overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      <motion.button
+                        onClick={() => go(l.href)}
+                        className="mobile-menu-link"
+                        initial={{ y: "100%" }}
+                        animate={{ y: "0%" }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.12 + i * 0.04 }}
+                      >
+                        <span className="mobile-menu-idx">{String(i + 1).padStart(2, "0")}</span>
+                        {l.label}
+                        <span aria-hidden style={{ marginLeft: "auto", fontSize: 18, color: "var(--text-3)" }}>
+                          {l.href.startsWith("/") ? "↗" : "→"}
+                        </span>
+                      </motion.button>
+                    </div>
+                  ))}
                 </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.45 }}
+                  style={{ marginTop: "auto", paddingTop: 28 }}
+                >
+                  <button
+                    className="btn-primary"
+                    style={{ width: "100%", padding: "16px 0", justifyContent: "center" }}
+                    onClick={() => { setOpen(false); openModal("schedule"); }}
+                  >
+                    Start Your Project
+                  </button>
+                  <div style={{ marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.06em" }}>
+                    <a href="mailto:abhinaybakkera@orvantia.in" style={{ color: "var(--text-2)", textDecoration: "none" }}>
+                      abhinaybakkera@orvantia.in
+                    </a>
+                    <div style={{ display: "flex", gap: 16 }}>
+                      <a href="https://www.instagram.com/orvantia.in" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-2)", textDecoration: "none" }}>Instagram</a>
+                      <a href="https://www.linkedin.com/company/orvantiaai" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-2)", textDecoration: "none" }}>LinkedIn</a>
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>

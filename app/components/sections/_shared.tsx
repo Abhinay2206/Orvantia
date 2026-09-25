@@ -200,7 +200,7 @@ export const Section = forwardRef<
       className={className}
       style={{
         position: "relative",
-        padding: "clamp(88px, 13vh, 168px) clamp(24px, 5vw, 80px)",
+        padding: "clamp(72px, calc(7vw + 46px), 168px) clamp(24px, 5vw, 80px)",
         overflow: "hidden",
         ...style,
       }}

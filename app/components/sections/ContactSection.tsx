@@ -39,7 +39,7 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
         {icon}
       </span>
       <div>
-        <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 3 }}>{label}</div>
+        <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 3 }}>{label}</div>
         <div style={{ fontSize: 14.5, color: "var(--text)", lineHeight: 1.4 }}>{value}</div>
       </div>
     </div>

@@ -116,20 +116,21 @@ export default function ManifestoSection() {
           }}
         >
           {tokens.map((tok, i) => {
-            const pill = tok.match(/^\[(\w+)\]$/);
             const space = i < tokens.length - 1 ? " " : "";
-            if (pill) {
-              return (
-                <span key={i}>
-                  <Pill kind={pill[1]} />
-                  {space}
-                </span>
-              );
-            }
             const accent = tok.startsWith("*");
+            const word = <span className={accent ? "mf-w accent-serif" : "mf-w"}>{tok.replace("*", "")}</span>;
+            if (/^\[\w+\]$/.test(tok)) return null; // rendered with the word that follows
+            const pill = tokens[i - 1]?.match(/^\[(\w+)\]$/);
             return (
               <span key={i}>
-                <span className={accent ? "mf-w accent-serif" : "mf-w"}>{tok.replace("*", "")}</span>
+                {pill ? (
+                  // A pill and its word never split across lines.
+                  <span style={{ whiteSpace: "nowrap" }}>
+                    <Pill kind={pill[1]} /> {word}
+                  </span>
+                ) : (
+                  word
+                )}
                 {space}
               </span>
             );

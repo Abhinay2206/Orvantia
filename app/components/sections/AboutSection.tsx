@@ -96,7 +96,7 @@ export default function AboutSection() {
         className="grid-cols-1 lg:grid-cols-[1fr_1.2fr]"
       >
         {/* Header - Pinned Column */}
-        <div ref={leftColRef} style={{ maxWidth: 620, paddingBottom: "40px" }} className="will-change-transform">
+        <div ref={leftColRef} style={{ maxWidth: 620 }} className="will-change-transform lg:pb-10">
           <Reveal>
             <Eyebrow num="01" label="What We Fix" />
           </Reveal>
@@ -128,12 +128,12 @@ export default function AboutSection() {
               className="about-pillar glass-card"
               style={{
                 background: "rgba(255,255,255,0.02)",
-                padding: "clamp(32px, 4vw, 48px)",
+                padding: "clamp(22px, 4vw, 48px)",
                 borderRadius: "var(--radius-lg)",
                 border: "1px solid rgba(255,255,255,0.05)",
                 display: "flex",
                 flexDirection: "column",
-                gap: 24,
+                gap: "clamp(14px, 2vw, 24px)",
                 willChange: "transform, opacity, filter",
               }}
             >

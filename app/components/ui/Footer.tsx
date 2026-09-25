@@ -239,7 +239,7 @@ export default function Footer() {
             <div
               style={{
                 fontFamily: "var(--mono)",
-                fontSize: 9,
+                fontSize: 10,
                 letterSpacing: "0.26em",
                 textTransform: "uppercase",
                 color: "rgba(241,245,249,0.22)",
@@ -248,7 +248,7 @@ export default function Footer() {
             >
               {col.heading}
             </div>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+            <ul className="footer-links" style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 2 }}>
               {col.links.map((link) => (
                 <li key={link.label}>
                   <a
@@ -274,7 +274,7 @@ export default function Footer() {
                       <span
                         style={{
                           fontFamily: "var(--mono)",
-                          fontSize: 9,
+                          fontSize: 10,
                           color: "rgba(241,245,249,0.18)",
                           letterSpacing: "0.08em",
                         }}
@@ -371,8 +371,8 @@ export default function Footer() {
                 style={{
                   display: "grid",
                   placeItems: "center",
-                  width: 30,
-                  height: 30,
+                  width: 40,
+                  height: 40,
                   borderRadius: 8,
                   border: "1px solid rgba(255,255,255,0.08)",
                   color: "rgba(241,245,249,0.4)",

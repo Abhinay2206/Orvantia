@@ -167,6 +167,7 @@ export default function TeamSection() {
 
       <div
         ref={gridRef}
+        className="team-grid"
         style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 12, perspective: 1200 }}
       >
         {PEOPLE.map((p, i) => (

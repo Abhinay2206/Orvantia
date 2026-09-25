@@ -96,9 +96,9 @@ function ProductViewer() {
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       gsap.fromTo(
         frame,
-        { rotateX: 16, scale: 0.9, y: 60, transformOrigin: "center top" },
+        { rotateX: 16, scale: 0.9, transformOrigin: "center top" },
         {
-          rotateX: 0, scale: 1, y: 0, ease: "none",
+          rotateX: 0, scale: 1, ease: "none",
           scrollTrigger: { trigger: frame, start: "top bottom", end: "top 35%", scrub: 0.8 },
         }
       );
@@ -118,7 +118,7 @@ function ProductViewer() {
   return (
     <div ref={ref}>
       {/* Tabs */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+      <div className="cs-tabs" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
         {VIEWS.map((v, i) => {
           const on = i === active;
           return (
@@ -421,8 +421,8 @@ export default function CaseStudySection() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
-                gap: "clamp(20px, 2.4vw, 32px)",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 118px), 1fr))",
+                gap: "clamp(12px, 2.4vw, 32px)",
               }}
             >
               {METRICS.map((m) => (

@@ -177,8 +177,8 @@ export default function HeroScene() {
             <span style={{ fontFamily: "var(--mono)", fontSize: 10.5, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-2)" }}>
               Premium Software Studio
             </span>
-            <span style={{ width: 40, height: 1, background: "rgba(129,140,248,0.4)" }} />
-            <span style={{ fontFamily: "var(--mono)", fontSize: 10.5, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-3)" }}>
+            <span className="hidden sm:block" style={{ width: 40, height: 1, background: "rgba(129,140,248,0.4)" }} />
+            <span className="hidden sm:block" style={{ fontFamily: "var(--mono)", fontSize: 10.5, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-3)" }}>
               Available for projects
             </span>
           </motion.div>
@@ -223,6 +223,7 @@ export default function HeroScene() {
               initial={{ opacity: 0, y: 14 }}
               animate={sceneReady ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 1.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="hero-ctas"
               style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0 }}
             >
               <MagneticButton
@@ -275,7 +276,7 @@ export default function HeroScene() {
               <div style={{ fontFamily: "var(--font)", fontSize: "clamp(10px, 0.9vw, 12.5px)", fontWeight: 500, color: "rgba(241,245,249,0.72)", whiteSpace: "nowrap", lineHeight: 1.2 }}>
                 Prayagh Consumer Care Pvt. Ltd.
               </div>
-              <div style={{ fontFamily: "var(--mono)", fontSize: 7, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(74,222,128,0.7)", marginTop: 2 }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(74,222,128,0.7)", marginTop: 2 }}>
                 First client · Live in production
               </div>
             </div>
@@ -293,6 +294,7 @@ export default function HeroScene() {
           {CAPABILITIES.map((c, i) => (
             <motion.span
               key={c}
+              className="hidden sm:inline-block"
               initial={{ opacity: 0, y: 10 }}
               animate={sceneReady ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 1.72 + i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}

@@ -13,6 +13,7 @@ const PEOPLE: Person[] = [
   { name: "Mekkonda Aarush", role: "Team Member", initials: "MA", color: "#60a5fa" },
   { name: "Sunkari Manwitha", role: "Team Member", initials: "SM", color: "#fb7185" },
   { name: "J Vigneshwar Reddy", role: "Team Member", initials: "JV", color: "#5fc2ab" },
+  { name: "Jeevan Kumar", role: "Team Member", initials: "JK", color: "#a855f7" },
 ];
 
 /* Overlapping avatar stack - fans out on hover. */

@@ -10,6 +10,7 @@ import Footer from "./components/ui/Footer";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import SmoothScroll from "./components/providers/SmoothScroll";
 import ManifestoSection from "./components/sections/ManifestoSection";
+import BrandFilmSection from "./components/sections/BrandFilmSection";
 import AboutSection from "./components/sections/AboutSection";
 import ServicesSection from "./components/sections/ServicesSection";
 import ShowcaseSection from "./components/sections/ShowcaseSection";
@@ -120,6 +121,9 @@ export default function Home() {
 
               {/* Manifesto – scroll-lit statement */}
               <ManifestoSection />
+
+              {/* Brand film – "Built beyond the idea." */}
+              <BrandFilmSection />
 
               {/* 01 · About – the everyday problems we fix */}
               <AboutSection />

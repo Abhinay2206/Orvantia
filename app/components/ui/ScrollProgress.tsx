@@ -5,6 +5,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 
 const SECTIONS = [
   { id: "hero", label: "Home" },
+  { id: "film", label: "Film" },
   { id: "about", label: "About" },
   { id: "case-study", label: "Case Study" },
   { id: "services", label: "Services" },

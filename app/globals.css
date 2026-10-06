@@ -1216,3 +1216,21 @@ button:hover .roll > span { transform: translateY(-50%); }
   .film-play { width: 26px; height: 26px; }
   .film-sound { width: 40px; height: 40px; }
 }
+
+/* ─── FAQ ────────────────────────────────────────────────── */
+.faq-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+@media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr; } }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item:first-child { border-top: 1px solid var(--border); }
+.faq-item summary {
+  list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  padding: clamp(18px, 2.2vw, 26px) 0; font-size: clamp(16px, 1.6vw, 20px); font-weight: 600; letter-spacing: -0.015em; color: var(--text); cursor: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary span { font-family: var(--mono); font-size: 20px; color: rgba(196,181,253,0.8); transition: transform 0.4s cubic-bezier(.16,1,.3,1); flex-shrink: 0; }
+.faq-item[open] summary span { transform: rotate(45deg); }
+.faq-item p { padding: 0 0 clamp(18px, 2.2vw, 26px); font-size: clamp(14px, 1.3vw, 16px); line-height: 1.7; color: var(--text-2); max-width: 62ch; }
+@media (hover: none) { .faq-item summary { cursor: pointer; } }
+
+/* NutritionOS feature rows: text always first on phones */
+@media (max-width: 760px) { .nos-row > * { order: 0 !important; } }

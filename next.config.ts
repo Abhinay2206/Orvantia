@@ -16,6 +16,13 @@ const cspHeader = `
 `;
 
 const nextConfig: NextConfig = {
+  // Product details live at /products/<name>; the old index lands on the section.
+  async redirects() {
+    return [
+      // permanent:false (307) - browsers cache 308s forever, which breaks the URL if it's ever reused
+      { source: "/products", destination: "/#products", permanent: false },
+    ];
+  },
   async headers() {
     return [
       {

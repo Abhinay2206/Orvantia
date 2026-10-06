@@ -278,7 +278,7 @@ export default function ContactSection() {
       <div style={{ maxWidth: 760, margin: "0 auto clamp(48px, 6vw, 80px)", textAlign: "center" }}>
         <Reveal>
           <div style={{ display: "inline-flex" }}>
-            <Eyebrow num="08" label="Contact" />
+            <Eyebrow num="09" label="Contact" />
           </div>
         </Reveal>
         <SplitHeadline

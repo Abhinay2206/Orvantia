@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "FactoryFlow — Case Study | Orvantia",
+  title: "FactoryFlow case study — Orvantia",
   description:
-    "How Orvantia replaced a manufacturing floor's diary and WhatsApp with FactoryFlow - a task and workflow platform now live at Prayagh Consumer Care Pvt. Ltd.",
+    "How Orvantia replaced a manufacturer's diary-and-WhatsApp workflow with FactoryFlow: one system of record, automated follow-ups, and live reporting for Prayagh Consumer Care.",
 };
 
 export default function CaseStudyLayout({ children }: { children: React.ReactNode }) {

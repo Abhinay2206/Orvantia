@@ -161,6 +161,9 @@ function NutritionOSPanel() {
             >
               Open NutritionOS ↗
             </a>
+            <a href="/products/nutritionos" data-cursor-hover className="btn-secondary" style={{ marginLeft: 12, textDecoration: "none" }}>
+              See how it works →
+            </a>
           </div>
         </div>
 
@@ -296,6 +299,9 @@ function EnterafluxPanel() {
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 10px #a855f7" }} />
               Coming Soon
             </span>
+            <a href="/products/enteraflux" data-cursor-hover className="btn-secondary" style={{ marginLeft: 12, textDecoration: "none" }}>
+              About the research →
+            </a>
           </div>
         </div>
       </div>
@@ -312,10 +318,10 @@ export default function ProductsSection() {
     >
       <div style={{ maxWidth: 820, marginBottom: "clamp(48px, 6vw, 80px)" }}>
         <Reveal>
-          <Eyebrow num="01" label="Our Products" />
+          <Eyebrow num="04" label="Our Products" />
         </Reveal>
         <SplitHeadline
-          text="Products we build *for ourselves."
+          text="Products we build for *ourselves."
           style={{ marginTop: 24, fontSize: "clamp(30px, 4.6vw, 62px)" }}
         />
         <Reveal delay={0.15}>

@@ -10,18 +10,19 @@ const NAV = [
   {
     heading: "Products",
     links: [
-      { label: "All Products", sub: "NutritionOS · EnteraFlux", href: "/products" },
-      { label: "NutritionOS", sub: "Free Fitness Tracker", href: "https://nutritionos.orvantia.in/" },
-      { label: "EnteraFlux", sub: "Research Stage", href: "https://www.enteraflux.tech/" },
+      { label: "All Products", sub: "NutritionOS · EnteraFlux", href: "/#products" },
+      { label: "NutritionOS", sub: "Free Fitness Tracker", href: "/products/nutritionos" },
+      { label: "EnteraFlux", sub: "Research Stage", href: "/products/enteraflux" },
     ],
   },
   {
     heading: "Studio",
     links: [
       { label: "About", href: "/#about" },
-      { label: "Case Study", href: "/#case-study" },
+      { label: "Case Study", href: "/case-study" },
       { label: "Services", href: "/#services" },
       { label: "Process", href: "/#process" },
+      { label: "FAQ", href: "/#faq" },
       { label: "Team", href: "/#team" },
       { label: "Contact", href: "/#contact" },
     ],

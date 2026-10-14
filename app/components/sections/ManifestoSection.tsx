@@ -105,13 +105,13 @@ export default function ManifestoSection() {
         </div>
 
         <p
-          className="mf-text"
+          className="mf-text serif-display"
           style={{
-            fontFamily: "var(--font)",
-            fontSize: "clamp(28px, 4.3vw, 66px)",
-            fontWeight: 500,
-            letterSpacing: "-0.035em",
-            lineHeight: 1.16,
+            fontFamily: "var(--serif)",
+            fontSize: "clamp(34px, 5.6vw, 92px)",
+            fontWeight: 400,
+            letterSpacing: "-0.025em",
+            lineHeight: 1.06,
             color: "var(--text)",
           }}
         >

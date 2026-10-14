@@ -1,13 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+export default function SmoothScroll({ children, paused = false }: { children: React.ReactNode; paused?: boolean }) {
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+
+  useEffect(() => {
+    const lenis = (window as any).lenis as Lenis | undefined;
+    if (paused) lenis?.stop(); else lenis?.start();
+  }, [paused]);
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.1,
@@ -17,6 +25,8 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       smoothWheel: true,
     });
     
+    if (pausedRef.current) lenis.stop();   // held until the intro finishes
+
     // Expose for global modal controls
     (window as any).lenis = lenis;
 

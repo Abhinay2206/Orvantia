@@ -1,45 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import BootSequence from "./components/loader/BootSequence";
 import Nav from "./components/navigation/Nav";
 import CustomCursor from "./components/ui/CustomCursor";
-import Marquee from "./components/ui/Marquee";
 import Footer from "./components/ui/Footer";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import SmoothScroll from "./components/providers/SmoothScroll";
+import HeroScene from "./components/hero/HeroScene";
 import ManifestoSection from "./components/sections/ManifestoSection";
 import BrandFilmSection from "./components/sections/BrandFilmSection";
 import AboutSection from "./components/sections/AboutSection";
 import ServicesSection from "./components/sections/ServicesSection";
-import ShowcaseSection from "./components/sections/ShowcaseSection";
 import CaseStudySection from "./components/sections/CaseStudySection";
-import ProductsSection from "./components/sections/ProductsSection";
-import NextProjectSection from "./components/sections/NextProjectSection";
+import ProductsGallery from "./components/sections/ProductsGallery";
 import ProcessSection from "./components/sections/ProcessSection";
 import TeamSection from "./components/sections/TeamSection";
 import FaqSection from "./components/sections/FaqSection";
 import ContactSection from "./components/sections/ContactSection";
-
-const HeroScene = dynamic(() => import("./components/hero/HeroScene"), {
-  ssr: false,
-  loading: () => (
-    <div
-      className="w-full h-screen flex items-center justify-center"
-      style={{ background: "var(--bg)" }}
-    >
-      <div
-        className="w-20 h-20 rounded-full"
-        style={{
-          background: "radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)",
-          boxShadow: "0 0 40px rgba(99,102,241,0.2)",
-          animation: "pulse 1.5s ease-in-out infinite",
-        }}
-      />
-    </div>
-  ),
-});
 
 export default function Home() {
   const [booted, setBooted] = useState(false);
@@ -105,62 +83,54 @@ export default function Home() {
           removes mid-insert -> NotFoundError that kills the whole React root. */}
       <div>
         {booted && (
+          <>
+            <div className="grain" />
+            <CustomCursor />
+          </>
+        )}
         <>
-          <div className="grain" />
-          <CustomCursor />
-
-          <SmoothScroll>
+          <SmoothScroll paused={!booted}>
             <Nav show={navVisible} />
             <ScrollProgress />
 
             <main>
-              {/* Hero – full viewport Three.js + bloom */}
+              {/* Hero – full-viewport WebGL contour field */}
               <HeroScene />
 
-              {/* Ticker */}
-              <Marquee />
-
-              {/* Manifesto – scroll-lit statement */}
+              {/* Statement – scroll-lit */}
               <ManifestoSection />
 
-              {/* Brand film – "Built beyond the idea." */}
+              {/* Reel */}
               <BrandFilmSection />
 
-              {/* 01 · About – the everyday problems we fix */}
+              {/* 01 · What we fix */}
               <AboutSection />
 
-              {/* 02 · FactoryFlow case study – proof, right after the problem */}
+              {/* 02 · FactoryFlow – proof */}
               <CaseStudySection />
 
-              {/* 03 · Services – what we build */}
+              {/* 03 · What we build */}
               <ServicesSection />
 
-              {/* 04 · Products – NutritionOS (live) + EnteraFlux (research) */}
-              <ProductsSection />
+              {/* 04 · Products & experiments – pinned horizontal gallery */}
+              <ProductsGallery />
 
-              {/* 05 · Showcase – 3D / premium portfolio proof */}
-              <ShowcaseSection />
-
-              {/* What's next – CCTV attendance (in demo) */}
-              <NextProjectSection />
-
-              {/* 06 · Development process */}
+              {/* 05 · Process */}
               <ProcessSection />
 
-              {/* 07 · Team */}
+              {/* 06 · Team */}
               <TeamSection />
 
-              {/* 08 · FAQ – answers before they ask */}
+              {/* 07 · FAQ */}
               <FaqSection />
 
-              {/* 09 · Contact – details, socials + project form */}
+              {/* 08 · Contact */}
               <ContactSection />
             </main>
 
             <Footer />
           </SmoothScroll>
         </>
-        )}
       </div>
     </>
   );

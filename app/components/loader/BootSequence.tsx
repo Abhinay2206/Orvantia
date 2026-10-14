@@ -122,7 +122,7 @@ export default function BootSequence({ onComplete, skip }: { onComplete: () => v
 
           {/* Wordmark – character blur reveal */}
           <div className="relative z-10" style={{ perspective: "900px" }}>
-            <h1
+            <div
               style={{
                 display: "flex",
                 fontSize: "clamp(48px, 9vw, 128px)",
@@ -149,7 +149,7 @@ export default function BootSequence({ onComplete, skip }: { onComplete: () => v
                   {char}
                 </motion.span>
               ))}
-            </h1>
+            </div>
           </div>
 
           {/* Tagline */}

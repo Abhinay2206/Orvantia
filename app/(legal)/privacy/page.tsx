@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - Orvantia AI",
+  title: { absolute: "Privacy Policy - Orvantia AI" },
+  alternates: { canonical: "/privacy" },
   description: "Privacy Policy for Orvantia AI products and services.",
 };
 

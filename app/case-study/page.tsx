@@ -3,6 +3,7 @@
 import PageShell from "../components/ui/PageShell";
 import CtaBand from "../components/ui/CtaBand";
 import { Section, Eyebrow, SplitHeadline, Reveal } from "../components/sections/_shared";
+import Testimonial from "../components/sections/Testimonial";
 import { ProductDemo, MetricsBar, Transformation, STEPS, CAPABILITIES } from "../components/sections/CaseStudySection";
 
 const CYAN = "rgba(34,211,238,0.8)";
@@ -37,10 +38,10 @@ export default function CaseStudyPage() {
           <Reveal><Eyebrow num="01" label="Case study · Manufacturing" color={CYAN} /></Reveal>
         </div>
         <Reveal delay={0.08}>
-          <h1 className="g-text-cyan" style={{ marginTop: 22, fontSize: "clamp(48px, 9vw, 128px)", fontWeight: 700, letterSpacing: "-0.045em", lineHeight: 0.92 }}>FactoryFlow</h1>
+          <h1 className="serif-display" style={{ marginTop: 22, fontFamily: "var(--serif)", fontSize: "clamp(64px, 14.5vw, 232px)", fontWeight: 400, letterSpacing: "-0.045em", lineHeight: 0.86, marginLeft: "-0.04em" }}>FactoryFlow</h1>
         </Reveal>
         <Reveal delay={0.14}>
-          <p style={{ marginTop: 22, fontSize: "clamp(19px, 2.2vw, 30px)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.35, maxWidth: "28ch" }}>
+          <p style={{ marginTop: 26, fontFamily: "var(--serif)", fontSize: "clamp(28px, 3.6vw, 56px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.05, maxWidth: "22ch" }}>
             A manufacturing floor ran on a diary and WhatsApp. Now it runs on this.
           </p>
         </Reveal>
@@ -116,6 +117,11 @@ export default function CaseStudyPage() {
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>{STACK.map((c) => <span key={c} style={{ ...chip, fontFamily: "var(--mono)", fontSize: 12 }}>{c}</span>)}</div>
           </Reveal>
         </div>
+      </Section>
+
+      <Section style={{ borderTop: "1px solid var(--border)" }}>
+        <Reveal><Eyebrow num="06" label="In their words" color={CYAN} /></Reveal>
+        <div style={{ marginTop: "clamp(28px, 3.6vw, 44px)" }}><Testimonial /></div>
       </Section>
 
       <CtaBand

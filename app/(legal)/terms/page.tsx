@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service - Orvantia AI",
+  title: { absolute: "Terms of Service - Orvantia AI" },
+  alternates: { canonical: "/terms" },
   description: "Terms of Service for Orvantia AI products and services.",
 };
 

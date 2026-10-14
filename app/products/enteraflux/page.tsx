@@ -33,16 +33,16 @@ export default function EnterafluxPage() {
           <Reveal><Eyebrow num="01" label="Product · Research stage" color={VIOLET} /></Reveal>
         </div>
         <Reveal delay={0.08}>
-          <h1 className="g-text-violet" style={{ marginTop: 22, fontSize: "clamp(48px, 9vw, 128px)", fontWeight: 700, letterSpacing: "-0.045em", lineHeight: 0.92 }}>EnteraFlux</h1>
+          <h1 className="serif-display" style={{ marginTop: 22, fontFamily: "var(--serif)", fontSize: "clamp(64px, 14vw, 224px)", fontWeight: 400, letterSpacing: "-0.045em", lineHeight: 0.86, color: "#d8b4fe", marginLeft: "-0.04em" }}>EnteraFlux</h1>
         </Reveal>
         <Reveal delay={0.14}>
-          <p style={{ marginTop: 22, fontSize: "clamp(18px, 2vw, 27px)", fontWeight: 500, letterSpacing: "-0.01em", lineHeight: 1.45, maxWidth: "34ch" }}>
+          <p style={{ marginTop: 26, fontSize: "clamp(17px, 1.6vw, 22px)", fontWeight: 400, lineHeight: 1.55, color: "var(--text-2)", maxWidth: "40ch" }}>
             An AI health companion in research: cooperating agents that look after medication, symptoms, nutrition and progress - so long treatment journeys aren&apos;t managed alone.
           </p>
         </Reveal>
         <Reveal delay={0.2}>
           <div style={{ marginTop: 32, display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-            <a href={SITE} target="_blank" rel="noopener noreferrer" data-cursor-hover className="btn-primary" style={{ background: "linear-gradient(135deg, #8b5cf6, #6366f1)" }}>Follow the research ↗</a>
+            <a href={SITE} target="_blank" rel="noopener noreferrer" data-cursor-hover className="btn-primary">Follow the research ↗</a>
             <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", padding: "8px 14px", borderRadius: 100, border: "1px solid rgba(168,85,247,0.3)", background: "rgba(168,85,247,0.08)", color: VIOLET }}>◇ Not yet available</span>
           </div>
         </Reveal>

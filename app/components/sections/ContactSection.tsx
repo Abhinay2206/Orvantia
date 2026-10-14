@@ -93,7 +93,6 @@ function ContactPanel() {
   return (
     <Reveal>
       <div ref={panelRef} className="frosted" style={{ position: "relative", overflow: "hidden", borderRadius: "var(--radius-xl)", padding: "clamp(28px, 3.5vw, 48px)", height: "100%", display: "flex", flexDirection: "column" }}>
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #6366f1, #a855f7 45%, #22d3ee)" }} />
         <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 14 }}>
           Talk to us directly
         </div>
@@ -164,15 +163,16 @@ const labelStyle: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.03)",
-  border: "1px solid var(--border-strong)",
-  borderRadius: 10,
-  padding: "13px 16px",
+  background: "transparent",
+  border: "none",
+  borderBottom: "1px solid var(--border-strong)",
+  borderRadius: 0,
+  padding: "10px 0 12px",
   color: "var(--text)",
   fontFamily: "var(--font)",
-  fontSize: 15,
+  fontSize: 16,
   outline: "none",
-  transition: "border-color 0.2s",
+  transition: "border-color 0.3s",
 };
 
 function Chip({ active, children, onClick }: { active: boolean; children: React.ReactNode; onClick: () => void }) {
@@ -188,10 +188,10 @@ function Chip({ active, children, onClick }: { active: boolean; children: React.
         fontFamily: "var(--mono)",
         fontSize: 11,
         letterSpacing: "0.06em",
-        background: active ? "rgba(99,102,241,0.18)" : "rgba(255,255,255,0.03)",
-        border: active ? "1px solid rgba(99,102,241,0.55)" : "1px solid var(--border-strong)",
-        color: active ? "rgba(129,140,248,0.95)" : "var(--text-2)",
-        transition: "all 0.2s",
+        background: active ? "var(--text)" : "transparent",
+        border: active ? "1px solid var(--text)" : "1px solid var(--border-strong)",
+        color: active ? "#05050a" : "var(--text-2)",
+        transition: "all 0.3s",
       }}
     >
       {children}
@@ -278,7 +278,7 @@ export default function ContactSection() {
       <div style={{ maxWidth: 760, margin: "0 auto clamp(48px, 6vw, 80px)", textAlign: "center" }}>
         <Reveal>
           <div style={{ display: "inline-flex" }}>
-            <Eyebrow num="09" label="Contact" />
+            <Eyebrow num="08" label="Contact" />
           </div>
         </Reveal>
         <SplitHeadline
@@ -319,7 +319,7 @@ export default function ContactSection() {
               >
                 ✓
               </div>
-              <h3 style={{ fontFamily: "var(--font)", fontSize: 24, fontWeight: 600, color: "var(--text)", marginBottom: 12 }}>
+              <h3 style={{ fontFamily: "var(--serif)", fontSize: 40, fontWeight: 400, letterSpacing: "-0.02em", color: "var(--text)", marginBottom: 12 }}>
                 Message received.
               </h3>
               <p style={{ fontSize: 15, color: "var(--text-2)", lineHeight: 1.65 }}>
@@ -336,7 +336,7 @@ export default function ContactSection() {
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                     placeholder="Alex Chen"
                     style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
+                    onFocus={(e) => (e.target.style.borderColor = "#c4b5fd")}
                     onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
@@ -348,7 +348,7 @@ export default function ContactSection() {
                     onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                     placeholder="alex@company.com"
                     style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
+                    onFocus={(e) => (e.target.style.borderColor = "#c4b5fd")}
                     onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                   />
                 </div>
@@ -361,7 +361,7 @@ export default function ContactSection() {
                   onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
                   placeholder="Acme Corp"
                   style={inputStyle}
-                  onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
+                  onFocus={(e) => (e.target.style.borderColor = "#c4b5fd")}
                   onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                 />
               </div>
@@ -401,7 +401,7 @@ export default function ContactSection() {
                   placeholder="Tell us about your product, goals, and where you are today…"
                   rows={4}
                   style={{ ...inputStyle, resize: "vertical", minHeight: 110 }}
-                  onFocus={(e) => (e.target.style.borderColor = "rgba(99,102,241,0.5)")}
+                  onFocus={(e) => (e.target.style.borderColor = "#c4b5fd")}
                   onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
                 />
               </div>

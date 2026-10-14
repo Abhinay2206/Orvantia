@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy - Orvantia AI",
+  title: { absolute: "Cookie Policy - Orvantia AI" },
+  alternates: { canonical: "/cookies" },
   description: "Cookie Policy for Orvantia AI products and services.",
 };
 

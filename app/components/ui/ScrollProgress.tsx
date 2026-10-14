@@ -6,12 +6,10 @@ import { motion, useScroll, useSpring } from "framer-motion";
 const SECTIONS = [
   { id: "hero", label: "Home" },
   { id: "film", label: "Film" },
-  { id: "about", label: "About" },
-  { id: "case-study", label: "Case Study" },
+  { id: "about", label: "Problems" },
+  { id: "case-study", label: "FactoryFlow" },
   { id: "services", label: "Services" },
   { id: "products", label: "Products" },
-  { id: "showcase", label: "Showcase" },
-  { id: "next-project", label: "Next" },
   { id: "process", label: "Process" },
   { id: "team", label: "Team" },
   { id: "faq", label: "FAQ" },
@@ -70,8 +68,7 @@ export default function ScrollProgress() {
           zIndex: 200,
           transformOrigin: "left",
           scaleX,
-          background: "linear-gradient(90deg, #6366f1, #a855f7, #22d3ee)",
-          boxShadow: "0 0 12px rgba(99,102,241,0.6)",
+          background: "#c4b5fd",
         }}
       />
 
@@ -90,7 +87,7 @@ export default function ScrollProgress() {
               style={{ background: "transparent", border: "none", cursor: "none" }}
             >
               <span
-                className={`transition-all duration-300 origin-right ${on ? "opacity-100 translate-x-0 scale-100" : "opacity-0 translate-x-1.5 scale-95"} group-hover:opacity-100 group-hover:translate-x-0 group-hover:scale-110 group-hover/nav:opacity-75 group-hover/nav:translate-x-0 group-hover/nav:scale-100`}
+                className={`transition-all duration-300 origin-right opacity-0 translate-x-1.5 group-hover/nav:opacity-70 group-hover/nav:translate-x-0 group-hover:!opacity-100`}
                 style={{
                   fontFamily: "var(--mono)",
                   fontSize: 9,
@@ -102,12 +99,8 @@ export default function ScrollProgress() {
                 {s.label}
               </span>
               <span
-                className={`transition-all duration-300 ${on ? "w-[22px] bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" : "w-[14px] bg-white/20"} group-hover:w-[28px] group-hover:bg-cyan-400 group-hover:shadow-[0_0_12px_rgba(34,211,238,0.6)]`}
-                style={{
-                  height: 2,
-                  borderRadius: 2,
-                  background: on ? "linear-gradient(90deg,#6366f1,#a855f7)" : undefined,
-                }}
+                className={`transition-all duration-300 ${on ? "w-[22px] bg-[#f1f5f9]" : "w-[12px] bg-white/20"} group-hover:w-[28px] group-hover:bg-[#c4b5fd]`}
+                style={{ height: 1 }}
               />
             </button>
           );

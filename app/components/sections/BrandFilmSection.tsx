@@ -1,191 +1,135 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "@/lib/motion";
-import { SplitHeadline, Reveal } from "./_shared";
+import { gsap, ScrollTrigger } from "@/lib/motion";
 
 const SRC = "/film/orvantia-brand-film.mp4";
 const POSTER = "/film/orvantia-brand-film-poster.jpg";
-const LENGTH = "1:12";
+const LENGTH = 72;
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s) % 60).padStart(2, "0")}`;
 
 /*
- * The brand film. Plays muted while on screen (the voice-over is set as
- * on-screen type, so it reads without sound), grows from an inset card to
- * full width as it scrolls in, and only downloads once the visitor is near.
- * Click for sound; "Watch the film" restarts it fullscreen with sound.
+ * The brand film, presented as a scroll reel: a tall section with a sticky
+ * full-screen stage. The video starts as a small rounded window low in the
+ * frame and opens to full-bleed as you scroll, while the title lifts away.
+ * It plays muted in the window; "Play with sound" restarts it with a control
+ * bar. The clip-path and title are scrubbed by scroll, so they stay in sync.
  */
 export default function BrandFilmSection() {
-  const frameRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
-  const heardRef = useRef(false);
-  const inViewRef = useRef(false);
+  const fillRef = useRef<HTMLElement>(null);
   const [src, setSrc] = useState<string | undefined>(undefined);
+  const [live, setLive] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(true);
-  const [playing, setPlaying] = useState(false);
-  const [reduced, setReduced] = useState(false);
+  const [time, setTime] = useState(0);
+  const inViewRef = useRef(false);
 
-  // Load when near, play only while in view.
+  // Lazy-load near the viewport; play the muted preview only while in view.
   useEffect(() => {
-    const frame = frameRef.current;
-    const video = videoRef.current;
-    if (!frame || !video) return;
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setReduced(prefersReduced);
-
-    const near = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setSrc(SRC); near.disconnect(); } },
-      { rootMargin: "600px 0px" }
-    );
-    const visible = new IntersectionObserver(
+    const el = sectionRef.current, v = videoRef.current;
+    if (!el || !v) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const near = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setSrc(SRC); near.disconnect(); } }, { rootMargin: "900px 0px" });
+    const view = new IntersectionObserver(
       ([e]) => {
         inViewRef.current = e.isIntersecting;
-        if (e.isIntersecting) { if (video.getAttribute("src") && (!prefersReduced || !video.muted)) video.play().catch(() => {}); }
-        else video.pause();
+        if (e.isIntersecting) { if (v.getAttribute("src") && !reduced) v.play().catch(() => {}); }
+        else v.pause(); // never keep playing (or talking) while off-screen
       },
-      { threshold: 0.35 }
+      { rootMargin: "200px" }
     );
-    near.observe(frame);
-    visible.observe(frame);
+    near.observe(el); view.observe(el);
 
-    const onTime = () => { if (barRef.current && video.duration) barRef.current.style.transform = `scaleX(${video.currentTime / video.duration})`; };
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
-    video.addEventListener("timeupdate", onTime);
-    video.addEventListener("play", onPlay);
-    video.addEventListener("pause", onPause);
-    return () => {
-      near.disconnect(); visible.disconnect();
-      video.removeEventListener("timeupdate", onTime);
-      video.removeEventListener("play", onPlay);
-      video.removeEventListener("pause", onPause);
-    };
+    const onTime = () => { setTime(v.currentTime); if (fillRef.current && v.duration) fillRef.current.style.transform = `scaleX(${v.currentTime / v.duration})`; };
+    const onEnded = () => { setLive(false); v.muted = true; setMuted(true); v.loop = true; v.currentTime = 0; v.play().catch(() => {}); };
+    v.addEventListener("timeupdate", onTime);
+    v.addEventListener("ended", onEnded);
+    v.addEventListener("pause", () => setPaused(true));
+    v.addEventListener("play", () => setPaused(false));
+    return () => { near.disconnect(); view.disconnect(); v.removeEventListener("timeupdate", onTime); v.removeEventListener("ended", onEnded); };
   }, []);
 
-  // The source arrives after the visibility check — start playing once it does.
+  // Source arrives after the visibility check - start once it does.
   useEffect(() => {
     const v = videoRef.current;
-    if (src && v && inViewRef.current && !reduced) v.play().catch(() => {});
-  }, [src, reduced]);
+    if (src && v && inViewRef.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) v.play().catch(() => {});
+  }, [src]);
 
-  // Inset card → full frame as it scrolls into view.
+  // Scroll-scrubbed: the window opens to full-bleed, the title lifts and fades.
   useEffect(() => {
-    const frame = frameRef.current;
-    if (!frame) return;
+    const el = sectionRef.current;
+    if (!el) return;
     const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.fromTo(
-        frame,
-        { scale: 0.86, borderRadius: 44 },
-        { scale: 1, borderRadius: 20, ease: "none", scrollTrigger: { trigger: frame, start: "top bottom", end: "center center", scrub: 0.6 } }
-      );
+    mm.add("(prefers-reduced-motion: no-preference) and (min-width: 901px)", () => {
+      gsap.to(".reel-frame", { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: el, start: "top top", end: () => `+=${window.innerHeight * 0.95}`, scrub: true } });
+      gsap.to(".reel-title", { yPercent: -40, opacity: 0, ease: "none", scrollTrigger: { trigger: el, start: "top top", end: () => `+=${window.innerHeight * 0.55}`, scrub: true } });
     });
-    return () => mm.revert();
+    mm.add("(prefers-reduced-motion: no-preference) and (max-width: 900px)", () => {
+      gsap.fromTo(".reel-frame", { clipPath: "inset(31% 13% 11% 13% round 24px)" }, { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: el, start: "top top", end: () => `+=${window.innerHeight * 0.85}`, scrub: true } });
+      gsap.to(".reel-title", { yPercent: -50, opacity: 0, ease: "none", scrollTrigger: { trigger: el, start: "top top", end: () => `+=${window.innerHeight * 0.45}`, scrub: true } });
+    });
+    // Title lines rise out of their masks as the section arrives.
+    const lines = gsap.utils.toArray<HTMLElement>(".reel-title .mask > span", el);
+    gsap.set(lines, { yPercent: 110 });
+    const st = ScrollTrigger.create({ trigger: el, start: "top 80%", once: true, onEnter: () => gsap.to(lines, { yPercent: 0, duration: 1.1, ease: "orv", stagger: 0.12 }) });
+    return () => { st.kill(); mm.revert(); };
   }, []);
 
-  const toggleSound = () => {
+  const playWithSound = () => {
     const v = videoRef.current;
     if (!v) return;
     if (!src) setSrc(SRC);
-    const next = !v.muted;
-    v.muted = next;
-    // First time sound comes on, start the story from the top.
-    if (!next && !heardRef.current) { heardRef.current = true; v.currentTime = 0; }
+    v.loop = false; v.currentTime = 0; v.muted = false;
+    setMuted(false); setLive(true);
     v.play().catch(() => {});
-    setMuted(next);
   };
-
-  const watchFull = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const togglePause = () => { const v = videoRef.current; if (!v) return; v.paused ? v.play().catch(() => {}) : v.pause(); };
+  const toggleSound = () => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setMuted(v.muted); };
+  const seek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const v = videoRef.current; if (!v || !v.duration) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    v.currentTime = ((e.clientX - r.left) / r.width) * v.duration;
+  };
+  const full = () => {
     const v = videoRef.current as (HTMLVideoElement & { webkitEnterFullscreen?: () => void }) | null;
     if (!v) return;
-    if (!src) setSrc(SRC);
-    heardRef.current = true;
-    v.currentTime = 0;
-    v.muted = false;
-    setMuted(false);
-    v.play().catch(() => {});
-    if (v.requestFullscreen) v.requestFullscreen().catch(() => {});
-    else v.webkitEnterFullscreen?.();
+    if (v.requestFullscreen) v.requestFullscreen().catch(() => {}); else v.webkitEnterFullscreen?.();
   };
 
   return (
-    <section
-      id="film"
-      aria-label="Orvantia brand film"
-      style={{ position: "relative", zIndex: 10, padding: "clamp(24px, 6vh, 72px) clamp(16px, 3vw, 48px) clamp(80px, 14vh, 160px)" }}
-    >
-      <div style={{ maxWidth: 1440, margin: "0 auto" }}>
-        <div className="center" style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", marginBottom: "clamp(32px, 5vw, 64px)" }}>
-          <div style={{ fontFamily: "var(--mono)", fontSize: 10.5, letterSpacing: "0.26em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: "clamp(20px, 3vw, 32px)" }}>
-            ( The film )
-          </div>
-          <SplitHeadline text="Built *beyond the idea." style={{ fontSize: "clamp(34px, 6vw, 88px)", textAlign: "center" }} />
-          <Reveal delay={0.15}>
-            <p style={{ marginTop: 18, fontSize: "clamp(14px, 1.3vw, 17px)", lineHeight: 1.6, color: "var(--text-2)", maxWidth: "46ch" }}>
-              {LENGTH} on why we build software that survives reality.
-            </p>
-          </Reveal>
+    <section id="film" ref={sectionRef} className={`reel${live ? " live" : ""}`} aria-label="Orvantia brand film">
+      <div className="reel-pin">
+        <div className="reel-title">
+          <h2>
+            <span className="mask"><span>Built beyond</span></span>
+            <span className="mask"><span className="it">the idea.</span></span>
+          </h2>
+          <p>The brand film<br />{mmss(LENGTH)} · why we build</p>
         </div>
 
-        <div className="film-wrap">
-        <div
-          ref={frameRef}
-          className="film-frame"
-          onClick={toggleSound}
-          data-cursor-hover
-          data-cursor-text={muted ? "SOUND" : "MUTE"}
-          role="button"
-          tabIndex={0}
-          aria-label={muted ? "Turn sound on" : "Mute"}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSound(); } }}
-        >
-          <video
-            ref={videoRef}
-            src={src}
-            poster={POSTER}
-            muted
-            loop
-            playsInline
-            preload="none"
-            aria-label="Orvantia — Built beyond the idea"
-          />
-
-          <div className="film-shade" aria-hidden />
-
-          {reduced && !playing && (
-            <div className="film-big-play" aria-hidden>
-              <svg width="28" height="28" viewBox="0 0 12 12"><path d="M3 1.5v9l7.5-4.5z" fill="currentColor" /></svg>
-            </div>
-          )}
-
-          <div className="film-progress" aria-hidden><div ref={barRef} /></div>
+        <div className="reel-frame">
+          <video ref={videoRef} src={src} poster={POSTER} muted loop playsInline preload="none" aria-label="Orvantia brand film" />
         </div>
 
-          <div className="film-controls">
-            <button type="button" className="film-watch" onClick={watchFull}>
-              <span className="film-play" aria-hidden>
-                <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 1.5v9l7.5-4.5z" fill="currentColor" /></svg>
-              </span>
-              Watch the film
-              <span className="film-len">{LENGTH}</span>
-            </button>
+        <div className="reel-ui reel-play-wrap">
+          <button type="button" className="reel-play" data-cursor-hover onClick={playWithSound} aria-label="Play the film with sound">
+            <i aria-hidden />
+            <span>Play with sound<small>{mmss(LENGTH)} · 16:9</small></span>
+          </button>
+        </div>
 
-            <span className="film-hint">{muted ? "Playing muted · click the film for sound" : "Sound on"}</span>
+        <div className="reel-badge" aria-hidden>Preview · muted</div>
 
-            <button
-              type="button"
-              className="film-sound"
-              onClick={(e) => { e.stopPropagation(); toggleSound(); }}
-              aria-label={muted ? "Turn sound on" : "Mute"}
-            >
-              {muted ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H3v6h3l5 4z" /><path d="m22 9-6 6M16 9l6 6" /></svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5 6 9H3v6h3l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" /></svg>
-              )}
-            </button>
+        <div className="reel-bar">
+          <button type="button" onClick={togglePause} data-cursor-hover>{paused ? "Play" : "Pause"}</button>
+          <div className="reel-track" role="slider" aria-label="Seek" aria-valuemin={0} aria-valuemax={LENGTH} aria-valuenow={Math.round(time)} onClick={seek} data-cursor-hover>
+            <i ref={fillRef} />
           </div>
+          <span>{mmss(time)} / {mmss(LENGTH)}</span>
+          <button type="button" onClick={toggleSound} data-cursor-hover>{muted ? "Sound off" : "Sound on"}</button>
+          <button type="button" onClick={full} data-cursor-hover className="reel-full">Full</button>
         </div>
       </div>
     </section>

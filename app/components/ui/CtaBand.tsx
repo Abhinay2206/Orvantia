@@ -4,7 +4,7 @@ import { useModal } from "../providers/ModalProvider";
 import { Section, SplitHeadline, Reveal } from "../sections/_shared";
 
 /* Closing call to action for detail pages. */
-export default function CtaBand({ headline, body, back = { label: "← Back to Orvantia", href: "/" } }: { headline: string; body: string; back?: { label: string; href: string } }) {
+export default function CtaBand({ headline, body, back = { label: "← Back to Orvantia", href: "/#hero" } }: { headline: string; body: string; back?: { label: string; href: string } }) {
   const { openModal } = useModal();
   return (
     <Section style={{ textAlign: "center", borderTop: "1px solid var(--border)" }} glow="radial-gradient(ellipse 60% 70% at 50% 100%, rgba(99,102,241,0.14), transparent 65%)">

@@ -54,31 +54,32 @@ export const staggerChild: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
 };
 
-/* Section eyebrow - number / rule / label. */
+/* Section running head - number, label, then a hairline to the edge of the column. */
 export function Eyebrow({
   num,
   label,
-  color = "rgba(99,102,241,0.7)",
+  color = "rgba(196,181,253,0.9)",
 }: {
   num: string;
   label: string;
   color?: string;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontFamily: "var(--mono)", fontSize: 11, color }}>{num}</span>
-      <div style={{ width: 32, height: 1, background: color, opacity: 0.5 }} />
+    <div style={{ display: "flex", alignItems: "center", gap: 16, width: "100%" }}>
+      <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.08em", color }}>{num}</span>
       <span
         style={{
           fontFamily: "var(--mono)",
-          fontSize: 10,
-          letterSpacing: "0.24em",
+          fontSize: 10.5,
+          letterSpacing: "0.22em",
           textTransform: "uppercase",
-          color: "rgba(241,245,249,0.4)",
+          color: "rgba(241,245,249,0.55)",
+          whiteSpace: "nowrap",
         }}
       >
         {label}
       </span>
+      <span style={{ flex: 1, height: 1, background: "var(--border-strong)", minWidth: 24 }} />
     </div>
   );
 }
@@ -148,13 +149,15 @@ export function SplitHeadline({
   return (
     <h2
       ref={ref}
-      className={className}
+      className={`serif-display ${className ?? ""}`}
       style={{
-        fontFamily: "var(--font)",
-        fontWeight: 700,
-        letterSpacing: "-0.035em",
-        lineHeight: 1.02,
+        fontFamily: "var(--serif)",
+        fontWeight: 400,
+        letterSpacing: "-0.025em",
+        lineHeight: 0.98,
         ...style,
+        // Instrument Serif sets smaller than a grotesk at the same size.
+        fontSize: style?.fontSize ? `calc(${style.fontSize} * 1.3)` : undefined,
       }}
     >
       {words.map((w, i) => {
@@ -180,7 +183,7 @@ export function SplitHeadline({
   );
 }
 
-/* Section wrapper - consistent padding + ambient glow. */
+/* Section wrapper - consistent padding. */
 import { forwardRef } from "react";
 
 export const Section = forwardRef<
@@ -188,11 +191,12 @@ export const Section = forwardRef<
   {
     id?: string;
     children: ReactNode;
+    /** @deprecated ambient glows were removed in the v2 design system; ignored. */
     glow?: string;
     style?: CSSProperties;
     className?: string;
   }
->(function Section({ id, children, glow, style, className }, ref) {
+>(function Section({ id, children, style, className }, ref) {
   return (
     <section
       id={id}
@@ -201,16 +205,10 @@ export const Section = forwardRef<
       style={{
         position: "relative",
         padding: "clamp(72px, calc(7vw + 46px), 168px) clamp(24px, 5vw, 80px)",
-        overflow: "hidden",
+        overflow: "clip",
         ...style,
       }}
     >
-      {glow && (
-        <div
-          className="pointer-events-none"
-          style={{ position: "absolute", inset: 0, background: glow, zIndex: 0 }}
-        />
-      )}
       <div style={{ position: "relative", zIndex: 1, maxWidth: 1440, margin: "0 auto" }}>
         {children}
       </div>

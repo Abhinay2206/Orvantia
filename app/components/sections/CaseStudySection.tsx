@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/motion";
 import { Section, Eyebrow, Reveal } from "./_shared";
 import AnimatedCounter from "../ui/AnimatedCounter";
+import Testimonial from "./Testimonial";
 
 const METRICS = [
   { to: 231, decimals: 0, suffix: "", label: "Tasks Managed" },
@@ -183,155 +184,62 @@ export function Transformation() {
   );
 }
 
-/* ─── Proof bar — real first-month production numbers ─── */
+/* ─── Proof strip — real first-month production numbers ─── */
 export function MetricsBar() {
   return (
-        <Reveal>
-          <div
-            className="glass-card"
-            style={{
-              padding: "clamp(28px, 3.4vw, 46px)",
-              borderRadius: "var(--radius-lg)",
-              background: "linear-gradient(135deg, rgba(34,211,238,0.06), rgba(10,10,20,0.6) 55%)",
-              backdropFilter: "blur(12px)",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "var(--mono)",
-                fontSize: 10,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: "var(--text-3)",
-                marginBottom: 28,
-              }}
-            >
-              First month in production
+    <div>
+      <div style={{ fontFamily: "var(--mono)", fontSize: 10.5, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 20 }}>
+        First month in production
+      </div>
+      <div className="metric-strip">
+        {METRICS.map((m) => (
+          <div key={m.label} className="metric-cell">
+            <div className="metric-num">
+              <AnimatedCounter to={m.to} decimals={m.decimals} suffix={m.suffix} duration={1600} />
             </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 118px), 1fr))",
-                gap: "clamp(12px, 2.4vw, 32px)",
-              }}
-            >
-              {METRICS.map((m) => (
-                <div key={m.label} className="stat-cell" style={{ padding: "14px 16px" }}>
-                  <div
-                    className="g-text-cyan"
-                    style={{
-                      fontFamily: "var(--font)",
-                      fontSize: "clamp(34px, 4.4vw, 56px)",
-                      fontWeight: 700,
-                      letterSpacing: "-0.04em",
-                      lineHeight: 1,
-                    }}
-                  >
-                    <AnimatedCounter to={m.to} decimals={m.decimals} suffix={m.suffix} duration={1600} />
-                  </div>
-                  <div style={{ marginTop: 12, height: 2, width: 32, borderRadius: 2, background: "linear-gradient(90deg, #22d3ee, transparent)" }} />
-                  <div
-                    style={{
-                      marginTop: 12,
-                      fontFamily: "var(--mono)",
-                      fontSize: 10,
-                      letterSpacing: "0.16em",
-                      textTransform: "uppercase",
-                      color: "var(--text-3)",
-                    }}
-                  >
-                    {m.label}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="metric-label">{m.label}</div>
           </div>
-        </Reveal>
+        ))}
+      </div>
+    </div>
   );
 }
 
 export default function CaseStudySection() {
   return (
-    <Section
-      id="case-study"
-      style={{ position: "relative", zIndex: 10 }}
-      glow="radial-gradient(ellipse 70% 60% at 50% 0%, rgba(34,211,238,0.08), transparent 60%)"
-    >
-      {/* Header */}
-      <div style={{ maxWidth: 900 }}>
+    <Section id="case-study" style={{ position: "relative", zIndex: 10 }}>
+      <Reveal><Eyebrow num="02" label="In production" /></Reveal>
+
+      <div className="cs-title-row">
+        <h2 className="cs-title serif-display">FactoryFlow</h2>
+        <div className="cs-side">
+          <span className="status-pill"><span className="status-dot" />Live in production</span>
+          <div className="cs-client">Prayagh Consumer Care Pvt. Ltd.<br />Manufacturing</div>
+        </div>
+      </div>
+
+      <div className="cs-lede">
         <Reveal>
-          <Eyebrow num="02" label="Featured Case Study" color="rgba(34,211,238,0.8)" />
+          <p className="cs-quote">A manufacturing floor ran on a diary and <span className="accent-serif">WhatsApp.</span> Now it runs on this.</p>
         </Reveal>
         <Reveal delay={0.1}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 26, flexWrap: "wrap" }}>
-            <h2
-              style={{
-                fontFamily: "var(--font)",
-                fontSize: "clamp(38px, 6vw, 84px)",
-                fontWeight: 700,
-                letterSpacing: "-0.04em",
-                lineHeight: 0.95,
-              }}
-              className="g-text-cyan"
-            >
-              FactoryFlow
-            </h2>
-            <span className="status-pill" style={{ marginBottom: 8 }}>
-              <span className="status-dot" />
-              Live in Production
-            </span>
-          </div>
-        </Reveal>
-        <Reveal delay={0.16}>
-          <p
-            style={{
-              marginTop: 18,
-              fontSize: "clamp(17px, 1.8vw, 23px)",
-              color: "var(--text)",
-              lineHeight: 1.5,
-              letterSpacing: "-0.01em",
-              maxWidth: "34ch",
-              fontWeight: 600,
-            }}
-          >
-            A manufacturing floor ran on a diary and WhatsApp. Now it runs on this.
+          <p style={{ fontSize: "clamp(15px, 1.35vw, 18px)", lineHeight: 1.7, color: "var(--text-2)", maxWidth: "46ch" }}>
+            An enterprise task and workflow platform we designed, built and shipped for Prayagh Consumer Care - now handling their real day-to-day operations across multiple departments.
           </p>
-        </Reveal>
-        <Reveal delay={0.22}>
-          <p style={{ marginTop: 14, fontSize: "clamp(15px, 1.4vw, 18px)", color: "var(--text-2)", maxWidth: "62ch", lineHeight: 1.65 }}>
-            An enterprise task and workflow platform we designed, built, and shipped for
-            <strong style={{ color: "var(--text)", fontWeight: 600 }}> Prayagh Consumer Care Pvt. Ltd.</strong> - now
-            handling their real day-to-day operations across multiple departments.
-          </p>
-          <div style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-3)" }}>
-            <span style={{ width: 22, height: 1, background: "rgba(34,211,238,0.5)" }} />
-            Client · Prayagh Consumer Care Pvt. Ltd.
-          </div>
+          <a href="/case-study" className="btn-primary" data-cursor-hover style={{ marginTop: 28 }}>Read the full story →</a>
         </Reveal>
       </div>
 
-      {/* Narrated product tour */}
-      <div style={{ marginTop: "clamp(40px, 5vw, 66px)" }}>
-        <Reveal>
-          <ProductDemo />
-        </Reveal>
+      <div style={{ marginTop: "clamp(40px, 5vw, 72px)" }}>
+        <Reveal><ProductDemo /></Reveal>
       </div>
 
-      <div style={{ marginTop: "clamp(40px, 5vw, 64px)" }}>
-        <MetricsBar />
+      <div style={{ marginTop: "clamp(40px, 5vw, 72px)" }}>
+        <Testimonial />
       </div>
 
-      <div style={{ marginTop: "clamp(32px, 4vw, 52px)", display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-        <Reveal>
-          <a href="/case-study" className="btn-primary" data-cursor-hover style={{ background: "linear-gradient(135deg, rgba(34,211,238,0.9), rgba(59,130,246,0.9))" }}>
-            Read the full story →
-          </a>
-        </Reveal>
-        <Reveal delay={0.08}>
-          <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.08em", color: "var(--text-3)" }}>
-            The problem, how we fixed it, and what changed
-          </span>
-        </Reveal>
+      <div style={{ marginTop: "clamp(48px, 6vw, 88px)" }}>
+        <Reveal><MetricsBar /></Reveal>
       </div>
     </Section>
   );

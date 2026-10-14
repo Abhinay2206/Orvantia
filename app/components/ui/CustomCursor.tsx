@@ -100,10 +100,8 @@ export default function CustomCursor() {
           height: 32,
           border: "1px solid rgba(255,255,255,0.25)",
           background: useTransform(textHoverSpring, [0, 1], ["rgba(255,255,255,0)", "rgba(255,255,255,0.1)"]),
-          backdropFilter: useTransform(textHoverSpring, [0, 1], ["blur(0px)", "blur(4px)"]),
           opacity: cursorOpacity,
           scale: ringScale,
-          mixBlendMode: "difference",
         }}
       />
       
@@ -119,7 +117,6 @@ export default function CustomCursor() {
             [cursorOpacity, textHoverSpring],
             ([co, th]: number[]) => co * th
           ),
-          mixBlendMode: "difference",
         }}
       >
         <span style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: "0.2em", color: "white", fontWeight: 600 }}>
@@ -142,7 +139,6 @@ export default function CustomCursor() {
             ([co, dp]: number[]) => co * dp
           ),
           scale: dotScale,
-          mixBlendMode: "difference",
         }}
       />
     </>

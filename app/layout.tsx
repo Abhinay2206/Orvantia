@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ModalProvider from "./components/providers/ModalProvider";
+import { SITE_URL, SITE_NAME, SITE_DESC } from "@/lib/site";
 
 // Self-hosted (latin subset) so builds never depend on downloading fonts from
 // Google - a failed download there breaks the Vercel build.
@@ -29,30 +30,74 @@ const instrumentSerif = localFont({
   display: "swap",
 });
 
+const TITLE = "Orvantia | Software & Automation for Growing Businesses";
+
 export const metadata: Metadata = {
-  title: "Orvantia | Software & Automation for Growing Businesses",
-  description:
-    "Orvantia helps small and growing businesses replace diaries, spreadsheets, and WhatsApp follow-ups with automation, SaaS, and custom software their teams actually use.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: TITLE, template: "%s | Orvantia" },
+  description: SITE_DESC,
+  applicationName: SITE_NAME,
   keywords: [
     "business automation",
     "custom software for small business",
     "SaaS development",
     "workflow automation",
     "software studio India",
+    "software company Hyderabad",
     "web and mobile apps",
   ],
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   openGraph: {
-    title: "Orvantia | Software & Automation for Growing Businesses",
-    description:
-      "We replace manual work with automation, SaaS, and custom software - built for growing businesses.",
     type: "website",
+    url: "/",
+    siteName: SITE_NAME,
+    locale: "en_IN",
+    title: TITLE,
+    description: "We replace manual work with automation, SaaS, and custom software - built for growing businesses.",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Orvantia - software that runs itself" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: "We replace manual work with automation, SaaS, and custom software - built for growing businesses.",
+    images: ["/og.png"],
   },
 };
+
+export const viewport: Viewport = { themeColor: "#04040a", colorScheme: "dark" };
+
+const ORG_LD = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${SITE_URL}/#org`,
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    description: SITE_DESC,
+    address: { "@type": "PostalAddress", addressLocality: "Hyderabad", addressCountry: "IN" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": `${SITE_URL}/#service`,
+    name: SITE_NAME,
+    url: SITE_URL,
+    image: `${SITE_URL}/og.png`,
+    description: SITE_DESC,
+    areaServed: "Worldwide",
+    address: { "@type": "PostalAddress", addressLocality: "Hyderabad", addressCountry: "IN" },
+    knowsAbout: ["Business automation", "SaaS development", "Custom software", "Workflow automation"],
+  },
+  { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: SITE_NAME, publisher: { "@id": `${SITE_URL}/#org` }, inLanguage: "en" },
+];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }} />
         <ModalProvider>{children}</ModalProvider>
       </body>
     </html>

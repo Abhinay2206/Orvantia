@@ -10,8 +10,9 @@ const NAV = [
   {
     heading: "Products",
     links: [
-      { label: "All Products", sub: "NutritionOS · EnteraFlux", href: "/#products" },
+      { label: "All Products", sub: "NutritionOS · ContextBridge · EnteraFlux", href: "/#products" },
       { label: "NutritionOS", sub: "Free Fitness Tracker", href: "/products/nutritionos" },
+      { label: "ContextBridge", sub: "Open Source", href: "/products/contextbridge" },
       { label: "EnteraFlux", sub: "Research Stage", href: "/products/enteraflux" },
     ],
   },
@@ -158,12 +159,13 @@ export default function Footer() {
           </div>
           <h2
             ref={closingRef}
+            className="serif-display"
             style={{
-              fontFamily: "var(--font)",
-              fontSize: "clamp(40px, 7.4vw, 118px)",
-              fontWeight: 600,
-              letterSpacing: "-0.045em",
-              lineHeight: 0.98,
+              fontFamily: "var(--serif)",
+              fontSize: "clamp(48px, 9vw, 148px)",
+              fontWeight: 400,
+              letterSpacing: "-0.03em",
+              lineHeight: 0.96,
               color: "var(--text)",
             }}
           >

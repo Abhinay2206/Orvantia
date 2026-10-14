@@ -48,16 +48,16 @@ export default function NutritionOSPage() {
           <div>
             <Reveal><Eyebrow num="01" label="Product · Live & free" color="rgba(95,194,171,0.85)" /></Reveal>
             <Reveal delay={0.08}>
-              <h1 style={{ marginTop: 22, fontSize: "clamp(48px, 8vw, 112px)", fontWeight: 700, letterSpacing: "-0.045em", lineHeight: 0.92, color: TEAL }}>NutritionOS</h1>
+              <h1 className="serif-display" style={{ marginTop: 22, fontFamily: "var(--serif)", fontSize: "clamp(56px, 10vw, 168px)", fontWeight: 400, letterSpacing: "-0.04em", lineHeight: 0.88, color: TEAL, marginLeft: "-0.03em" }}>NutritionOS</h1>
             </Reveal>
             <Reveal delay={0.14}>
-              <p style={{ marginTop: 22, fontSize: "clamp(18px, 1.9vw, 25px)", fontWeight: 500, letterSpacing: "-0.01em", lineHeight: 1.45, maxWidth: "30ch" }}>
+              <p style={{ marginTop: 24, fontSize: "clamp(17px, 1.6vw, 22px)", fontWeight: 400, lineHeight: 1.55, color: "var(--text-2)", maxWidth: "34ch" }}>
                 A fast, private nutrition and training tracker - built for one thumb on a phone, with a food database made for Indian cooking.
               </p>
             </Reveal>
             <Reveal delay={0.2}>
               <div style={{ marginTop: 32, display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
-                <a href={URL} target="_blank" rel="noopener noreferrer" data-cursor-hover className="btn-primary" style={{ background: `linear-gradient(135deg, ${TEAL}, #3fa58e)`, color: "#04120e" }}>Open NutritionOS ↗</a>
+                <a href={URL} target="_blank" rel="noopener noreferrer" data-cursor-hover className="btn-primary">Open NutritionOS ↗</a>
                 <span className="status-pill" style={{ display: "inline-flex" }}><span className="status-dot" />Live · installable web app</span>
               </div>
             </Reveal>
@@ -91,7 +91,7 @@ export default function NutritionOSPage() {
             <div key={title} className="nos-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 360px), 1fr))", gap: "clamp(32px, 6vw, 96px)", alignItems: "center" }}>
               <Reveal style={{ order: i % 2 ? 2 : 0 }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: 12, color: TEAL }}>{String(i + 1).padStart(2, "0")}</div>
-                <h2 style={{ marginTop: 14, fontSize: "clamp(26px, 3.4vw, 44px)", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1.05, maxWidth: "16ch" }}>{title}</h2>
+                <h2 style={{ marginTop: 14, fontFamily: "var(--serif)", fontSize: "clamp(34px, 4.4vw, 62px)", fontWeight: 400, letterSpacing: "-0.025em", lineHeight: 1, maxWidth: "14ch" }}>{title}</h2>
                 <p style={{ marginTop: 16, fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text-2)", maxWidth: "46ch" }}>{desc}</p>
               </Reveal>
               <Reveal delay={0.1} style={{ order: 1 }}>
@@ -118,7 +118,7 @@ export default function NutritionOSPage() {
         <div style={{ marginTop: "clamp(48px, 6vw, 80px)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))", gap: 24 }}>
           {STATS.map(([v, l]) => (
             <Reveal key={l}>
-              <div style={{ fontSize: "clamp(40px, 5vw, 64px)", fontWeight: 700, letterSpacing: "-0.045em", color: TEAL, lineHeight: 1 }}>{v}</div>
+              <div style={{ fontFamily: "var(--serif)", fontSize: "clamp(48px, 6vw, 88px)", fontWeight: 400, letterSpacing: "-0.03em", color: TEAL, lineHeight: 1 }}>{v}</div>
               <div style={{ marginTop: 10, fontFamily: "var(--mono)", fontSize: 10.5, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--text-3)" }}>{l}</div>
             </Reveal>
           ))}

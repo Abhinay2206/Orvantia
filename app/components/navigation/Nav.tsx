@@ -66,8 +66,7 @@ export default function Nav({ show }: { show: boolean }) {
           <motion.div
             className="absolute inset-0 transition-all duration-400"
             style={{
-              background: scrolled ? "rgba(4,4,10,0.7)" : "transparent",
-              backdropFilter: scrolled ? "blur(20px)" : "none",
+              background: scrolled ? "rgba(4,4,10,0.88)" : "transparent",
               borderBottom: scrolled
                 ? "1px solid rgba(255,255,255,0.05)"
                 : "1px solid transparent",

@@ -282,7 +282,7 @@ export default function ContactSection() {
           </div>
         </Reveal>
         <SplitHeadline
-          text="Let's build something *extraordinary."
+          text="Tell us what *slows *you *down."
           style={{ marginTop: 26, fontSize: "clamp(34px, 6vw, 82px)", letterSpacing: "-0.04em", lineHeight: 1 }}
         />
       </div>

@@ -109,7 +109,7 @@ export default function BrandFilmSection() {
           <p>The brand film<br />{mmss(LENGTH)} · why we build</p>
         </div>
 
-        <div className="reel-frame">
+        <div className="reel-frame" data-cursor-text={live ? undefined : "Play"} onClick={live ? undefined : playWithSound}>
           <video ref={videoRef} src={src} poster={POSTER} muted loop playsInline preload="none" aria-label="Orvantia brand film" />
         </div>
 

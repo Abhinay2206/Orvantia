@@ -71,6 +71,9 @@ export default function Home() {
 
   const onBooted = () => {
     setBooted(true);
+    // Sections render behind the intro overlay; this tells them it has lifted.
+    (window as { __orvBooted?: boolean }).__orvBooted = true;
+    window.dispatchEvent(new Event("orv:booted"));
     setTimeout(() => setNavVisible(true), 300);
   };
 

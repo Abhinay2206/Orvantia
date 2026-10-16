@@ -46,9 +46,13 @@ export default function HeroScene() {
     return () => io.disconnect();
   }, []);
 
+  // The hero plays its entrance once the intro overlay has gone (it renders behind it).
   useEffect(() => {
-    const timer = setTimeout(() => setSceneReady(true), 200);
-    return () => clearTimeout(timer);
+    let timer: ReturnType<typeof setTimeout>;
+    const go = () => { timer = setTimeout(() => setSceneReady(true), 120); };
+    if ((window as { __orvBooted?: boolean }).__orvBooted) go();
+    else window.addEventListener("orv:booted", go, { once: true });
+    return () => { clearTimeout(timer); window.removeEventListener("orv:booted", go); };
   }, []);
 
   /* Headline: lines rise out of their masks, then the second line cycles. */
@@ -59,9 +63,9 @@ export default function HeroScene() {
     const first = headRef.current.querySelector<HTMLElement>(".hero-l1");
     let timer: ReturnType<typeof setInterval> | undefined;
     const ctx = gsap.context(() => {
-      gsap.set(phrases, { yPercent: 115 });
-      if (reduced) { gsap.set(phrases[0], { yPercent: 0 }); return; }
-      gsap.set(first, { yPercent: 115 });
+      // y: 0 clears the CSS pre-hide offset, which GSAP would otherwise read as pixels.
+      gsap.set([first, ...phrases], { y: 0, yPercent: 135 });
+      if (reduced) { gsap.set([first, phrases[0]], { yPercent: 0 }); return; }
       gsap.to(first, { yPercent: 0, duration: 1.3, ease: ORV_EASE, delay: 0.3 });
       gsap.to(phrases[0], { yPercent: 0, duration: 1.3, ease: ORV_EASE, delay: 0.46 });
       let i = 0;
@@ -69,8 +73,8 @@ export default function HeroScene() {
         timer = setInterval(() => {
           const out = phrases[i];
           i = (i + 1) % phrases.length;
-          gsap.to(out, { yPercent: -115, duration: 0.9, ease: ORV_EASE, overwrite: true });
-          gsap.fromTo(phrases[i], { yPercent: 115 }, { yPercent: 0, duration: 1, ease: ORV_EASE, overwrite: true });
+          gsap.to(out, { yPercent: -135, duration: 0.9, ease: ORV_EASE, overwrite: true });
+          gsap.fromTo(phrases[i], { yPercent: 135 }, { yPercent: 0, duration: 1, ease: ORV_EASE, overwrite: true });
         }, 3000);
       }, 2600);
       return () => clearTimeout(start);
@@ -98,19 +102,19 @@ export default function HeroScene() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative w-full overflow-hidden"
-      style={{ background: "#04040a", minHeight: "100svh" }}
+      className="relative w-full"
+      style={{ background: "#04040a", minHeight: "100svh", display: "flex", flexDirection: "column", overflow: "clip" }}
       onMouseMove={onMouseMove}
     >
       {/* ─── Canvas ─ */}
       <div className="absolute inset-0" style={{ zIndex: 0 }}>
-        <HeroField active={onScreen} />
+        <HeroField active={onScreen} start={sceneReady} />
       </div>
 
       {/* ─── Overlays ─ */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(4,4,10,0.55) 0%, transparent 26%, transparent 74%, rgba(4,4,10,0.95) 100%)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(4,4,10,0.5), transparent 30%, transparent 70%, rgba(4,4,10,0.4))" }} />
+        {/* Keep the type on calm, dark ground: the left column and the foot fall to black. */}
+        <div className="hero-shade" />
       </div>
 
       {/* ─── Editorial content ─ */}
@@ -118,7 +122,7 @@ export default function HeroScene() {
         className="relative flex flex-col justify-end"
         // In flow (not absolutely placed) so a short screen makes the hero taller
         // instead of pushing the text up under the fixed nav.
-        style={{ zIndex: 4, y: contentY, opacity: contentOpacity, minHeight: "100svh", padding: "108px clamp(24px, 6vw, 96px) clamp(76px, 12vh, 132px)" }}
+        style={{ zIndex: 4, y: contentY, opacity: contentOpacity, flex: 1, padding: "108px clamp(24px, 6vw, 96px) clamp(20px, 4vh, 40px)" }}
       >
         <div style={{ maxWidth: 1500, width: "100%" }}>
           <motion.div
@@ -189,8 +193,9 @@ export default function HeroScene() {
       </motion.div>
 
       <motion.div
-        className="absolute inset-x-0 bottom-0"
-        style={{ zIndex: 4, opacity: contentOpacity, padding: "0 clamp(24px, 6vw, 96px) clamp(16px, 3vh, 30px)" }}
+        // sticky: on short screens the hero is taller than the window, so the bar
+        // stays pinned to the bottom of the viewport instead of below the fold
+        style={{ position: "sticky", bottom: 0, zIndex: 4, opacity: contentOpacity, padding: "28px clamp(24px, 6vw, 96px) clamp(16px, 3vh, 30px)", pointerEvents: "none", background: "linear-gradient(to top, rgba(4,4,10,0.96) 55%, transparent)" }}
         initial={{ opacity: 0 }}
         animate={sceneReady ? { opacity: 1 } : {}}
         transition={{ delay: 1.5, duration: 0.9 }}

@@ -43,7 +43,7 @@ export default function Testimonial() {
     <figure className="tm">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
       <Reveal>
-        <div className="tm-video">
+        <div className="tm-video" data-cursor-text={started ? undefined : "Play"} onClick={started ? undefined : play}>
           <video
             ref={ref}
             src="/case-study/prayagh-testimonial.mp4"
@@ -55,7 +55,7 @@ export default function Testimonial() {
             onEnded={() => setStarted(false)}
           />
           {!started && (
-            <button type="button" className="reel-play tm-play" data-cursor-hover onClick={play} aria-label="Play the client testimonial with sound">
+            <button type="button" className="reel-play tm-play" data-cursor-hover onClick={(e) => { e.stopPropagation(); play(); }} aria-label="Play the client testimonial with sound">
               <span aria-hidden>▶</span> Play with sound
             </button>
           )}

@@ -860,22 +860,9 @@ html { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.2) transparent;
 }
 .footer-top:hover { color: rgba(241,245,249,0.85); }
 
-/* ─── Manifesto: inline icon pills ───────────────────────── */
-.mf-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.55em;
-  height: 0.9em;
-  margin: 0 0.04em;
-  border-radius: 100px;
-  vertical-align: -0.08em;
-  color: var(--pill);
-  background: color-mix(in srgb, var(--pill) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--pill) 38%, transparent);
-  box-shadow: 0 0 24px color-mix(in srgb, var(--pill) 18%, transparent);
-}
-.mf-pill svg { width: 0.5em; height: 0.5em; }
+/* ─── Manifesto: the manual tools get struck through ───── */
+.mf-strike { position: relative; display: inline-block; }
+.mf-line { position: absolute; left: -0.04em; right: -0.04em; top: 56%; height: max(2px, 0.045em); background: #c4b5fd; transform: scaleX(0); transform-origin: left center; pointer-events: none; }
 
 /* ─── Text roll: label slides up, a fresh copy rolls in ──── */
 .roll {
@@ -1157,6 +1144,8 @@ button:hover .roll > span { transform: translateY(-50%); }
 .hero-rotor { font-style: italic; color: #c4b5fd; }
 .hero-sizer { visibility: hidden; display: inline-block; white-space: nowrap; padding-right: 0.06em; }
 .hero-phrase { position: absolute; left: 0; top: 0.02em; white-space: nowrap; will-change: transform; padding-right: 0.06em; }
+/* Hidden in their masks until the entrance runs (the hero renders behind the intro overlay). */
+.hero-l1, .hero-phrase { transform: translateY(135%); }
 .hero-row { margin-top: clamp(28px, 4.6vh, 56px); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 36px; }
 .hero-index { width: min(100%, 400px); }
 .hero-index-title { padding-bottom: 12px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-3); border-bottom: 1px solid var(--border-strong); }
@@ -1181,6 +1170,15 @@ button:hover .roll > span { transform: translateY(-50%); }
   .hero-ctas { margin-top: 20px !important; }
 }
 
+/* Short desktop windows: compact the lower row so the hero still fits one screen */
+@media (max-height: 700px) and (min-width: 761px) {
+  .hero-row p { display: none; }
+  .hero-ctas { margin-top: 0 !important; }
+  .hero-index-row { padding: 9px 0; }
+  .hero-index-title { padding-bottom: 8px; }
+  .hero-h1 { font-size: clamp(48px, min(10vw, 15svh), 150px); }
+}
+
 /* ─── Client testimonial ─── */
 .tm { display: grid; grid-template-columns: minmax(220px, 340px) minmax(0, 1fr); gap: clamp(28px, 6vw, 96px); align-items: center; margin: 0; padding: clamp(28px, 3.4vw, 44px) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .tm-video { position: relative; aspect-ratio: 9 / 16; border-radius: var(--radius-lg); overflow: hidden; background: #000; border: 1px solid var(--border); }
@@ -1196,3 +1194,24 @@ button:hover .roll > span { transform: translateY(-50%); }
 .tm-video::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 40%, rgba(4,4,10,0.88) 78%); transition: opacity 0.4s; }
 .tm-video:has(video[controls])::after { opacity: 0; }
 .tm-play { z-index: 2; }
+
+/* Hero: dark ground under the type, light only where there is no text */
+.hero-shade { position: absolute; inset: 0; background:
+  linear-gradient(to bottom, rgba(4,4,10,0.7) 0%, transparent 18%, transparent 62%, rgba(4,4,10,0.92) 100%),
+  linear-gradient(to right, rgba(4,4,10,0.94) 0%, rgba(4,4,10,0.82) 30%, rgba(4,4,10,0.25) 56%, transparent 72%); }
+@media (max-aspect-ratio: 9/10) { .hero-shade { background:
+  linear-gradient(to bottom, rgba(4,4,10,0.55) 0%, transparent 14%, rgba(4,4,10,0.35) 34%, rgba(4,4,10,0.94) 52%, #04040a 100%); } }
+
+/* ─── Intro ─── */
+.boot { position: fixed; inset: 0; z-index: 9999; background: #04040a; color: var(--text); overflow: hidden; }
+.boot-head { position: absolute; top: 0; left: 0; right: 0; height: 64px; display: flex; align-items: center; }
+.boot-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.boot-word { display: flex; font-family: var(--serif); font-weight: 400; font-size: clamp(64px, 13vw, 200px); line-height: 1; letter-spacing: -0.045em; }
+.boot-mask { display: inline-block; overflow: hidden; padding: 0.06em 0.01em 0.14em; margin: 0 -0.01em; }
+.boot-tag { margin-top: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(241,245,249,0.45); padding-left: 0.32em; }
+.boot-foot { position: absolute; left: 0; right: 0; bottom: 28px; display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(241,245,249,0.4); }
+.boot-count { font-size: 13px; letter-spacing: 0.12em; color: var(--text); font-variant-numeric: tabular-nums; }
+.boot-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #c4b5fd; transform-origin: left center; }
+
+/* Keyboard focus: a clear lilac ring everywhere (the custom cursor hides the pointer, not focus) */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible { outline: 1.5px solid #c4b5fd; outline-offset: 3px; border-radius: 4px; }

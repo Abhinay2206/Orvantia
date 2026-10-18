@@ -1200,7 +1200,7 @@ button:hover .roll > span { transform: translateY(-50%); }
   linear-gradient(to bottom, rgba(4,4,10,0.7) 0%, transparent 18%, transparent 62%, rgba(4,4,10,0.92) 100%),
   linear-gradient(to right, rgba(4,4,10,0.94) 0%, rgba(4,4,10,0.82) 30%, rgba(4,4,10,0.25) 56%, transparent 72%); }
 @media (max-aspect-ratio: 9/10) { .hero-shade { background:
-  linear-gradient(to bottom, rgba(4,4,10,0.55) 0%, transparent 14%, rgba(4,4,10,0.35) 34%, rgba(4,4,10,0.94) 52%, #04040a 100%); } }
+  linear-gradient(to bottom, rgba(4,4,10,0.5) 0%, transparent 12%, transparent 30%, rgba(4,4,10,0.9) 48%, #04040a 62%); } }
 
 /* ─── Intro ─── */
 .boot { position: fixed; inset: 0; z-index: 9999; background: #04040a; color: var(--text); overflow: hidden; }
@@ -1215,3 +1215,46 @@ button:hover .roll > span { transform: translateY(-50%); }
 
 /* Keyboard focus: a clear lilac ring everywhere (the custom cursor hides the pointer, not focus) */
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible { outline: 1.5px solid #c4b5fd; outline-offset: 3px; border-radius: 4px; }
+
+/* ─── Phones & tablets: the hero is bigger, products become a swipe carousel ─── */
+@media (max-width: 480px) { .hero-h1 { font-size: min(16.4vw, 70px); } }
+@media (max-width: 1023px) {
+  .pg-track { flex-direction: row; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 24px 28px; scrollbar-width: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .pg-track::-webkit-scrollbar { display: none; }
+  .pg-panel { flex: 0 0 min(86vw, 520px); scroll-snap-align: center; padding: 28px 22px 32px; border: 1px solid var(--border); border-radius: 8px; background: rgba(255,255,255,0.025); }
+  .pg-intro { flex-basis: min(80vw, 460px); border: 0; background: none; padding: 8px 8px 32px 0; justify-content: flex-start; }
+  .pg-count { display: none; }
+  .pg-cue { display: block; margin-top: 28px; }
+  .pg-name { font-size: clamp(42px, 12vw, 64px); }
+  .pg-project { align-content: start; gap: 28px; }
+}
+/* Tall phones/tablets: pinned like desktop - the page scroll drives the slide */
+@media (max-width: 1023px) and (min-height: 620px) {
+  .pg-wrap { height: 100svh; overflow: hidden; display: flex; flex-direction: column; }
+  .pg-head { flex: none; }
+  .pg-track { flex: 1; min-height: 0; width: max-content; overflow: visible; scroll-snap-type: none; padding: 0 24px 22px; gap: 14px; will-change: transform; }
+  .pg-panel { height: 100%; min-height: 0; overflow: hidden; padding: 26px 22px 22px; }
+  .pg-intro { height: 100%; justify-content: center; }
+  .pg-project { grid-template-rows: auto minmax(0, 1fr); gap: 16px; align-content: stretch; }
+  .pg-name { margin-top: 16px; font-size: clamp(44px, 13vw, 64px); }
+  .pg-line { margin-top: 16px; font-size: 15.5px; line-height: 1.6; }
+  .pg-meta { margin-top: 14px; }
+  .pg-links { margin-top: 22px; gap: 14px 18px; }
+  .pg-visual { min-height: 0; height: 100%; align-self: stretch; align-items: center; justify-content: center; overflow: hidden; border-top: 1px solid var(--border); padding-top: 16px; }
+  .pg-visual > * { flex-shrink: 0; }
+  .pg-bar { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(255,255,255,0.08); }
+  .pg-bar > div { height: 100%; background: var(--text); transform-origin: left; transform: scaleX(0); }
+}
+
+@media (max-width: 1023px) and (min-height: 620px) and (max-height: 780px) {
+  .pg-visual { contain: paint; }
+  .pg-visual > * { zoom: 0.7; }
+  .pg-name { font-size: clamp(38px, 11vw, 52px); }
+  .pg-line { font-size: 14.5px; }
+}
+
+/* Touch: a firm press response instead of hover */
+@media (hover: none) {
+  .btn-primary:active, .hero-cta-primary:active, .footer-cta:active { transform: scale(0.97); }
+  .svc-row:active, .hero-index-row:active, .faq-item summary:active { background: rgba(255,255,255,0.04); }
+}

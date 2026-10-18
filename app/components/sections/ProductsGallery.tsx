@@ -109,8 +109,8 @@ const PROJECTS: Project[] = [
 ];
 
 /**
- * Products - one pinned horizontal gallery. Desktop scrubs sideways through
- * the projects while the page is pinned; phones get a plain vertical stack.
+ * Products - one pinned horizontal gallery. Scrolling the page slides sideways
+ * through the projects while the section is pinned (swipe carousel on short phones).
  */
 export default function ProductsGallery() {
   const { openModal } = useModal();
@@ -123,7 +123,9 @@ export default function ProductsGallery() {
     const wrap = wrapRef.current, track = trackRef.current;
     if (!wrap || !track) return;
     const mm = gsap.matchMedia();
-    mm.add("(min-width: 1024px)", () => {
+    // desktop, and tall phones/tablets: pinned, scrolling the page slides the gallery sideways.
+    // Short phones fall back to a native swipe carousel (the cards would not fit one screen).
+    mm.add("(min-width: 1024px), (max-width: 1023px) and (min-height: 620px)", () => {
       const dist = () => Math.max(0, track.scrollWidth - window.innerWidth);
       const total = PROJECTS.length;
       const tween = gsap.to(track, {
@@ -156,7 +158,7 @@ export default function ProductsGallery() {
             Things we build<br />for <span className="accent-serif">ourselves.</span>
           </h2>
           <p style={{ marginTop: 28, maxWidth: "44ch", fontSize: "clamp(15px, 1.4vw, 18px)", lineHeight: 1.7, color: "var(--text-2)" }}>
-            Beyond client work we ship our own products - to fix problems we face, and to push at what&apos;s next. Scroll sideways.
+            Beyond client work we ship our own products - to fix problems we face, and to push at what&apos;s next. Keep going - it slides sideways.
           </p>
           <span className="pg-cue" aria-hidden>Scroll →</span>
         </div>

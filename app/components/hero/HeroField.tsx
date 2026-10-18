@@ -145,8 +145,8 @@ function build(
   scene.add(floor);
 
   // The modules.
-  const COLS = phone ? 16 : 30;
-  const ROWS = phone ? 26 : 24;
+  const COLS = phone ? 22 : 30;
+  const ROWS = phone ? 30 : 24;
   const N = COLS * ROWS;
   const geo = new RoundedBoxGeometry(0.88, 0.5, 0.88, 4, 0.12);
   const glow = new Float32Array(N);
@@ -206,16 +206,20 @@ function build(
     const w = host.clientWidth || 1, hh = host.clientHeight || 1;
     renderer.setSize(w, hh, false);
     camera.aspect = w / hh;
+    camera.fov = camera.aspect < 0.9 ? 40 : 30; // phones: a wider lens so the floor reads as a floor, not a close-up
+    // phones: slide the frame so the floor sits in the top half, above the type
+    if (camera.aspect < 0.9) camera.setViewOffset(w, hh, 0, hh * 0.24, w, hh); else camera.clearViewOffset();
     camera.updateProjectionMatrix();
   };
   // crane: 1 = start of the entrance (camera high and far back), 0 = resting framing
   const placeCamera = (scroll: number, crane = 0) => {
     const portrait = camera.aspect < 0.9;
     if (portrait) {
-      camera.position.set(0, 9.5 + scroll * 3, 6.5 - scroll * 2);
-      look.set(0, -0.5, -6);
-      key.position.set(9, 9, -15);
-      key.target.position.set(0.5, 0, -6);
+      camera.position.set(0, 8 + scroll * 3, 9.5 - scroll * 2);
+      look.set(0, -0.3, -4.2);
+      key.position.set(7, 8, -9);
+      key.target.position.set(0.8, 0, -4.5);
+      key.intensity = 8;
     } else {
       camera.position.set(-2.5, 6.2 + scroll * 3, 14.5 - scroll * 2);
       look.set(4, -0.4, 0);

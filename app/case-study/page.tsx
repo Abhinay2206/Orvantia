@@ -105,7 +105,7 @@ export default function CaseStudyPage() {
       {/* ── Results + under the hood ── */}
       <Section>
         <Reveal><Eyebrow num="05" label="The results" color={CYAN} /></Reveal>
-        <SplitHeadline text="Real numbers from the *first month." style={{ marginTop: 22, marginBottom: "clamp(28px, 3.6vw, 44px)", fontSize: "clamp(28px, 4.4vw, 58px)", maxWidth: "20ch" }} />
+        <SplitHeadline text="Real numbers from *three months in production." style={{ marginTop: 22, marginBottom: "clamp(28px, 3.6vw, 44px)", fontSize: "clamp(28px, 4.4vw, 58px)", maxWidth: "20ch" }} />
         <MetricsBar />
         <div style={{ marginTop: "clamp(40px, 5vw, 64px)", display: "grid", gap: 28, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))" }}>
           <Reveal>

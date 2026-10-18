@@ -7,10 +7,10 @@ import AnimatedCounter from "../ui/AnimatedCounter";
 import Testimonial from "./Testimonial";
 
 const METRICS = [
-  { to: 231, decimals: 0, suffix: "", label: "Tasks Managed" },
-  { to: 989, decimals: 0, suffix: "", label: "Activity Logs" },
-  { to: 2.1, decimals: 1, suffix: "K", label: "Emails Delivered" },
-  { to: 38, decimals: 0, suffix: "", label: "Concurrent Users" },
+  { to: 285, decimals: 0, suffix: "", label: "Tasks Managed" },
+  { to: 1.6, decimals: 1, suffix: "K", label: "Activity Logs" },
+  { to: 4.8, decimals: 1, suffix: "K", label: "Emails Delivered" },
+  { to: 48, decimals: 0, suffix: "", label: "Concurrent Users" },
   { to: 0, decimals: 0, suffix: "", label: "Minutes Downtime" },
 ];
 
@@ -24,7 +24,7 @@ const BEFORE = [
 
 const AFTER = [
   "One system of record - no diary, nothing lost",
-  "Follow-ups automated - 2.1K notifications in month one",
+  "Follow-ups automated - 4.8K emails delivered in three months",
   "Ownership, priority and due date on every card",
   "Overdue surfaced automatically the moment it slips",
   "Scored, exportable productivity reports per member",
@@ -33,7 +33,7 @@ const AFTER = [
 export const STEPS = [
   ["01", "Mapped the real workflow", "We sat with the floor and traced how work actually moves - who raises a task, who owns it, who signs it off - across every department and shift.", "#6366f1"],
   ["02", "Built one system of record", "Every task, department, and shift went into a single source of truth. The diary and the scattered chats were replaced by one place everyone trusts.", "#22d3ee"],
-  ["03", "Automated the follow-ups", "Routing, priorities, due dates, and timed escalations now happen on their own - and 2.1K notifications went out in the first month.", "#a855f7"],
+  ["03", "Automated the follow-ups", "Routing, priorities, due dates, and timed escalations now happen on their own - and 4.8K emails have gone out in three months in production.", "#a855f7"],
   ["04", "Deployed and handed over", "Shipped to production, trained the team, and handed over with credentials, a data policy, and a maintenance term.", "#3b82f6"],
 ];
 
@@ -184,12 +184,12 @@ export function Transformation() {
   );
 }
 
-/* ─── Proof strip — real first-month production numbers ─── */
+/* ─── Proof strip — real production numbers, three months in ─── */
 export function MetricsBar() {
   return (
     <div>
       <div style={{ fontFamily: "var(--mono)", fontSize: 10.5, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 20 }}>
-        First month in production
+        Three months in production
       </div>
       <div className="metric-strip">
         {METRICS.map((m) => (

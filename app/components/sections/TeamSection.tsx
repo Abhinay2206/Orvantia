@@ -2,14 +2,15 @@
 
 import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
 
-const PEOPLE = [
-  { name: "Bakkera Abhinay", role: "Founder" },
-  { name: "P Deekshith", role: "Team member" },
-  { name: "Aisiri MR", role: "Team member" },
-  { name: "Mekkonda Aarush", role: "Team member" },
-  { name: "Sunkari Manwitha", role: "Team member" },
-  { name: "J Vigneshwar Reddy", role: "Team member" },
-  { name: "Jeevan Kumar", role: "Team member" },
+// Only the founder carries a label; repeating "Team member" on every row was noise.
+const PEOPLE: { name: string; founder?: boolean }[] = [
+  { name: "Bakkera Abhinay", founder: true },
+  { name: "P Deekshith" },
+  { name: "Aisiri MR" },
+  { name: "Mekkonda Aarush" },
+  { name: "Sunkari Manwitha" },
+  { name: "J Vigneshwar Reddy" },
+  { name: "Jeevan Kumar" },
 ];
 
 export default function TeamSection() {
@@ -31,7 +32,7 @@ export default function TeamSection() {
               <div className="team-row" data-cursor-hover>
                 <span className="team-i">{String(i + 1).padStart(2, "0")}</span>
                 <span className="team-name">{p.name}</span>
-                <span className="team-role">{p.role}</span>
+                {p.founder && <span className="team-badge"><i aria-hidden />Studio Lead</span>}
               </div>
             </Reveal>
           </li>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
 import { useModal } from "@/app/components/providers/ModalProvider";
 import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
@@ -22,10 +22,6 @@ const SERVICES: Service[] = [
 export default function ServicesSection() {
   const { openModal } = useModal();
   const listRef = useRef<HTMLDivElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
-  const moveX = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
-  const moveY = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
-  const [active, setActive] = useState<Service | null>(null);
 
   /* Rows draw their rule and rise in as they enter - one batched listener. */
   useEffect(() => {
@@ -45,27 +41,6 @@ export default function ServicesSection() {
     }, list);
     return () => ctx.revert();
   }, []);
-
-  /* Floating "Start" badge that chases the cursor across the list. */
-  useEffect(() => {
-    const badge = badgeRef.current;
-    if (!badge) return;
-    gsap.set(badge, { xPercent: -50, yPercent: -50, scale: 0 });
-    moveX.current = gsap.quickTo(badge, "x", { duration: 0.55, ease: "power3" });
-    moveY.current = gsap.quickTo(badge, "y", { duration: 0.55, ease: "power3" });
-  }, []);
-
-  useEffect(() => {
-    if (!badgeRef.current) return;
-    gsap.to(badgeRef.current, { scale: active ? 1 : 0, duration: 0.45, ease: ORV_EASE, overwrite: "auto" });
-  }, [active]);
-
-  const onMove = (e: React.MouseEvent) => {
-    const r = listRef.current?.getBoundingClientRect();
-    if (!r) return;
-    moveX.current?.(e.clientX - r.left);
-    moveY.current?.(e.clientY - r.top);
-  };
 
   return (
     <Section
@@ -94,8 +69,6 @@ export default function ServicesSection() {
       <div
         ref={listRef}
         className="svc-list"
-        onMouseMove={onMove}
-        onMouseLeave={() => setActive(null)}
         style={{ position: "relative" }}
       >
         {SERVICES.map((s) => (
@@ -104,7 +77,6 @@ export default function ServicesSection() {
             type="button"
             className="svc-row"
             data-cursor-hover
-            onMouseEnter={() => setActive(s)}
             onClick={() => openModal("schedule")}
             style={{ "--svc": s.c } as React.CSSProperties}
           >
@@ -113,7 +85,7 @@ export default function ServicesSection() {
               <span className="svc-num">{s.n}</span>
               <span className="svc-title">{s.k}</span>
               <span className="svc-desc">{s.d}</span>
-              <span className="svc-go" aria-hidden>
+              <span className="svc-go" aria-hidden data-cursor-lock>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 13L13 3M13 3H5M13 3v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -122,16 +94,6 @@ export default function ServicesSection() {
           </button>
         ))}
         <span className="svc-rule-end" aria-hidden />
-
-        {/* Cursor-chasing badge (pointer devices only) */}
-        <div
-          ref={badgeRef}
-          className="svc-badge"
-          aria-hidden
-          style={{ background: active?.c ?? "#818cf8" }}
-        >
-          Start a project
-        </div>
       </div>
     </Section>
   );

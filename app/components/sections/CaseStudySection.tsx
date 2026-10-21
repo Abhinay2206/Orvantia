@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/motion";
-import { Section, Eyebrow, Reveal } from "./_shared";
+import { Section, Eyebrow, Reveal, Drift } from "./_shared";
 import AnimatedCounter from "../ui/AnimatedCounter";
 import Testimonial from "./Testimonial";
 
@@ -211,7 +211,7 @@ export default function CaseStudySection() {
       <Reveal><Eyebrow num="02" label="In production" /></Reveal>
 
       <div className="cs-title-row">
-        <h2 className="cs-title serif-display">FactoryFlow</h2>
+        <Drift amount={12}><h2 className="cs-title serif-display">FactoryFlow</h2></Drift>
         <div className="cs-side">
           <span className="status-pill"><span className="status-dot" />Live in production</span>
           <div className="cs-client">Prayagh Consumer Care Pvt. Ltd.<br />Manufacturing</div>

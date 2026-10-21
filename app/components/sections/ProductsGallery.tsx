@@ -139,6 +139,17 @@ export default function ProductsGallery() {
           },
         },
       });
+      // Depth: inside each panel the visual travels a touch faster than the track and the copy
+      // a touch slower, so the slide has parallax; the intro title lingers as it leaves.
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const st = (trigger: Element, start = "left right") => ({ trigger, containerAnimation: tween, start, end: "right left", scrub: 0.7 });
+        track.querySelectorAll(".pg-project").forEach((panel) => {
+          gsap.fromTo(panel.querySelector(".pg-visual > *"), { xPercent: 16 }, { xPercent: -16, ease: "none", scrollTrigger: st(panel) });
+          gsap.fromTo(panel.querySelector(".pg-copy"), { xPercent: -6 }, { xPercent: 6, ease: "none", scrollTrigger: st(panel) });
+        });
+        const intro = track.querySelector(".pg-intro");
+        if (intro) gsap.to(intro.firstElementChild, { xPercent: 22, ease: "none", scrollTrigger: st(intro, "left left") });
+      }
       return () => { tween.scrollTrigger?.kill(); tween.kill(); };
     });
     return () => mm.revert();

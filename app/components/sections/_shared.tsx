@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView, type Variants } from "framer-motion";
-import { useRef, useEffect, Fragment, type ReactNode, type CSSProperties } from "react";
+import { useRef, useEffect, useState, Fragment, type ReactNode, type CSSProperties } from "react";
 import { gsap, ScrollTrigger, SplitText, EASE, ORV_EASE } from "@/lib/motion";
 
 /* Shared easing - one house curve, GSAP + Framer Motion alike. */
@@ -54,7 +54,9 @@ export const staggerChild: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
 };
 
-/* Section running head - number, label, then a hairline to the edge of the column. */
+/* Section running head - a chapter card. The number and label type themselves
+   on (mono, with a caret) as the section arrives, then the hairline draws out to
+   the edge of the column. It echoes the keyboard that opens the page. */
 export function Eyebrow({
   num,
   label,
@@ -64,10 +66,28 @@ export function Eyebrow({
   label: string;
   color?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-8% 0px" });
+  const total = num.length + label.length;
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setN(total); return; }
+    let i = 0;
+    const id = setInterval(() => { i += 1; setN(i); if (i >= total) clearInterval(id); }, 38);
+    return () => clearInterval(id);
+  }, [inView, total]);
+  const done = n >= total;
+  const typedNum = num.slice(0, Math.min(n, num.length));
+  const typedLabel = label.slice(0, Math.max(0, n - num.length));
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 16, width: "100%" }}>
-      <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.08em", color }}>{num}</span>
+    <div ref={ref} className={`eyebrow${done ? " is-typed" : ""}`} style={{ display: "flex", alignItems: "center", gap: 16, width: "100%" }}>
+      <span className="ty" style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.08em", color }}>
+        <span className="ty-ghost">{num}</span>
+        <span className="ty-live" aria-hidden>{typedNum}</span>
+      </span>
       <span
+        className="ty"
         style={{
           fontFamily: "var(--mono)",
           fontSize: 10.5,
@@ -77,11 +97,46 @@ export function Eyebrow({
           whiteSpace: "nowrap",
         }}
       >
-        {label}
+        <span className="ty-ghost">{label}</span>
+        <span className="ty-live" aria-hidden>{typedLabel}{inView && <i className={`ty-caret${done ? " is-done" : ""}`} />}</span>
       </span>
-      <span style={{ flex: 1, height: 1, background: "var(--border-strong)", minWidth: 24 }} />
+      <span className="eyebrow-rule" />
     </div>
   );
+}
+
+/* Aperture - media opens from a framed, slightly zoomed crop to full frame as it
+   scrolls in, like a lens iris. Scrubbed, so it reverses on the way back up. */
+export function Aperture({ children, className, style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const st = { trigger: el, start: "top 92%", end: "top 40%", scrub: 0.8 };
+      gsap.fromTo(el, { clipPath: "inset(12% 9% 12% 9% round 14px)" }, { clipPath: "inset(0% 0% 0% 0% round 6px)", ease: "none", scrollTrigger: st });
+      const inner = el.firstElementChild;
+      if (inner) gsap.fromTo(inner, { scale: 1.12 }, { scale: 1, ease: "none", scrollTrigger: { ...st } });
+    });
+    return () => mm.revert();
+  }, []);
+  return <div ref={ref} className={className} style={style}>{children}</div>;
+}
+
+/* Drift - a big title moves a touch slower than the page, so the scroll has depth. */
+export function Drift({ children, amount = 14, className, style }: { children: ReactNode; amount?: number; className?: string; style?: CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.fromTo(el, { yPercent: amount }, { yPercent: -amount, ease: "none", scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true } });
+    });
+    return () => mm.revert();
+  }, [amount]);
+  return <div ref={ref} className={className} style={{ willChange: "transform", ...style }}>{children}</div>;
 }
 
 /**

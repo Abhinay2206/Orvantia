@@ -1,6 +1,6 @@
 "use client";
 
-import { Section, Eyebrow, SplitHeadline, Reveal } from "./_shared";
+import { Section, Eyebrow, SplitHeadline, Reveal, Drift } from "./_shared";
 
 // Only the founder carries a label; repeating "Team member" on every row was noise.
 const PEOPLE: { name: string; founder?: boolean }[] = [
@@ -18,7 +18,7 @@ export default function TeamSection() {
     <Section id="team" style={{ position: "relative", zIndex: 10 }}>
       <Reveal><Eyebrow num="06" label="Team" /></Reveal>
       <div className="team-top">
-        <SplitHeadline text="The people *behind it." style={{ fontSize: "clamp(34px, 5vw, 78px)", maxWidth: "12ch" }} />
+        <Drift amount={10}><SplitHeadline text="The people *behind it." style={{ fontSize: "clamp(34px, 5vw, 78px)", maxWidth: "12ch" }} /></Drift>
         <Reveal delay={0.12}>
           <p style={{ maxWidth: "34ch", fontSize: "clamp(14px, 1.25vw, 16px)", lineHeight: 1.7, color: "var(--text-2)" }}>
             A small, hands-on team in Hyderabad that designs, builds, and ships every product end to end.

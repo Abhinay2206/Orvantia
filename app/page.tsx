@@ -88,6 +88,7 @@ export default function Home() {
         {booted && (
           <>
             <div className="grain" />
+            <div className="cine-vignette" aria-hidden />
             <CustomCursor />
           </>
         )}

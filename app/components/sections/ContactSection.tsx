@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { gsap, ScrollTrigger, ORV_EASE } from "@/lib/motion";
-import { Section, Eyebrow, Reveal, SplitHeadline, EASE } from "./_shared";
+import { Section, Eyebrow, Reveal, SplitHeadline, Drift, EASE } from "./_shared";
 
 /* ─── Contact details + socials ──────────────────────────── */
 const SOCIALS = [
@@ -281,10 +281,12 @@ export default function ContactSection() {
             <Eyebrow num="08" label="Contact" />
           </div>
         </Reveal>
-        <SplitHeadline
-          text="Tell us what *slows *you *down."
-          style={{ marginTop: 26, fontSize: "clamp(34px, 6vw, 82px)", letterSpacing: "-0.04em", lineHeight: 1 }}
-        />
+        <Drift amount={10}>
+          <SplitHeadline
+            text="Tell us what *slows *you *down."
+            style={{ marginTop: 26, fontSize: "clamp(34px, 6vw, 82px)", letterSpacing: "-0.04em", lineHeight: 1 }}
+          />
+        </Drift>
       </div>
 
       <div

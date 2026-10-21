@@ -5,6 +5,7 @@ import { gsap, ORV_EASE } from "@/lib/motion";
 import { useModal } from "@/app/components/providers/ModalProvider";
 import MagneticButton from "./MagneticButton";
 import RollText from "./RollText";
+import { Drift } from "../sections/_shared";
 
 const NAV = [
   {
@@ -83,21 +84,15 @@ export default function Footer() {
   const wordmarkRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef<HTMLHeadingElement>(null);
 
-  /* Wordmark letters rise out of the floor as the footer scrolls in. */
+  /* Wordmark letters rise out of the floor as the footer scrolls in, then light
+     from within one by one, like the keys that open the page - the end card. */
   useEffect(() => {
     const el = wordmarkRef.current;
     if (!el) return;
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".wm-letter",
-        { yPercent: 105 },
-        {
-          yPercent: 0,
-          ease: ORV_EASE,
-          stagger: 0.05,
-          scrollTrigger: { trigger: el, start: "top bottom", end: "bottom bottom", scrub: 0.8 },
-        }
-      );
+      gsap.timeline({ scrollTrigger: { trigger: el, start: "top bottom", end: "bottom bottom", scrub: 0.8 } })
+        .fromTo(".wm-letter", { yPercent: 105 }, { yPercent: 0, ease: ORV_EASE, stagger: 0.05 })
+        .fromTo(".wm-lit", { opacity: 0 }, { opacity: 1, ease: "none", stagger: 0.05, duration: 0.3 }, 0.3);
     }, el);
     return () => ctx.revert();
   }, []);
@@ -157,6 +152,7 @@ export default function Footer() {
           <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: "var(--text-3)", marginBottom: 22 }}>
             Still running on paper &amp; WhatsApp?
           </div>
+          <Drift amount={10}>
           <h2
             ref={closingRef}
             className="serif-display"
@@ -176,6 +172,7 @@ export default function Footer() {
               </span>
             ))}
           </h2>
+          </Drift>
         </div>
 
         <MagneticButton className="footer-cta" strength={0.35} onClick={() => openModal("schedule")}>
@@ -324,7 +321,7 @@ export default function Footer() {
         >
           {WORDMARK.map((l, i) => (
             <span key={i} style={{ display: "inline-block", overflow: "hidden", paddingBottom: "0.02em" }}>
-              <span className="wm-letter">{l}</span>
+              <span className="wm-letter">{l}<span className="wm-lit">{l}</span></span>
             </span>
           ))}
         </div>
@@ -353,6 +350,9 @@ export default function Footer() {
           }}
         >
           © {new Date().getFullYear()} Orvantia, Inc. All rights reserved.
+          <br />
+          {/* Required by the model's CC BY 4.0 licence */}
+          Keyboard model: <a href="https://sketchfab.com/3d-models/mechanical-keyboard-22eb3b6d9db2494493b0b3b3e71a324c" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>&ldquo;Mechanical Keyboard&rdquo; by YarikLegendary</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>CC BY 4.0</a>, recoloured.
         </p>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.12em", color: "rgba(241,245,249,0.35)" }}>

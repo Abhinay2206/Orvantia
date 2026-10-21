@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Reveal } from "./_shared";
+import { Reveal, Aperture } from "./_shared";
 import { SITE_URL as SITE } from "@/lib/site";
 const QUOTE = "Saving around 4 hours of my daily time.";
 
@@ -42,7 +42,7 @@ export default function Testimonial() {
   return (
     <figure className="tm">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
-      <Reveal>
+      <Aperture>
         <div className="tm-video" data-cursor-text={started ? undefined : "Play"} onClick={started ? undefined : play}>
           <video
             ref={ref}
@@ -60,7 +60,7 @@ export default function Testimonial() {
             </button>
           )}
         </div>
-      </Reveal>
+      </Aperture>
       <Reveal delay={0.1}>
         <div className="tm-body">
           <div className="tm-eyebrow">Client story · Prayagh Consumer Care</div>

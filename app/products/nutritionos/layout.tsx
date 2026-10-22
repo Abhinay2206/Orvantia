@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: { url: "/products/nutritionos", type: "website", images: [{ url: "/og.png", width: 1200, height: 630 }] },
   twitter: { card: "summary_large_image", images: ["/og.png"] },
   description:
-    "A fast, private nutrition and training tracker with 750+ Indian and Telangana foods, AI plate recognition, progressive-overload workouts and progress reports. Free, installable, built by Orvantia.",
+    "Free, private nutrition and training tracker with 750+ Indian foods, AI plate recognition, workouts and progress reports. Built by Orvantia.",
 };
 
 const LD = {

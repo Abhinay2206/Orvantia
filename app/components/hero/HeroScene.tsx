@@ -394,7 +394,7 @@ export default function HeroScene() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={entered ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            transition={reducedMotion ? { duration: 0 } : { delay: 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             style={{ marginBottom: "clamp(16px, 2.6vh, 30px)", fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(241,245,249,0.6)" }}
           >
             Software &amp; automation studio
@@ -417,7 +417,7 @@ export default function HeroScene() {
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={entered ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 1.0, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={reducedMotion ? { duration: 0 } : { delay: 1.0, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               style={{ maxWidth: "44ch" }}
             >
               <p style={{ fontSize: "clamp(15px, 1.3vw, 19px)", lineHeight: 1.65, color: "var(--text-2)" }}>
@@ -443,7 +443,7 @@ export default function HeroScene() {
               aria-label="Selected work"
               initial={{ opacity: 0, y: 14 }}
               animate={entered ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 1.25, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={reducedMotion ? { duration: 0 } : { delay: 1.25, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="hero-index-title">Now running</div>
               {INDEX.map(([name, meta, href]) => (
@@ -465,7 +465,7 @@ export default function HeroScene() {
         style={{ position: "relative", zIndex: 4, padding: "28px clamp(24px, 6vw, 96px) clamp(16px, 3vh, 30px)", pointerEvents: "none", background: "linear-gradient(to top, rgba(4,4,10,0.96) 55%, transparent)" }}
         initial={{ opacity: 0 }}
         animate={sceneReady ? { opacity: 1 } : {}}
-        transition={{ delay: 1.5, duration: 0.9 }}
+        transition={reducedMotion ? { duration: 0 } : { delay: 1.5, duration: 0.9 }}
       >
         <div className="hero-foot">
           <span>Hyderabad · {clock || "--:--"} IST</span>

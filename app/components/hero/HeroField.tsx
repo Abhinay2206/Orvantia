@@ -341,7 +341,8 @@ function build(
     ready = true;
     if (!running) { if (reduced) step(0); render(); }
   };
-  loadKeyboard(THREE, "/models/keyboard.glb", { word: WORD, keyAt, ignite: IGNITE, env: kbEnv, phone })
+  // under reduced motion the shot never plays (the hero rests on the floor), so the board is not even fetched
+  (reduced ? Promise.reject(new Error("reduced motion")) : loadKeyboard(THREE, "/models/keyboard.glb", { word: WORD, keyAt, ignite: IGNITE, env: kbEnv, phone }))
     .then((m) => {
       if (disposed) { m.dispose(); return; }
       kb = m;

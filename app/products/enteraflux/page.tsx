@@ -27,7 +27,7 @@ export default function EnterafluxPage() {
       {/* ── Hero ── */}
       <Section glow="radial-gradient(ellipse 60% 60% at 70% 30%, rgba(168,85,247,0.12), transparent 62%)">
         <Reveal>
-          <a href="/#products" data-cursor-hover style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.1em", color: "var(--text-3)", textDecoration: "none" }}>← Back to Orvantia</a>
+          <a href="/#products" data-cursor-hover className="back-link"><span aria-hidden>←</span> Back to Orvantia</a>
         </Reveal>
         <div style={{ marginTop: 28 }}>
           <Reveal><Eyebrow num="01" label="Product · Research stage" color={VIOLET} /></Reveal>

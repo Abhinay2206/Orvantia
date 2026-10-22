@@ -55,7 +55,7 @@ export default function Testimonial() {
             onEnded={() => setStarted(false)}
           />
           {!started && (
-            <button type="button" className="reel-play tm-play" data-cursor-hover onClick={(e) => { e.stopPropagation(); play(); }} aria-label="Play the client testimonial with sound">
+            <button type="button" className="reel-play tm-play" data-cursor-hover onClick={(e) => { e.stopPropagation(); play(); }}>
               <span aria-hidden>▶</span> Play with sound
             </button>
           )}

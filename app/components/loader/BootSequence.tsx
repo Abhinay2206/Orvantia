@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const WORD = "Orvantia";
-const EASE = [0.16, 1, 0.3, 1] as const;
 
 /*
  * Intro: the wordmark rises letter by letter out of its masks while a counter
@@ -14,6 +13,7 @@ const EASE = [0.16, 1, 0.3, 1] as const;
  */
 export default function BootSequence({ onComplete, skip }: { onComplete: () => void; skip?: boolean }) {
   const [exiting, setExiting] = useState(false);
+  const reduced = useReducedMotion();
   const [count, setCount] = useState(0);
   const done = useRef(false);
 
@@ -53,7 +53,7 @@ export default function BootSequence({ onComplete, skip }: { onComplete: () => v
           className="boot"
           initial={{ clipPath: "inset(0% 0% 0% 0%)" }}
           exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
-          transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: reduced ? 0 : 1, ease: [0.76, 0, 0.24, 1] }}
           aria-hidden
         >
           <div className="boot-head px-6 md:px-10">
@@ -62,22 +62,10 @@ export default function BootSequence({ onComplete, skip }: { onComplete: () => v
 
           <div className="boot-center">
             <div className="boot-word serif-display">
-              {WORD.split("").map((ch, i) => (
-                <span key={i} className="boot-mask">
-                  <motion.span
-                    style={{ display: "inline-block" }}
-                    initial={{ y: "110%" }}
-                    animate={{ y: "0%" }}
-                    transition={{ delay: 0.12 + i * 0.045, duration: 1.1, ease: EASE }}
-                  >
-                    {ch}
-                  </motion.span>
-                </span>
-              ))}
+              {/* One element, risen by CSS: it paints with the HTML and is the page's largest text from the first frame */}
+              <span className="boot-mask"><span className="boot-l">{WORD}</span></span>
             </div>
-            <motion.div className="boot-tag" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.8, ease: EASE }}>
-              Software &amp; automation studio
-            </motion.div>
+            <div className="boot-tag">Software &amp; automation studio</div>
           </div>
 
           <div className="boot-foot px-6 md:px-10">

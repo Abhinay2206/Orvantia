@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: { url: "/products/contextbridge", type: "website", images: [{ url: "/og.png", width: 1200, height: 630 }] },
   twitter: { card: "summary_large_image", images: ["/og.png"] },
   description:
-    "ContextBridge checkpoints the real state of a repo, records the tests you ran, and tells the next AI coding session whether it's safe to edit. Free, MIT-licensed, local-first. Sponsored by Orvantia.",
+    "ContextBridge checkpoints a repo's real state and the tests you ran, then tells the next AI coding session if it's safe to edit. Free and MIT.",
 };
 
 const LD = {

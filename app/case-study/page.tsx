@@ -32,7 +32,7 @@ export default function CaseStudyPage() {
       {/* ── Hero ── */}
       <Section glow="radial-gradient(ellipse 70% 60% at 50% 0%, rgba(34,211,238,0.09), transparent 60%)">
         <Reveal>
-          <a href="/#case-study" data-cursor-hover style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.1em", color: "var(--text-3)", textDecoration: "none" }}>← Back to Orvantia</a>
+          <a href="/#case-study" data-cursor-hover className="back-link"><span aria-hidden>←</span> Back to Orvantia</a>
         </Reveal>
         <div style={{ marginTop: 28 }}>
           <Reveal><Eyebrow num="01" label="Case study · Manufacturing" color={CYAN} /></Reveal>

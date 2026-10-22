@@ -13,7 +13,7 @@ export default function PageShell({ children }: { children: React.ReactNode }) {
       <CustomCursor />
       <SmoothScroll>
         <Nav show />
-        <main style={{ paddingTop: 64 }}>{children}</main>
+        <main id="main" style={{ paddingTop: 64 }}>{children}</main>
         <Footer />
       </SmoothScroll>
     </>

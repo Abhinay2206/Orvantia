@@ -32,7 +32,8 @@ export default function Home() {
   // Arriving from another page with a target section (e.g. "/#contact") –
   // skip the intro and land directly on that section instead of the top.
   useEffect(() => {
-    if (window.location.hash) setSkipBoot(true);
+    // ...or arriving from another page of the site through the page transition: no second loader.
+    if (window.location.hash || document.documentElement.classList.contains("orv-curtain")) setSkipBoot(true);
   }, []);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ export default function Home() {
             <Nav show={navVisible} />
             <ScrollProgress />
 
-            <main>
+            <main id="main">
               {/* Hero – full-viewport WebGL contour field */}
               <HeroScene />
 

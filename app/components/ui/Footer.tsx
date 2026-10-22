@@ -196,7 +196,7 @@ export default function Footer() {
           {/* Logo mark */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
             <div style={{ position: "relative", width: 28, height: 28 }}>
-              <img src="/logo.png" alt="Orvantia Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+              <img src="/logo.png" alt="" width={28} height={28} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
             </div>
             <span
               style={{
@@ -352,7 +352,7 @@ export default function Footer() {
           © {new Date().getFullYear()} Orvantia, Inc. All rights reserved.
           <br />
           {/* Required by the model's CC BY 4.0 licence */}
-          Keyboard model: <a href="https://sketchfab.com/3d-models/mechanical-keyboard-22eb3b6d9db2494493b0b3b3e71a324c" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>&ldquo;Mechanical Keyboard&rdquo; by YarikLegendary</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>CC BY 4.0</a>, recoloured.
+          Keyboard model: <a href="https://sketchfab.com/3d-models/mechanical-keyboard-22eb3b6d9db2494493b0b3b3e71a324c" target="_blank" rel="noopener noreferrer" className="credit-link">&ldquo;Mechanical Keyboard&rdquo; by YarikLegendary</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="credit-link">CC BY 4.0</a>, recoloured.
         </p>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.12em", color: "rgba(241,245,249,0.35)" }}>

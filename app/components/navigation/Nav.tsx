@@ -82,7 +82,7 @@ export default function Nav({ show }: { show: boolean }) {
             >
               {/* Mark */}
               <div className="relative w-6 h-6">
-                <img src="/logo.png" alt="Orvantia Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                <img src="/logo.png" alt="" width={24} height={24} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
               </div>
 
               <span
@@ -103,13 +103,13 @@ export default function Nav({ show }: { show: boolean }) {
                   className="transition-colors text-xs tracking-[0.12em] uppercase"
                   style={{
                     fontFamily: "var(--mono)",
-                    color: "rgba(241,245,249,0.35)",
+                    color: "rgba(241,245,249,0.62)",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "rgba(241,245,249,0.85)";
+                    e.currentTarget.style.color = "#f1f5f9";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "rgba(241,245,249,0.35)";
+                    e.currentTarget.style.color = "rgba(241,245,249,0.62)";
                   }}
                 >
                   <RollText>{l.label}</RollText>
@@ -126,7 +126,7 @@ export default function Nav({ show }: { show: boolean }) {
                   data-cursor-hover
                   onClick={() => go("#contact")}
                 >
-                  Let&apos;s Talk
+                  <RollText>Let&apos;s Talk</RollText>
                 </button>
               </span>
               <button

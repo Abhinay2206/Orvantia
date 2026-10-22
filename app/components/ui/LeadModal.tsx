@@ -197,7 +197,7 @@ export default function LeadModal({ type, onClose }: Props) {
                 fontFamily: "var(--font)", fontSize: 14,
                 color: "rgba(241,245,249,0.4)", lineHeight: 1.65, marginBottom: 28,
               }}>
-                We&apos;ll review your inquiry and get back to you within 1–2 business days. Check your inbox for a confirmation.
+                We&apos;ll review your inquiry and get back to you within 1 to 2 business days. Check your inbox for a confirmation.
               </p>
               <button
                 onClick={onClose}
@@ -362,7 +362,7 @@ export default function LeadModal({ type, onClose }: Props) {
                 fontFamily: "var(--mono)", fontSize: 10,
                 color: "rgba(241,245,249,0.2)", letterSpacing: "0.06em",
               }}>
-                We respond within 1–2 business days.
+                We respond within 1 to 2 business days.
               </p>
             </form>
           )}

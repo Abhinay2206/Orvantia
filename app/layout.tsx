@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ModalProvider from "./components/providers/ModalProvider";
+import PageCurtain from "./components/ui/PageCurtain";
 import { SITE_URL, SITE_NAME, SITE_DESC } from "@/lib/site";
 
 // Self-hosted (latin subset) so builds never depend on downloading fonts from
@@ -95,10 +96,16 @@ const ORG_LD = [
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}>
       <body>
+        {/* Arriving through the page transition: start covered by its tiles. Runs while the body is
+            parsed, so before the first paint. It sits in <body>, not <head>: browser extensions inject
+            their own scripts into <head>, which would make React report a hydration mismatch. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("orv-nav"))document.documentElement.classList.add("orv-curtain")}catch(e){}` }} />
+        <a href="#main" className="skip-link">Skip to content</a>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }} />
         <ModalProvider>{children}</ModalProvider>
+        <PageCurtain />
       </body>
     </html>
   );

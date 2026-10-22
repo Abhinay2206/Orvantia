@@ -38,7 +38,7 @@ export default function ContextBridgePage() {
       {/* ── Hero ── */}
       <Section>
         <Reveal>
-          <a href="/#products" data-cursor-hover style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.1em", color: "var(--text-3)", textDecoration: "none" }}>← Back to Orvantia</a>
+          <a href="/#products" data-cursor-hover className="back-link"><span aria-hidden>←</span> Back to Orvantia</a>
         </Reveal>
         <div style={{ marginTop: 28 }}><Reveal><Eyebrow num="01" label="Product · Open source" color={GREEN} /></Reveal></div>
         <div className="split" style={{ marginTop: "clamp(28px, 4vw, 56px)", alignItems: "end", gridTemplateColumns: "minmax(0, 6fr) minmax(0, 6fr)" }}>

@@ -13,7 +13,7 @@ function Phones() {
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1.18fr 1fr", gap: "clamp(8px, 1.4vw, 20px)", alignItems: "center", width: "min(100%, 520px)" }}>
       {shots.map((src, i) => (
         <div key={src} style={{ aspectRatio: "780 / 1688", borderRadius: 22, padding: 4, background: "linear-gradient(160deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04))", boxShadow: "0 40px 90px rgba(0,0,0,0.55)", transform: `translateY(${i === 1 ? 0 : 28}px)` }}>
-          <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: 18 }} />
+          <img src={src} alt="" width={780} height={1688} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: 18 }} />
         </div>
       ))}
     </div>

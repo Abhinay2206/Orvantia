@@ -108,7 +108,7 @@ function ContactPanel() {
           <span className="email-arrow" style={{ fontSize: "0.7em" }}>↗</span>
         </a>
         <p style={{ marginTop: 14, fontSize: 15, lineHeight: 1.7, color: "var(--text-2)", maxWidth: "40ch" }}>
-          Tell us what you&apos;re building. We reply within 1–2 business days with a clear,
+          Tell us what you&apos;re building. We reply within 1 to 2 business days with a clear,
           no-pressure path forward.
         </p>
 
@@ -121,7 +121,7 @@ function ContactPanel() {
           <InfoRow
             icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><circle className="draw-icon" cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" /><path className="draw-icon" d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>}
             label="Response time"
-            value="Within 1–2 business days"
+            value="Within 1 to 2 business days"
           />
         </div>
 
@@ -148,7 +148,7 @@ function ContactPanel() {
 }
 
 const BUDGETS = ["< ₹10 K", "₹10 K - 50 K", "₹50 K - 1 L", "₹1 L+"];
-const TIMELINES = ["ASAP", "1–3 months", "3–6 months", "Exploring"];
+const TIMELINES = ["ASAP", "1 to 3 months", "3 to 6 months", "Exploring"];
 const SERVICES = ["SaaS Platform", "AI / ML", "Web App", "Mobile App", "Automation", "Custom Software"];
 
 const labelStyle: React.CSSProperties = {
@@ -325,7 +325,7 @@ export default function ContactSection() {
                 Message received.
               </h3>
               <p style={{ fontSize: 15, color: "var(--text-2)", lineHeight: 1.65 }}>
-                Thanks – we&apos;ll be in touch within 1–2 business days.
+                Thanks, we&apos;ll be in touch within 1 to 2 business days.
               </p>
             </div>
           ) : (

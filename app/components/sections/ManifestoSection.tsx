@@ -26,11 +26,11 @@ export default function ManifestoSection() {
       const tl = gsap.timeline({ scrollTrigger: { trigger: text, start: "top 80%", end: "bottom 52%", scrub: 0.6 } });
       tl.fromTo(words, { opacity: 0.12 }, { opacity: 1, ease: "none", stagger: 0.1, duration: 0.5 }, 0)
         .to(gsap.utils.toArray<HTMLElement>(".mf-line", el), { scaleX: 1, ease: "power2.inOut", stagger: 0.22, duration: 0.5 }, last * 0.1 + 0.6)
-        .to(gsap.utils.toArray<HTMLElement>(".mf-strike", el), { color: "rgba(241,245,249,0.3)", ease: "none", stagger: 0.22, duration: 0.5 }, "<");
+        .to(gsap.utils.toArray<HTMLElement>(".mf-strike", el), { color: "rgba(241,245,249,0.42)", ease: "none", stagger: 0.22, duration: 0.5 }, "<");
     });
     mm.add("(prefers-reduced-motion: reduce)", () => {
       gsap.set(gsap.utils.toArray<HTMLElement>(".mf-line", el), { scaleX: 1 });
-      gsap.set(gsap.utils.toArray<HTMLElement>(".mf-strike", el), { color: "rgba(241,245,249,0.3)" });
+      gsap.set(gsap.utils.toArray<HTMLElement>(".mf-strike", el), { color: "rgba(241,245,249,0.42)" });
     });
     return () => mm.revert();
   }, []);

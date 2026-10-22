@@ -114,7 +114,7 @@ export default function BrandFilmSection() {
         </div>
 
         <div className="reel-ui reel-play-wrap">
-          <button type="button" className="reel-play" data-cursor-hover onClick={playWithSound} aria-label="Play the film with sound">
+          <button type="button" className="reel-play" data-cursor-hover onClick={playWithSound}>
             <i aria-hidden />
             <span>Play with sound<small>{mmss(LENGTH)} · 16:9</small></span>
           </button>

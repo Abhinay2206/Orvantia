@@ -1,18 +1,19 @@
 "use client";
 
-import { motion, useInView, type Variants } from "framer-motion";
+import { useInView, type Variants } from "framer-motion";
 import { useRef, useEffect, useState, Fragment, type ReactNode, type CSSProperties } from "react";
 import { gsap, ScrollTrigger, SplitText, EASE, ORV_EASE } from "@/lib/motion";
 
 /* Shared easing - one house curve, GSAP + Framer Motion alike. */
 export { EASE };
 
-/* Reveal - fade + rise on scroll into view. */
+/* Reveal - fade + rise, in CSS (see .rv in globals.css) so nothing waits for script: on the
+   first screen it plays from the first paint (the headline is never held back for hydration),
+   further down it is tied to the element entering the viewport. */
 export function Reveal({
   children,
   delay = 0,
   y = 28,
-  once = true,
   className,
   style,
   as = "div",
@@ -20,26 +21,17 @@ export function Reveal({
   children: ReactNode;
   delay?: number;
   y?: number;
+  /** @deprecated reveals are scroll-linked now */
   once?: boolean;
   className?: string;
   style?: CSSProperties;
   as?: "div" | "span" | "li";
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once, margin: "-12% 0px" });
-  const MotionTag = motion[as] as typeof motion.div;
-
+  const Tag = as;
   return (
-    <MotionTag
-      ref={ref}
-      className={className}
-      initial={{ opacity: 0, y }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.95, ease: EASE, delay }}
-      style={{ transformPerspective: 1200, transformOrigin: "center bottom", ...style }}
-    >
+    <Tag className={`rv${className ? ` ${className}` : ""}`} style={{ ["--rv-d" as string]: `${delay}s`, ["--rv-y" as string]: `${y}px`, ...style }}>
       {children}
-    </MotionTag>
+    </Tag>
   );
 }
 
@@ -178,7 +170,7 @@ export function SplitHeadline({
       }
       const plainEl = outer.querySelector<HTMLElement>("[data-split-word]");
       if (plainEl) {
-        const split = new SplitText(plainEl, { type: "chars" });
+        const split = new SplitText(plainEl, { type: "chars", aria: "none" }); // the <h2> carries the name
         splits.push(split);
         targets.push(...split.chars);
       }
@@ -204,6 +196,7 @@ export function SplitHeadline({
   return (
     <h2
       ref={ref}
+      aria-label={text.replace(/\*/g, "")}
       className={`serif-display ${className ?? ""}`}
       style={{
         fontFamily: "var(--serif)",
@@ -220,7 +213,7 @@ export function SplitHeadline({
         const clean = w.replace("*", "");
         return (
           <Fragment key={i}>
-            <span style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top", paddingBottom: "0.08em" }}>
+            <span aria-hidden style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top", paddingBottom: "0.08em" }}>
               <span
                 data-split-word={isGrad ? undefined : true}
                 data-split-grad={isGrad ? true : undefined}

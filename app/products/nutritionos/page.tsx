@@ -10,7 +10,7 @@ const TEAL = "#5fc2ab";
 function Phone({ src, alt, tilt = 0, glow = false }: { src: string; alt: string; tilt?: number; glow?: boolean }) {
   return (
     <div style={{ aspectRatio: "780 / 1688", borderRadius: "clamp(16px, 2vw, 28px)", padding: "clamp(3px, 0.45vw, 6px)", background: "linear-gradient(160deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04))", boxShadow: glow ? "0 50px 120px rgba(0,0,0,0.6), 0 0 60px rgba(95,194,171,0.18), 0 0 0 1px rgba(255,255,255,0.08)" : "0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)", transform: `rotate(${tilt}deg)` }}>
-      <img src={src} alt={alt} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "clamp(13px, 1.7vw, 23px)" }} />
+      <img src={src} alt={alt} width={780} height={1688} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "clamp(13px, 1.7vw, 23px)" }} />
     </div>
   );
 }
@@ -42,7 +42,7 @@ export default function NutritionOSPage() {
       {/* ── Hero ── */}
       <Section glow="radial-gradient(ellipse 60% 60% at 80% 40%, rgba(95,194,171,0.12), transparent 62%)">
         <Reveal>
-          <a href="/#products" data-cursor-hover style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: "0.1em", color: "var(--text-3)", textDecoration: "none" }}>← Back to Orvantia</a>
+          <a href="/#products" data-cursor-hover className="back-link"><span aria-hidden>←</span> Back to Orvantia</a>
         </Reveal>
         <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: "clamp(40px, 6vw, 88px)", alignItems: "center" }}>
           <div>

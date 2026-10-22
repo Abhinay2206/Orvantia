@@ -17,8 +17,8 @@
   --electric: #818cf8;
 
   --text: #f1f5f9;
-  --text-2: rgba(241, 245, 249, 0.55);
-  --text-3: rgba(241, 245, 249, 0.28);
+  --text-2: rgba(241, 245, 249, 0.64);
+  --text-3: rgba(241, 245, 249, 0.5); /* 4.8:1 on the ground: AA for small labels */
   --text-4: rgba(241, 245, 249, 0.12);
 
   --font: var(--font-space);
@@ -1019,15 +1019,7 @@ button:hover .roll > span { transform: translateY(-50%); }
 /* NutritionOS feature rows: text always first on phones */
 @media (max-width: 760px) { .nos-row > * { order: 0 !important; } }
 
-/* ─── Design system v2: page transitions ───── */
-/* Cross-page transitions (Chrome / Safari 18.2+; silently ignored elsewhere). */
-@media (prefers-reduced-motion: no-preference) {
-  @view-transition { navigation: auto; }
-  ::view-transition-old(root) { animation: vt-out 0.45s var(--ease) both; }
-  ::view-transition-new(root) { animation: vt-in 0.8s var(--ease) both; }
-  @keyframes vt-out { to { opacity: 0; transform: translateY(-3vh); } }
-  @keyframes vt-in { from { opacity: 0; transform: translateY(4vh); } }
-}
+/* Page transitions: see PageCurtain (the floor of modules). */
 
 /* ─── Products gallery (pinned horizontal on desktop) ─────── */
 .pg-wrap { overflow: clip; }
@@ -1050,7 +1042,7 @@ button:hover .roll > span { transform: translateY(-50%); }
 .pg-line { margin-top: 24px; max-width: 42ch; font-size: clamp(15px, 1.35vw, 18px); line-height: 1.7; color: var(--text-2); }
 .pg-meta { margin-top: 20px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); }
 .pg-links { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
-.pg-ext { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2); text-decoration: none; border-bottom: 1px solid var(--border-strong); padding-bottom: 4px; transition: color 0.3s, border-color 0.3s; }
+.pg-ext { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2); text-decoration: none; border-bottom: 1px solid var(--border-strong); padding: 8px 0 5px; transition: color 0.3s, border-color 0.3s; }
 .pg-ext:hover { color: var(--text); border-color: var(--ac); }
 .pg-visual { display: flex; justify-content: center; }
 .pg-bar { display: none; }
@@ -1391,3 +1383,54 @@ button:hover .roll > span { transform: translateY(-50%); }
 .hero-stage[data-tight] .hero-ctas { margin-top: 0 !important; }
 .hero-stage[data-tight] .hero-index-row { padding: 9px 0; }
 .hero-stage[data-tight] .hero-index-title { padding-bottom: 8px; }
+
+/* Page transition (PageCurtain): a field of dark modules, 16 x 10 (8 x 20 on portrait screens) */
+.page-curtain { position: fixed; inset: 0; z-index: 10001; pointer-events: none; display: grid; grid-template-columns: repeat(16, 1fr); grid-template-rows: repeat(10, 1fr); }
+@media (orientation: portrait) { .page-curtain { grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(20, 1fr); } }
+.page-curtain i { display: block; margin: -0.5px; background: #07070e; box-shadow: inset 0 0 0 1px rgba(196,181,253,0.05); border-radius: 3px; transform: scale(0); }
+html.orv-curtain .page-curtain i { transform: scale(1); animation: pc-safety 0.6s ease 3s forwards; } /* never stuck covered if scripts fail */
+@keyframes pc-safety { to { transform: scale(0); } }
+
+/* Skip link: first stop for keyboard users */
+.skip-link { position: fixed; left: 16px; top: 16px; z-index: 10002; padding: 10px 16px; border-radius: 999px; background: #f1f5f9; color: #05050a; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; transform: translateY(-160%); transition: transform 0.3s var(--ease); }
+.skip-link:focus-visible { transform: none; outline: 2px solid #c4b5fd; outline-offset: 3px; }
+
+/* Reveal (see _shared.tsx). Tied to the element entering the viewport: content that is on screen
+   at load is simply there from the first paint (on inner pages the tile transition is the
+   entrance). Browsers without view timelines get a one-off timed entrance instead. */
+@media (prefers-reduced-motion: no-preference) {
+  .rv { animation: rv-in 0.95s cubic-bezier(0.16, 1, 0.3, 1) var(--rv-d, 0s) both; }
+  @supports (animation-timeline: view()) {
+    .rv { animation: rv-in linear both; animation-timeline: view(); animation-range: entry 0px entry 260px; }
+  }
+}
+@keyframes rv-in { from { opacity: 0; translate: 0 var(--rv-y, 28px); } }
+
+/* Loader wordmark, also CSS so it paints with the HTML */
+.boot-l { display: inline-block; animation: boot-l 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+@keyframes boot-l { from { translate: 0 45%; opacity: 0.01; } }
+.boot-tag { animation: boot-tag 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both; }
+@keyframes boot-tag { from { opacity: 0; translate: 0 8px; } }
+@media (prefers-reduced-motion: reduce) { .boot-l, .boot-tag { animation: none; } }
+
+/* Back links on inner pages: mono, a real hit area, the arrow leads the way on hover */
+.back-link { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--text-3); text-decoration: none; transition: color 0.3s var(--ease); }
+.back-link span { display: inline-block; transition: transform 0.4s var(--ease); }
+@media (hover: hover) { .back-link:hover { color: var(--text); } .back-link:hover span { transform: translateX(-5px); } }
+.back-link:focus-visible { color: var(--text); }
+.credit-link { color: inherit; display: inline-block; padding: 6px 0; }
+
+/* 404: a task that never landed */
+.nf { position: relative; min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; padding: clamp(56px, 10vh, 120px) clamp(24px, 6vw, 96px) 64px; background: var(--bg); overflow: clip; }
+.nf-floor { display: grid; grid-template-columns: repeat(9, clamp(22px, 4.2vw, 46px)); gap: clamp(5px, 0.8vw, 9px); margin-bottom: clamp(36px, 6vh, 64px); transform: perspective(900px) rotateX(48deg) rotateZ(-8deg); transform-origin: left center; width: max-content; }
+.nf-floor i { aspect-ratio: 1; border-radius: 22%; background: #0b0b14; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 6px 0 #050509; }
+.nf-floor i.lit { background: #6366f1; box-shadow: 0 0 18px rgba(99,102,241,0.55), 0 6px 0 #2b2d8f; animation: nf-run 2.6s var(--ease) infinite; }
+.nf-floor i.hole { background: transparent; box-shadow: inset 0 0 0 1px rgba(196,181,253,0.45); }
+@keyframes nf-run { 0%, 100% { opacity: 0.35; } 18% { opacity: 1; } 60% { opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) { .nf-floor i.lit { animation: none; } }
+.nf-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-2); }
+.nf-title { margin-top: 18px; font-family: var(--serif); font-weight: 400; font-size: clamp(54px, 9vw, 150px); line-height: 0.92; letter-spacing: -0.035em; color: var(--text); max-width: 11ch; }
+.nf-title em { color: #c4b5fd; }
+.nf-copy { margin-top: 24px; max-width: 42ch; font-size: clamp(15px, 1.25vw, 18px); line-height: 1.6; color: var(--text-2); }
+.nf-actions { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 12px; }
+.nf-actions a { text-decoration: none; }

@@ -1130,7 +1130,7 @@ button:hover .roll > span { transform: translateY(-50%); }
 @media (max-width: 560px) { .team-row { grid-template-columns: 32px minmax(0, 1fr); } .team-badge { grid-column: 2; justify-self: start; margin-top: 4px; } }
 
 /* ─── Hero v3 ────────────────────────────────────────────── */
-.hero-h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(54px, min(12.4vw, 19.5svh), 214px); line-height: 0.9; letter-spacing: -0.035em; color: var(--text); }
+.hero-h1 { font-family: var(--serif); font-weight: 400; font-size: calc(clamp(54px, min(12.4vw, 19.5svh), 214px) * var(--hf, 1)); line-height: 0.9; letter-spacing: -0.035em; color: var(--text); }
 .hero-mask { display: block; position: relative; overflow: hidden; padding: 0.02em 0 0.17em; margin-bottom: -0.12em; }
 .hero-l1 { display: inline-block; will-change: transform; }
 .hero-rotor { font-style: italic; color: #c4b5fd; }
@@ -1138,7 +1138,7 @@ button:hover .roll > span { transform: translateY(-50%); }
 .hero-phrase { position: absolute; left: 0; top: 0.02em; white-space: nowrap; will-change: transform; padding-right: 0.06em; }
 /* Hidden in their masks until the entrance runs (the hero renders behind the intro overlay). */
 .hero-l1, .hero-phrase { transform: translateY(135%); }
-.hero-row { margin-top: clamp(28px, 4.6vh, 56px); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 36px; }
+.hero-row { margin-top: calc(clamp(28px, 4.6vh, 56px) * var(--hf, 1)); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 36px; }
 .hero-index { width: min(100%, 400px); }
 .hero-index-title { padding-bottom: 12px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-3); border-bottom: 1px solid var(--border-strong); }
 .hero-index-row { display: grid; grid-template-columns: 1fr auto 18px; gap: 16px; align-items: baseline; padding: 15px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: none; }
@@ -1168,7 +1168,7 @@ button:hover .roll > span { transform: translateY(-50%); }
   .hero-ctas { margin-top: 0 !important; }
   .hero-index-row { padding: 9px 0; }
   .hero-index-title { padding-bottom: 8px; }
-  .hero-h1 { font-size: clamp(48px, min(10vw, 15svh), 150px); }
+  .hero-h1 { font-size: calc(clamp(48px, min(10vw, 15svh), 150px) * var(--hf, 1)); }
 }
 
 /* ─── Client testimonial ─── */
@@ -1209,7 +1209,7 @@ button:hover .roll > span { transform: translateY(-50%); }
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible { outline: 1.5px solid #c4b5fd; outline-offset: 3px; border-radius: 4px; }
 
 /* ─── Phones & tablets: the hero is bigger, products become a swipe carousel ─── */
-@media (max-width: 480px) { .hero-h1 { font-size: min(16.4vw, 70px); } }
+@media (max-width: 480px) { .hero-h1 { font-size: calc(min(16.4vw, 70px) * var(--hf, 1)); } }
 @media (max-width: 1023px) {
   .pg-track { flex-direction: row; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 24px 28px; scrollbar-width: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
   .pg-track::-webkit-scrollbar { display: none; }
@@ -1385,3 +1385,9 @@ button:hover .roll > span { transform: translateY(-50%); }
 }
 @keyframes rack { 0%, 100% { opacity: 0.32; } 38%, 62% { opacity: 1; } }
 @keyframes sheet-open { from { clip-path: inset(0 3.5% 0 3.5% round 28px); } to { clip-path: inset(0 0 0 0 round 0); } }
+
+/* Fit (see HeroScene): when the hero is too tall for the window the paragraph steps aside and the lower block compacts */
+.hero-stage[data-tight] .hero-row p { display: none; }
+.hero-stage[data-tight] .hero-ctas { margin-top: 0 !important; }
+.hero-stage[data-tight] .hero-index-row { padding: 9px 0; }
+.hero-stage[data-tight] .hero-index-title { padding-bottom: 8px; }

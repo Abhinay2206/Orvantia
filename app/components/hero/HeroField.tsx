@@ -68,11 +68,11 @@ export const monotone = (xs: number[], ys: number[]) => {
 // The lens pass (see build): depth of field gathered over a golden-angle disc, read from a mip
 // level that fills the gaps between taps; a soft glow from the blurred mips above a threshold;
 // a short horizontal (anamorphic) streak from the brightest lights; then the usual tone mapping.
-const LENS = (taps: number) => `
+const LENS = (maxTaps: number) => `
 #include <packing>
 uniform sampler2D tColor, tDepth;
 uniform vec2 uRes;
-uniform float uNear, uFar, uFocus, uAperture, uMaxCoc, uGlow, uStreak;
+uniform float uNear, uFar, uFocus, uAperture, uMaxCoc, uGlow, uStreak, uTaps;
 varying vec2 vUv;
 float dist(vec2 uv) { return -perspectiveDepthToViewZ(texture2D(tDepth, uv).x, uNear, uFar); }
 float coc(float d) { return min(uMaxCoc, uAperture * abs(d - uFocus) / max(d, 0.001)); }
@@ -80,12 +80,13 @@ void main() {
   vec3 col = textureLod(tColor, vUv, 0.0).rgb;
   float c0 = coc(dist(vUv));
   if (c0 > 0.6) {
-    float lod = log2(max(1.0, c0 / ${Math.sqrt(taps).toFixed(2)}));
+    float lod = log2(max(1.0, c0 / sqrt(uTaps)));
     vec3 acc = col;
     float wsum = 1.0;
-    for (int i = 0; i < ${taps}; i++) {
+    for (int i = 0; i < ${maxTaps}; i++) {
+      if (float(i) >= uTaps) break;
       float fi = float(i) + 0.5;
-      float r = sqrt(fi / ${taps}.0) * c0;
+      float r = sqrt(fi / uTaps) * c0;
       float a = fi * 2.39996323;
       vec2 uv = vUv + vec2(cos(a), sin(a)) * r / uRes;
       float w = clamp(coc(dist(uv)) - r + 1.5, 0.0, 1.0); // a sample counts only if its own blur reaches here
@@ -100,12 +101,14 @@ void main() {
   // dense taps from a very soft mip, closer together than its texels, fading with distance:
   // a continuous streak (sparse taps would stamp separate ghost copies of each light)
   vec3 st = vec3(0.0);
-  for (int i = 1; i <= 10; i++) {
-    float fi = float(i);
-    vec2 o = vec2(fi * 0.016, 0.0);
-    st += (max(textureLod(tColor, vUv + o, 5.5).rgb - 0.45, 0.0) + max(textureLod(tColor, vUv - o, 5.5).rgb - 0.45, 0.0)) * (1.0 - fi / 11.0);
+  if (uStreak > 0.001) {
+    for (int i = 1; i <= 6; i++) {
+      float fi = float(i);
+      vec2 o = vec2(fi * 0.027, 0.0);
+      st += (max(textureLod(tColor, vUv + o, 5.5).rgb - 0.45, 0.0) + max(textureLod(tColor, vUv - o, 5.5).rgb - 0.45, 0.0)) * (1.0 - fi / 7.0);
+    }
   }
-  col += g * uGlow + st * (uStreak / 5.0) * vec3(0.62, 0.58, 1.0);
+  col += g * uGlow + st * (uStreak / 3.0) * vec3(0.62, 0.58, 1.0);
   gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
@@ -155,6 +158,11 @@ function build(
   const phone = host.clientWidth < 760 || matchMedia("(pointer: coarse)").matches;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // Quality tiers. The keyboard shot fills the screen with lit surfaces, so on weaker GPUs it is the
+  // heaviest part of the page. 0: full lens (depth of field, glow, streak); 1: lighter lens, no streak,
+  // fewer taps, softer resolution; 2: no lens, plain render; 3: also no shadows, 1x resolution.
+  // Phones start at 1, and any device steps down on its own when frames run long (see the loop).
+  let tier = phone ? 1 : 0;
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   let dpr = Math.min(devicePixelRatio || 1, phone ? 1.5 : 1.75);
   renderer.setPixelRatio(dpr);
@@ -164,6 +172,9 @@ function build(
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = !phone;
   renderer.shadowMap.type = THREE.PCFShadowMap;
+  // The shadow map is drawn only when something that casts it (or the light) has moved - see step().
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
   const canvas = renderer.domElement;
   canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;display:block";
   host.appendChild(canvas);
@@ -376,14 +387,14 @@ function build(
   // streak, in one extra full-screen pass. Only during the keyboard shot, only where half-float
   // targets render, and it is the first thing dropped when frames run long.
   let lensOn = !reduced && renderer.capabilities.isWebGL2 && (renderer.extensions.has("EXT_color_buffer_float") || renderer.extensions.has("EXT_color_buffer_half_float"));
-  const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter, depthTexture: new THREE.DepthTexture(1, 1) });
+  const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: phone ? 2 : 4, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter, depthTexture: new THREE.DepthTexture(1, 1) });
   const lens = new THREE.ShaderMaterial({
     uniforms: {
       tColor: { value: rt.texture }, tDepth: { value: rt.depthTexture }, uRes: { value: new THREE.Vector2(1, 1) },
-      uNear: { value: camera.near }, uFar: { value: camera.far }, uFocus: { value: 5 }, uAperture: { value: 0 }, uMaxCoc: { value: 20 }, uGlow: { value: 0 }, uStreak: { value: 0 },
+      uNear: { value: camera.near }, uFar: { value: camera.far }, uFocus: { value: 5 }, uAperture: { value: 0 }, uMaxCoc: { value: 20 }, uGlow: { value: 0 }, uStreak: { value: 0 }, uTaps: { value: 12 },
     },
     vertexShader: "varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }",
-    fragmentShader: LENS(phone ? 10 : 14),
+    fragmentShader: LENS(14),
     depthTest: false,
     depthWrite: false,
   });
@@ -394,7 +405,7 @@ function build(
   const lensCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   const bufSize = new THREE.Vector2();
   const syncLens = () => { renderer.getDrawingBufferSize(bufSize); rt.setSize(bufSize.x, bufSize.y); lens.uniforms.uRes.value.copy(bufSize); };
-  let lensAmt = 0, focus = 5;
+  let lensAmt = 0, focus = 5, lensGain = 1; // lensGain eases to 0 when the lens is dropped, so it fades instead of popping
   const focusP = new THREE.Vector3(), fwd = new THREE.Vector3();
   const frame = () => {
     const w = host.clientWidth || 1, hh = host.clientHeight || 1;
@@ -543,7 +554,7 @@ function build(
   const dummy = new THREE.Object3D();
   const tmpV = new THREE.Vector3();
   let clock = 0, introAt = -1, nextSpawn = 0.3, raf = 0, running = false, last = 0;
-  let slow = 0, frames = 0, scroll = 0, prog = reduced ? 1 : 0, lastKey = -1, lastProg = prog, woke = false;
+  let winN = 0, winSlow = 0, winT = 0, strikes = 0, shadowTick = 0, shadowSig = 0, scroll = 0, prog = reduced ? 1 : 0, lastKey = -1, lastProg = prog, woke = false;
   const cue = (name: string) => dispatchEvent(new CustomEvent("orv:cue", { detail: { name } }));
 
   const step = (dt: number) => {
@@ -570,7 +581,7 @@ function build(
     push = reduced ? 0 : 1 - ease(Math.max(0, intro) / 4.5);
     placeCamera(scroll, 0, prog);
     // the keyboard types with the scroll; its studio light fades as the camera pulls away
-    kb?.update(prog, wake, clock, lensOn ? macro : 0);
+    kb?.update(prog, wake, clock, lensGain * macro);
     // tell the page each key that goes down (with where it is on screen, so its letter can lift
     // off it into the headline) and how many are typed; cue the sound at the big moments
     if (kb) {
@@ -612,10 +623,19 @@ function build(
       (moteGeo.getAttribute("position") as T.BufferAttribute).needsUpdate = true;
     }
     key.angle = 0.4 + 0.15 * macro;
+    // the shadow map (the keyboard's shadow on the floor, then the tiles') is redrawn only when it can
+    // have changed: the light or the board moved, or the tiles are up and moving (every other frame)
+    if (renderer.shadowMap.enabled) {
+      const sig = key.position.x + key.position.y * 3 + key.position.z * 7 + key.target.position.x * 11 + key.target.position.z * 13 + key.angle * 17 + (kb ? kb.group.position.y * 19 : 0);
+      if (mesh.visible ? (++shadowTick & 1) === 0 : Math.abs(sig - shadowSig) > 1e-4) renderer.shadowMap.needsUpdate = true;
+      shadowSig = sig;
+    }
     // the lens: focus is pulled to the key about to go down (a beat early, like a focus puller),
     // then onto the whole board once the word is complete; the aperture closes as the camera rises,
     // and the pass is gone early in the pull-back, before the floor comes up
-    lensAmt = lensOn ? 1 - band(PULL[0] + 0.02, PULL[0] + 0.16, prog) : 0;
+    lensGain += ((lensOn && tier < 2 ? 1 : 0) - lensGain) * (dt > 0 ? 1 - Math.exp(-dt * 5) : 1);
+    if (lensGain < 0.02) lensGain = 0;
+    lensAmt = lensGain * (1 - band(PULL[0] + 0.02, PULL[0] + 0.16, prog));
     if (lensAmt > 0.001) {
       if (kb) kb.keyPos(Math.max(0, kb.lastTyped(prog + 0.018)), focusP); else focusP.copy(oAt);
       focusP.lerp(kbAt, band(IGNITE - 0.02, IGNITE + 0.06, prog));
@@ -626,11 +646,12 @@ function build(
       u.uFocus.value = focus;
       u.uAperture.value = bufSize.y * (0.0065 + 0.0105 * (1 - band(0.12, 0.34, prog))) * lensAmt;
       u.uMaxCoc.value = bufSize.y * 0.022;
-      u.uGlow.value = 0.9 * lensAmt;
-      u.uStreak.value = 0.22 * lensAmt;
+      u.uGlow.value = (tier === 0 ? 0.9 : 0.7) * lensAmt;
+      u.uStreak.value = (tier === 0 ? 0.22 : 0) * lensAmt;
+      u.uTaps.value = tier === 0 ? (phone ? 9 : 13) : 7;
     }
     // the close shot fills the whole screen with lit surfaces; render it a little softer to keep 60fps
-    const ratio = macro > 0.5 || lensAmt > 0.001 ? Math.min(dpr, phone ? 1.25 : 1.3) : dpr;
+    const ratio = tier >= 3 ? 1 : macro > 0.5 || lensAmt > 0.001 ? Math.min(dpr, tier >= 2 ? 1.15 : phone ? 1.1 : 1.3) : dpr;
     if (renderer.getPixelRatio() !== ratio) { renderer.setPixelRatio(ratio); renderer.setSize(host.clientWidth || 1, host.clientHeight || 1, false); syncLens(); }
 
     if (cursor.on) {
@@ -680,7 +701,10 @@ function build(
     const decayGlow = Math.pow(0.955, f), decayLift = Math.pow(0.9, f), damp = Math.pow(0.8, f);
     for (let k = ripples.length - 1; k >= 0; k--) if (clock - ripples[k].t > 1.6) ripples.splice(k, 1);
 
-    for (let i = 0; i < N; i++) {
+    // the floor is all under the surface until the pull-back (every tile is scrubbed by scroll then), so
+    // none of its per-tile work runs, and nothing is uploaded, while the keyboard is on stage
+    const tilesOn = reduced || prog >= PULL[0] + 0.03;
+    if (tilesOn) for (let i = 0; i < N; i++) {
       let target = 0;
       if (intro < delay[i]) target = -3;
       else target = reduced ? 0 : 0.03 * Math.sin(clock * 0.7 + phase[i]); // the floor breathes, barely
@@ -718,10 +742,12 @@ function build(
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
     }
-    mesh.visible = reduced || prog >= PULL[0] + 0.03; // all tiles are under the floor before the wave
-    mesh.instanceMatrix.needsUpdate = true;
-    glowAttr.needsUpdate = true;
-    hueAttr.needsUpdate = true;
+    mesh.visible = tilesOn;
+    if (tilesOn) {
+      mesh.instanceMatrix.needsUpdate = true;
+      glowAttr.needsUpdate = true;
+      hueAttr.needsUpdate = true;
+    }
   };
 
   const render = () => {
@@ -739,14 +765,23 @@ function build(
     raf = requestAnimationFrame(loop);
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
     last = now;
-    // Long frames: step resolution down, then drop shadows.
-    if (++frames > 30) {
-      slow = dt > 0.024 ? slow + 1 : Math.max(0, slow - 1);
-      if (slow > 40) {
-        slow = 0;
-        if (lensAmt > 0.001) lensOn = false; // the lens pass goes first
-        else if (dpr > 1) { dpr = Math.max(1, dpr - 0.25); renderer.setPixelRatio(dpr); frame() }
-        else if (renderer.shadowMap.enabled) { renderer.shadowMap.enabled = false; key.castShadow = false; mat.needsUpdate = true; }
+    // Slow frames: judged over half-second windows (so a one-off shader compile does not count); two slow
+    // windows in a row step the quality down a tier. It never steps back up (no flapping).
+    if (ready) {
+      winN++;
+      if (dt > 0.026) winSlow++;
+      winT += dt;
+      if (winT >= 0.5) {
+        const bad = winSlow / winN > 0.4;
+        strikes = bad ? strikes + 1 : 0;
+        if (strikes >= 2 && tier < 3) {
+          tier++;
+          strikes = 0;
+          if (tier === 3) { renderer.shadowMap.enabled = false; key.castShadow = false; mat.needsUpdate = true; floorMat.needsUpdate = true; }
+          if (tier >= 2 && dpr > 1) { dpr = Math.max(1, dpr - 0.25); renderer.setPixelRatio(dpr); frame(); }
+        }
+        winN = winSlow = 0;
+        winT = 0;
       }
     }
     step(dt);

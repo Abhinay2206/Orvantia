@@ -73,6 +73,8 @@ export default function HeroScene() {
      back it grows and glides up into the headline's second line, and hands over
      to the real headline there - the typed words become the headline. */
   const stageRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const footRef = useRef<HTMLDivElement>(null);
   const kinRef = useRef<HTMLDivElement>(null);
   const kinBase = useRef({ left: 0, top: 0, w: 0, h: 0, sw: 0, sh: 0 });
   const landed = useRef(false);
@@ -119,6 +121,35 @@ export default function HeroScene() {
     if (t < 0.999 && landed.current) { landed.current = false; rotorReset.current(); }
   };
   useMotionValueEvent(shown, "change", (t) => { if (!reducedMotion) applyKin(t); });
+  /* Fit: the stage is exactly one screen tall, so on a short window (or at browser zoom) the headline,
+     paragraph and index can add up to more than it holds and push the bottom bar out of view. Measure
+     the layout and shrink the headline and spacing (--hf) until everything, bar included, fits;
+     below 0.72 the paragraph steps aside too. */
+  const fit = () => {
+    const stage = stageRef.current, body = bodyRef.current, foot = footRef.current;
+    if (!stage || !body || !foot) return;
+    stage.removeAttribute("data-tight");
+    let hf = 1;
+    const over = () => body.offsetHeight + foot.offsetHeight - stage.clientHeight;
+    stage.style.setProperty("--hf", "1");
+    for (let i = 0; i < 14 && over() > 0.5; i++) {
+      hf = Math.max(0.45, hf - 0.04);
+      if (hf < 0.72) stage.setAttribute("data-tight", "");
+      stage.style.setProperty("--hf", hf.toFixed(2));
+    }
+  };
+  useEffect(() => {
+    if (!reducedMotion) {
+      const run = () => { fit(); layoutKin(); };
+      run();
+      const ro = new ResizeObserver(run);
+      if (stageRef.current) ro.observe(stageRef.current);
+      document.fonts?.ready.then(run);
+      window.addEventListener("resize", run);
+      return () => { ro.disconnect(); window.removeEventListener("resize", run); };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reducedMotion, mounted]);
   useEffect(() => {
     if (reducedMotion) {
       const real = headRef.current?.querySelector<HTMLElement>(".hero-phrase");
@@ -192,8 +223,11 @@ export default function HeroScene() {
     if (!l || reducedMotion) return;
     const base = { duration: l.options.duration, wheel: l.virtualScroll?.options.wheelMultiplier ?? 1 };
     let inShot: boolean | null = null;
+    let end = runwayEnd();
+    const ro = new ResizeObserver(() => { end = runwayEnd(); }); // not read on every scroll event: that would force layout each time
+    if (stageRef.current) ro.observe(stageRef.current);
     const apply = () => {
-      const now = l.scroll < runwayEnd() - 2;
+      const now = l.scroll < end - 2;
       if (now === inShot) return;
       inShot = now;
       l.options.duration = now ? 2.1 : base.duration;
@@ -201,7 +235,7 @@ export default function HeroScene() {
     };
     apply();
     const off = l.on("scroll", apply);
-    return () => { off(); l.options.duration = base.duration; if (l.virtualScroll) l.virtualScroll.options.wheelMultiplier = base.wheel; };
+    return () => { off(); ro.disconnect(); l.options.duration = base.duration; if (l.virtualScroll) l.virtualScroll.options.wheelMultiplier = base.wheel; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, reducedMotion]);
 
@@ -350,6 +384,7 @@ export default function HeroScene() {
 
       {/* ─── Editorial content ─ */}
       <motion.div
+        ref={bodyRef}
         className="relative flex flex-col justify-end"
         // In flow (not absolutely placed) so a short screen makes the hero taller
         // instead of pushing the text up under the fixed nav.
@@ -424,6 +459,7 @@ export default function HeroScene() {
       </motion.div>
 
       <motion.div
+        ref={footRef}
         // sticky: on short screens the hero is taller than the window, so the bar
         // stays pinned to the bottom of the viewport instead of below the fold
         style={{ position: "relative", zIndex: 4, padding: "28px clamp(24px, 6vw, 96px) clamp(16px, 3vh, 30px)", pointerEvents: "none", background: "linear-gradient(to top, rgba(4,4,10,0.96) 55%, transparent)" }}

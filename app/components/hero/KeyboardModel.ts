@@ -170,7 +170,7 @@ export async function loadKeyboard(
       const isLegend = isCase && box.setFromObject(mesh).min.y > 0.3;
       // only the case casts the floor shadow; the caps sit on the case and gain little from it
       mesh.castShadow = !opts.phone && isCase && !isLegend;
-      mesh.receiveShadow = !opts.phone;
+      mesh.receiveShadow = false; // only the floor takes the board's shadow; the caps would just pay for lookups
       mesh.material =
         isLegend ? legendMat
         : isCase ? caseMat
